@@ -49,7 +49,6 @@ void app_main()
     }
 
     ESP_ERROR_CHECK(ret);
-    ESP_ERROR_CHECK(ret);
 
     /*Initialize the platform.*/
     if (platformInit() == false) {
