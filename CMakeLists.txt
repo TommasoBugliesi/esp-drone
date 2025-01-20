@@ -9,6 +9,7 @@ set(PLANE_COMPONENT_DIRS "./components/core"
                         "./components/drivers/general"
                         "./components/drivers/i2c_devices"
                         "./components/drivers/spi_devices"
+                        "./components/drivers/i2c_spi_devices"
                          "./components/lib" )
 
 set(EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIRS} ${PLANE_COMPONENT_DIRS}")

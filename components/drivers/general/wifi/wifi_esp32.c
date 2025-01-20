@@ -28,6 +28,7 @@
 
 #define UDP_SERVER_PORT         2390
 #define UDP_SERVER_BUFSIZE      64
+// #define DEBUG_UDP 1
 
 static struct sockaddr_storage source_addr;
 
@@ -249,17 +250,26 @@ static void app_espnow_event_handler(void *handler_args, esp_event_base_t base, 
     }
 }
 
+/**
+ * @brief Initialize the wifi.
+ *
+ * @note Initialize CRTP link only if USE_CRTP_WIFI is defined
+ */
 void wifiInit(void)
 {
     if (isInit) {
         return;
     }
-    // This should probably be reduced to a CRTP packet size
-    udpDataRx = xQueueCreate(16, sizeof(UDPPacket));
-    DEBUG_QUEUE_MONITOR_REGISTER(udpDataRx);
-    udpDataTx = xQueueCreate(16, sizeof(UDPPacket));
-    DEBUG_QUEUE_MONITOR_REGISTER(udpDataTx);
 
+    // Create a queue for CRTP packets
+    udpDataRx = xQueueCreate(16, sizeof(UDPPacket));
+    DEBUG_QUEUE_MONITOR_REGISTER(udpDataRx); // monitor the queue if DEBUG_QUEUE_MONITOR defined
+
+    // Create a queue for the data to be sent
+    udpDataTx = xQueueCreate(16, sizeof(UDPPacket));
+    DEBUG_QUEUE_MONITOR_REGISTER(udpDataTx); // monitor the queue if DEBUG_QUEUE_MONITOR defined
+
+    // Initialize the ESP-NOW
     espnow_storage_init();
     esp_netif_t *ap_netif = NULL;
     ESP_ERROR_CHECK(esp_netif_init());
@@ -267,18 +277,22 @@ void wifiInit(void)
     ap_netif = esp_netif_create_default_wifi_ap();
     uint8_t mac[6];
 
+    // Initialize the WIFI
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
+    // Register the event handler
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                     ESP_EVENT_ANY_ID,
                     &wifi_event_handler,
                     NULL,
                     NULL));
 
+    // Get the mac address of the AP
     ESP_ERROR_CHECK(esp_wifi_get_mac(ESP_IF_WIFI_AP, mac));
     sprintf(WIFI_SSID, "%s_%02X%02X%02X%02X%02X%02X", CONFIG_WIFI_BASE_SSID, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
+    // Set the WIFI configuration
     wifi_config_t wifi_config = {
         .ap = {
             .channel = WIFI_CH,
@@ -287,23 +301,30 @@ void wifiInit(void)
         },
     };
 
+    // Set the SSID and password
     memcpy(wifi_config.ap.ssid, WIFI_SSID, strlen(WIFI_SSID) + 1) ;
     wifi_config.ap.ssid_len = strlen(WIFI_SSID);
     memcpy(wifi_config.ap.password, WIFI_PWD, strlen(WIFI_PWD) + 1) ;
 
+    // Set the authentication mode
     if (strlen(WIFI_PWD) == 0) {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
 
+    // Set the WIFI mode
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_wifi_set_channel(WIFI_CH, WIFI_SECOND_CHAN_NONE);
+
+    // Initialize the ESP-NOW
     espnow_config_t espnow_config = ESPNOW_INIT_CONFIG_DEFAULT();
     espnow_init(&espnow_config);
     esp_event_handler_register(ESP_EVENT_ESPNOW, ESP_EVENT_ANY_ID, app_espnow_event_handler, NULL);
     ESP_ERROR_CHECK(espnow_ctrl_responder_bind(30 * 1000, -55, NULL));
     espnow_ctrl_responder_data(espnow_ctrl_data_cb);
+
+    // Set the IP address
     esp_netif_ip_info_t ip_info = {
         .ip.addr = ipaddr_addr("192.168.43.42"),
         .netmask.addr = ipaddr_addr("255.255.255.0"),
@@ -312,14 +333,21 @@ void wifiInit(void)
     ESP_ERROR_CHECK(esp_netif_dhcps_stop(ap_netif));
     ESP_ERROR_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info));
     ESP_ERROR_CHECK(esp_netif_dhcps_start(ap_netif));
+
+    // Print the SSID and password
     DEBUG_PRINT_LOCAL("wifi_init_softap complete.SSID:%s password:%s", WIFI_SSID, WIFI_PWD);
 
+    // Create the UDP server
     if (udp_server_create(NULL) == ESP_FAIL) {
         DEBUG_PRINT_LOCAL("UDP server create socket failed");
     } else {
         DEBUG_PRINT_LOCAL("UDP server create socket succeed");
     }
+
+    // Create the UDP server tasks
     xTaskCreate(udp_server_tx_task, UDP_TX_TASK_NAME, UDP_TX_TASK_STACKSIZE, NULL, UDP_TX_TASK_PRI, NULL);
     xTaskCreate(udp_server_rx_task, UDP_RX_TASK_NAME, UDP_RX_TASK_STACKSIZE, NULL, UDP_RX_TASK_PRI, NULL);
+
+    // Set the flag
     isInit = true;
 }

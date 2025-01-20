@@ -52,6 +52,7 @@
 
 static bool isinit_i2cPort[2] = {0, 0};
 
+#ifdef CONFIG_I2C0_ENABLE
 // Cost definitions of busses
 static const I2cDef sensorBusDef = {
     .i2cPort            = I2C_NUM_0,
@@ -64,7 +65,9 @@ static const I2cDef sensorBusDef = {
 I2cDrv sensorsBus = {
     .def                = &sensorBusDef,
 };
+#endif
 
+#ifdef CONFIG_I2C1_ENABLE
 static const I2cDef deckBusDef = {
     .i2cPort            = I2C_NUM_1,
     .i2cClockSpeed      = I2C_DEFAULT_DECK_CLOCK_SPEED,
@@ -76,6 +79,7 @@ static const I2cDef deckBusDef = {
 I2cDrv deckBus = {
     .def                = &deckBusDef,
 };
+#endif
 
 static void i2cdrvInitBus(I2cDrv *i2c)
 {

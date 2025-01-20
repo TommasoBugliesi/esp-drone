@@ -29,15 +29,23 @@
 
 #include "config.h"
 #include "console.h"
-//if enable, some message will print to remote client 
-//#define DEBUG_PRINT_ON_CONSOLE
+#include "sdkconfig.h"
+
+/* See menuconfig to activate debugging options*/
+#ifdef CONFIG_DEBUG_PRINT_ON_SEGGER_RTT
+  #define DEBUG_PRINT_ON_SEGGER_RTT 1
+#endif
+#ifdef CONFIG_DEBUG_PRINT_ON_UART
+  #define DEBUG_PRINT_ON_UART 1
+#endif
+
 #ifdef DEBUG_PRINT_ON_UART
   #include "uart1.h"
   #define uartPrintf uart1Printf
 #endif
 
 #ifdef DEBUG_PRINT_ON_SEGGER_RTT
-  #include "SEGGER_RTT.h"
+  #include "SEGGER_SYSVIEW.h"
 #endif
 
 #ifndef DEBUG_MODULE
@@ -64,8 +72,13 @@ void debugInit(void);
   #define DEBUG_PRINT(fmt, ...) eprintf(ITM_SendChar, fmt, ## __VA_ARGS__)
   #define DEBUG_PRINT_OS(fmt, ...) eprintf(ITM_SendChar, fmt, ## __VA_ARGS__)
 #elif defined(DEBUG_PRINT_ON_SEGGER_RTT)
-  #define DEBUG_PRINT(fmt, ...) SEGGER_RTT_printf(0, fmt, ## __VA_ARGS__)
-  #define DEBUG_PRINT_OS(fmt, ...) SEGGER_RTT_printf(0, fmt, ## __VA_ARGS__)
+  #define DEBUG_PRINT(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ## __VA_ARGS__)
+  #define DEBUG_PRINT_OS(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ## __VA_ARGS__)
+  #define DEBUG_PRINTE(fmt, ...) SEGGER_SYSVIEW_ErrorfHost(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTW(fmt, ...) SEGGER_SYSVIEW_WarnfHost(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTI(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTD(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTV(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ##__VA_ARGS__)
 #elif defined(DEBUG_PRINT_ON_CONSOLE)// Debug using radio or USB
   #include "esp_log.h"
   #define DEBUG_PRINT(fmt, ...) ESP_LOG_LEVEL_LOCAL(ESP_LOG_DEBUG,DEBUG_MODULE,fmt, ##__VA_ARGS__) 

@@ -41,7 +41,12 @@ static int led_polarity[] = {
 
 static bool isInit = false;
 
-//Initialize the green led pin as output
+/**
+ * @brief Initialize the LED:s as output
+ *
+ * This function will initialize all LED:s as output and set them to a default
+ * state of off.
+ */
 void ledInit()
 {
     int i;
@@ -50,7 +55,7 @@ void ledInit()
         return;
     }
 
-    for (i = 0; i < LED_NUM; i++) {
+    for (i = 0; i < LED_NUM_MAX; i++) {
         gpio_config_t io_conf = {
             //bit mask of the pins that you want to set,e.g.GPIO18/19
             .pin_bit_mask = (1ULL << led_pin[i]),
@@ -63,6 +68,8 @@ void ledInit()
         };
         //configure GPIO with the given settings
         gpio_config(&io_conf);
+
+        //set led to off at start up
         ledSet(i, 0);
     }
 
@@ -71,15 +78,14 @@ void ledInit()
 
 bool ledTest(void)
 {
-    ledSet(LED_GREEN, 1);
-    ledSet(LED_RED, 0);
-    vTaskDelay(M2T(250));
-    ledSet(LED_GREEN, 0);
-    ledSet(LED_RED, 1);
-    vTaskDelay(M2T(250));
-    // LED test end
+    ledSetAll();
+    vTaskDelay(M2T(500));
     ledClearAll();
-    ledSet(LED_BLUE, 1);
+    vTaskDelay(M2T(500));
+    ledSetAll();
+    vTaskDelay(M2T(500));
+    ledClearAll();
+    vTaskDelay(M2T(500));
 
     return isInit;
 }
@@ -88,7 +94,7 @@ void ledClearAll(void)
 {
     int i;
 
-    for (i = 0; i < LED_NUM; i++) {
+    for (i = 0; i < LED_NUM_MAX; i++) {
         //Turn off the LED:s
         ledSet(i, 0);
     }
@@ -98,14 +104,14 @@ void ledSetAll(void)
 {
     int i;
 
-    for (i = 0; i < LED_NUM; i++) {
+    for (i = 0; i < LED_NUM_MAX; i++) {
         //Turn on the LED:s
         ledSet(i, 1);
     }
 }
 void ledSet(led_t led, bool value)
 {
-    if (led > LED_NUM || led == LED_NUM) {
+    if (led >= LED_NUM_MAX || led < 0) {
         return;
     }
 

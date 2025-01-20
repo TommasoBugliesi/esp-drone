@@ -94,6 +94,27 @@ static bool detectEspNow(UDPPacket *in)
     return false;
 }
 
+/**
+ * @brief Wifi link task
+ *
+ * This task is responsible for receiving CRTP packets from the wifi link and
+ * sending them to the crtpPacketDelivery queue.
+ *
+ * If the packet is a legacy app packet, it is converted to a CRTP setpoint packet
+ * and sent to the crtpPacketDelivery queue.
+ *
+ * If the packet is an ESP-NOW packet, it is converted to a CRTP setpoint packet
+ * and sent to the crtpPacketDelivery queue.
+ *
+ * If the packet is a CRTP packet, it is sent to the crtpPacketDelivery queue
+ * without modification.
+ *
+ * The task also handles the case where the packet is not a CRTP packet or a
+ * legacy app packet or an ESP-NOW packet. In this case, the task prints an error
+ * message and discards the packet.
+ *
+ * The task is implemented as an infinite loop and does not return.
+ */
 static void wifilinkTask(void *param)
 {
     CRTPPacket p = {0};

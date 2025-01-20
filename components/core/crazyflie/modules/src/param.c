@@ -105,6 +105,18 @@ static bool isInit = false;
 
 STATIC_MEM_TASK_ALLOC_STACK_NO_DMA_CCM_SAFE(paramTask, PARAM_TASK_STACKSIZE);
 
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Initializes the parameter system.
+ * 
+ * This function sets up the parameters by calculating a hash for the table of contents (TOC)
+ * using the description of each parameter element. It initializes the parameter list, counts 
+ * the number of parameters, and creates the parameter task. It handles parameter groups 
+ * and checks for name length constraints. The function ensures it runs only once by checking
+ * the initialization status.
+ */
+
+/******  0b0ec197-501c-46fe-b0a5-50f455b25af3  *******/
 void paramInit(void)
 {
   int i;

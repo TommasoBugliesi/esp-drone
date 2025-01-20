@@ -55,7 +55,6 @@ void app_main()
         while (1);//if  firmware is running on the wrong hardware, Halt
     }
 
-    /*launch the system task */
+    /* launch the system task */
     systemLaunch();
-
 }

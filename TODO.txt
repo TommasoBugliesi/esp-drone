@@ -1,0 +1,10 @@
+// Fix board to have acc, mag and baro readings
+// Using platformio write code to check the status of the board
+// Use seeger view to read the MCu status
+// rewo
+
+if the board work:
+    // apply changes to code to integrate sensor libraries in the code
+    rk i2c and spi init to simplify sensor integration
+    // init the sensor and test them with seeger view
+else you fucked up

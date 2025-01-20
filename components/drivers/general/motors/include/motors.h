@@ -45,7 +45,6 @@
 
 //#define ENABLE_THRUST_BAT_COMPENSATED
 
-
 #define NBR_OF_MOTORS 4
 // Motors IDs define
 #define MOTOR_M1  0
@@ -53,17 +52,10 @@
 #define MOTOR_M3  2
 #define MOTOR_M4  3
 
-#ifdef CONFIG_TARGET_ESPLANE_V2_S2
-    #define MOTOR3_GPIO  CONFIG_MOTOR01_PIN         // M1 for ESP32FC
-    #define MOTOR4_GPIO  CONFIG_MOTOR02_PIN        // M2 for ESP32FC
-    #define MOTOR1_GPIO  CONFIG_MOTOR03_PIN        // M3 for ESP32FC
-    #define MOTOR2_GPIO  CONFIG_MOTOR04_PIN        // M4 for ESP32FC
-#else
-    #define MOTOR1_GPIO  CONFIG_MOTOR01_PIN         // M1 for ESP32FC
-    #define MOTOR2_GPIO  CONFIG_MOTOR02_PIN        // M2 for ESP32FC
-    #define MOTOR3_GPIO  CONFIG_MOTOR03_PIN        // M3 for ESP32FC
-    #define MOTOR4_GPIO  CONFIG_MOTOR04_PIN        // M4 for ESP32FC
-#endif
+#define MOTOR1_GPIO  CONFIG_MOTOR01_PIN         // M1 for ESP32FC
+#define MOTOR2_GPIO  CONFIG_MOTOR02_PIN        // M2 for ESP32FC
+#define MOTOR3_GPIO  CONFIG_MOTOR03_PIN        // M3 for ESP32FC
+#define MOTOR4_GPIO  CONFIG_MOTOR04_PIN        // M4 for ESP32FC
 
 #define MOT_PWM_CH1  4      // Motor M1 pwmchannel
 #define MOT_PWM_CH2  5      // Motor M2 pwmchannel
@@ -131,6 +123,8 @@
 #define HALF 500
 #define FULL 1000
 #define STOP 0
+
+// TODO : Create a structure similar to controller to use different functions at init for brushed and brushless motors
 
 typedef enum {
     BRUSHED,

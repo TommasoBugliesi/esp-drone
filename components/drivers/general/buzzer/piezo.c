@@ -42,7 +42,6 @@
 #define BUZ_PWM_CH2  1
 
 #define PIEZO_GPIO_POS_PIN    CONFIG_BUZ1_PIN_POS // buzzer+ -> GPIO39 ; buzzer- -> GND:
-#define PIEZO_GPIO_NEG_PIN    CONFIG_BUZ2_PIN_NEG // GND
 
 #define PIEZO_PWM_BITS      (13)
 #define PIEZO_PWM_PERIOD    ((1<<PIEZO_PWM_BITS) - 1)

@@ -45,7 +45,7 @@ bool eepromInit(I2C_Dev *i2cPort)
     }
 
     //TODOspi_flash_init();
-    DEBUG_PRINTI("spi_flash_init ... !");
+    //DEBUG_PRINTI("spi_flash_init ... !");
 
     isInit = true;
 

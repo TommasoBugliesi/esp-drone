@@ -32,20 +32,12 @@
 static platformConfig_t configs[] = {
 
     {
-        .deviceType = "EP20",
-        .deviceTypeName = "ESPlane 2.0 ",
-        .sensorImplementation = SensorImplementation_mpu6050_HMC5883L_MS5611,
+        .deviceType = "FF01",
+        .deviceTypeName = "FlyingFree V1.0 ",
+        .sensorImplementation = SensorImplementation_flyingfree_v01,
         .physicalLayoutAntennasAreClose = false,
         .motorMap = motorMapDefaultBrushed,
     },
-    {
-        .deviceType = "ED12",
-        .deviceTypeName = "ESP_Drone_v1_2",
-        .sensorImplementation = SensorImplementation_mpu6050_HMC5883L_MS5611,
-        .physicalLayoutAntennasAreClose = false,
-        .motorMap = motorMapDefaultBrushed,
-    },
-
 };
 
 const platformConfig_t *platformGetListOfConfigurations(int *nrOfConfigs)

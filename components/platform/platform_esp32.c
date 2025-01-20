@@ -31,8 +31,6 @@
 #error
 #endif
 
-#define DEFAULT_PLATFORM_STRING "0;EP20"
-
 //     //TODO:
 // #ifndef UNIT_TEST_MODE
 // static char *getAddressOfOtpMemoryBlock(int blockNr)
@@ -62,7 +60,7 @@ void platformGetDeviceTypeString(char *deviceTypeString)
 
     /*use default platform information  */
     if (!block || ((unsigned char)block[0]) == 0xff) {
-        block = DEFAULT_PLATFORM_STRING;
+        block = CONFIG_PLATFORM_STRING;
     }
 
     strncpy(deviceTypeString, block, PLATFORM_INFO_OTP_BLOCK_LEN);

@@ -34,10 +34,9 @@
 static bool isInit;
 
 static esp_adc_cal_characteristics_t *adc_chars;
-#ifdef CONFIG_IDF_TARGET_ESP32
-static const adc_channel_t channel = ADC_CHANNEL_7; //GPIO35 if ADC1
-#elif defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3)
-static const adc_channel_t channel = ADC_CHANNEL_1;     // GPIO2 if ADC1
+// TODO: find a clever way to link the copter configuration to the channel list to retrieve the right ADC_CHANNEL automatically
+#ifdef CONFIG_TARGET_FLYINGFREE_V01
+static const adc_channel_t channel = ADC_CHANNEL_6;     // GPI34 if ADC1
 #endif
 
 static const adc_bits_width_t width = ADC_WIDTH_MAX-1;

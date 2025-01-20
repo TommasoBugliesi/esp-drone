@@ -37,7 +37,7 @@
 #include "esp_timer.h"
 #include "driver/gpio.h"
 
-#include "sensors_mpu6050_hm5883L_ms5611.h"
+#include "sensors_bmi160_qmc5883l_bmp280.h"
 #include "system.h"
 #include "configblock.h"
 #include "param.h"
@@ -52,15 +52,16 @@
 #include "stm32_legacy.h"
 
 #include "i2cdev.h"
+#include "driver/spi_master.h"
 // #include "lps25h.h"
-#include "mpu6050.h"
-#include "hmc5883l.h"
-#include "ms5611.h"
+#include "bmi160.h"
+#include "qmc5883l.h"
+// #include "ms5611.h"
 // #include "ak8963.h"
-#include "zranger.h"
-#include "zranger2.h"
-#include "vl53l1x.h"
-#include "flowdeck_v1v2.h"
+// #include "zranger.h"
+// #include "zranger2.h"
+// #include "vl53l1x.h"
+// #include "flowdeck_v1v2.h"
 #define DEBUG_MODULE "SENSORS"
 #include "debug_cf.h"
 #include "static_mem.h"
@@ -82,8 +83,8 @@
 // #define SENSORS_ENABLE_MAG_HM5883L
 // #define SENSORS_ENABLE_PRESSURE_MS5611
 //#define SENSORS_ENABLE_RANGE_VL53L0X
-#define SENSORS_ENABLE_RANGE_VL53L1X
-#define SENSORS_ENABLE_FLOW_PMW3901
+// #define SENSORS_ENABLE_RANGE_VL53L1X
+// #define SENSORS_ENABLE_FLOW_PMW3901
 
 #define SENSORS_GYRO_FS_CFG MPU6050_GYRO_FS_2000
 #define SENSORS_DEG_PER_LSB_CFG MPU6050_DEG_PER_LSB_2000

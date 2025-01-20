@@ -1,14 +1,13 @@
-/*
+/**
  *    ||          ____  _ __
  * +------+      / __ )(_) /_______________ _____  ___
  * | 0xBC |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
  * +------+    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
  *  ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
  *
- * ESP-Drone Firmware
- * 
- * Copyright 2019-2020  Espressif Systems (Shanghai) 
- * Copyright (C) 2011-2012 Bitcraze AB
+ * Crazyflie control firmware
+ *
+ * Copyright (C) 2018 Bitcraze AB
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +21,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * debug.c - Debugging utility functions
  */
-#include "debug_cf.h"
 
-void debugInit(void)
-{
-#ifdef DEBUG_PRINT_ON_SEGGER_RTT
-  // SEGGER_RTT_Init();
-  // SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
-#endif
-}
+#ifndef __SENSORS_MPU9250_LPS25H_H__
+#define __SENSORS_MPU9250_LPS25H_H__
+
+#include "sensors.h"
+
+void sensorsBmi160Qmc5883lBmp280Init(void);
+bool sensorsBmi160Qmc5883lBmp280Test(void);
+bool sensorsBmi160Qmc5883lBmp280AreCalibrated(void);
+bool sensorsBmi160Qmc5883lBmp280ManufacturingTest(void);
+void sensorsBmi160Qmc5883lBmp280Acquire(sensorData_t *sensors, const uint32_t tick);
+void sensorsBmi160Qmc5883lBmp280WaitDataReady(void);
+bool sensorsBmi160Qmc5883lBmp280ReadGyro(Axis3f *gyro);
+bool sensorsBmi160Qmc5883lBmp280ReadAcc(Axis3f *acc);
+bool sensorsBmi160Qmc5883lBmp280ReadMag(Axis3f *mag);
+bool sensorsBmi160Qmc5883lBmp280ReadBaro(baro_t *baro);
+void sensorsBmi160Qmc5883lBmp280SetAccMode(accModes accMode);
+
+#endif // __SENSORS_MPU9250_LPS25H_H__

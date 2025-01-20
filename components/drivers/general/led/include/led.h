@@ -23,29 +23,61 @@
 #define __LED_H__
 
 #include <stdbool.h>
+#include "sdkconfig.h"
 
 //Led polarity configuration constant
 #define LED_POL_POS 0
 #define LED_POL_NEG 1
 
-#define LED_GPIO_BLUE  CONFIG_LED_PIN_BLUE
-#define LED_POL_BLUE   LED_POL_POS
-#define LED_GPIO_GREEN CONFIG_LED_PIN_GREEN  //different from pcb design
-#define LED_POL_GREEN  LED_POL_POS
-#define LED_GPIO_RED   CONFIG_LED_PIN_RED
-#define LED_POL_RED    LED_POL_POS
+// If colour not available skip
+#ifdef CONFIG_LED_PIN_BLUE_ENABLE
+    #define LED_GPIO_BLUE  CONFIG_LED_PIN_BLUE
+    #define LED_POL_BLUE   LED_POL_POS
 
-#define LINK_LED         LED_GREEN
-#define CHG_LED          LED_RED
-#define LOWBAT_LED       LED_RED
-#define LINK_DOWN_LED    LED_BLUE
-#define SYS_LED          LED_BLUE
-#define ERR_LED1         LED_RED
-#define ERR_LED2         LED_RED
+    #define LINK_DOWN_LED    LED_BLUE
+    #define SYS_LED          LED_BLUE
+#endif
+#ifndef CONFIG_LED_PIN_BLUE_ENABLE
+    #define LED_GPIO_BLUE -1
+    #define LED_POL_BLUE LED_POL_POS
 
-#define LED_NUM 3
+    #define LINK_DOWN_LED    -1
+    #define SYS_LED          -1
+#endif
+#ifdef CONFIG_LED_PIN_RED_ENABLE
+    #define LED_GPIO_RED   CONFIG_LED_PIN_RED
+    #define LED_POL_RED    LED_POL_POS
 
-typedef enum {LED_BLUE = 0, LED_RED, LED_GREEN} led_t;
+    #define CHG_LED          LED_RED
+    #define LOWBAT_LED       LED_RED
+    #define ERR_LED1         LED_RED
+    #define ERR_LED2         LED_RED
+#endif
+#ifndef CONFIG_LED_PIN_RED_ENABLE
+    #define LED_GPIO_RED -1
+    #define LED_POL_RED LED_POL_POS
+
+    #define CHG_LED          -1
+    #define LOWBAT_LED       -1
+    #define ERR_LED1         -1
+    #define ERR_LED2         -1
+#endif
+#ifdef CONFIG_LED_PIN_GREEN_ENABLE
+    #define LED_GPIO_GREEN CONFIG_LED_PIN_GREEN  
+    #define LED_POL_GREEN  LED_POL_POS
+
+    #define LINK_LED         LED_GREEN
+#endif
+#ifndef CONFIG_LED_PIN_GREEN_ENABLE
+    #define LED_GPIO_GREEN -1
+    #define LED_POL_GREEN LED_POL_POS
+
+    #define LINK_LED         -1
+#endif
+
+#define LED_NUM_MAX 3
+
+typedef enum {LED_BLUE = 0, LED_RED = 1, LED_GREEN = 2} led_t;
 
 void ledInit();
 bool ledTest();

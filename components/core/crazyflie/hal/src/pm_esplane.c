@@ -117,6 +117,7 @@ void pmInit(void)
     return;
   }
 
+    // TODO: Modify function to implement voltage measurement depending on the battery type
     pmEnableExtBatteryVoltMeasuring(CONFIG_ADC1_PIN, 2); // ADC1 PIN is fixed to ADC channel
 
     pmSyslinkInfo.pgood = false;

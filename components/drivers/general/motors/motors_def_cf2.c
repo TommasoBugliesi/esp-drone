@@ -23,6 +23,8 @@
 // Connector M1,
 #include "motors.h"
 
+
+#ifdef CONFIG_BRUSHED 
 static const MotorPerifDef CONN_M1 = {
     .drvType = BRUSHED,
 };
@@ -41,6 +43,28 @@ static const MotorPerifDef CONN_M3 = {
 static const MotorPerifDef CONN_M4 = {
     .drvType = BRUSHED,
 };
+#endif
+
+#ifdef CONFIG_BRUSHLESS
+static const MotorPerifDef CONN_M1 = {
+    .drvType = BRUSHLESS,
+};
+
+// Connector M2, PB11, TIM2_CH4
+static const MotorPerifDef CONN_M2 = {
+    .drvType = BRUSHLESS,
+};
+
+// Connector M3, PA15, TIM2_CH1
+static const MotorPerifDef CONN_M3 = {
+    .drvType = BRUSHLESS,
+};
+
+// Connector M4, PB9, TIM4_CH4
+static const MotorPerifDef CONN_M4 = {
+    .drvType = BRUSHLESS,
+};
+#endif
 
 /**
  * Default brushed mapping to M1-M4 connectors.

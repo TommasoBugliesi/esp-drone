@@ -50,6 +50,19 @@ int platformInit(void)
     return platformInitHardware();
 }
 
+/**
+ * Parse the device type string and return the device type string.
+ *
+ * The device type string is expected to be in the format "0;<device type>;".
+ * The function will extract the device type string from the input string and
+ * copy it to the output string.
+ *
+ * @param deviceTypeString The input string which contains the device type.
+ * @param deviceType The output string which will contain the extracted device
+ *                   type string.
+ *
+ * @return 0 if the device type string was parsed successfully, 1 otherwise.
+ */
 int platformParseDeviceTypeString(const char *deviceTypeString, char *deviceType)
 {
     if (deviceTypeString[0] != '0' || deviceTypeString[1] != ';') {
@@ -81,8 +94,8 @@ int platformInitConfiguration(const platformConfig_t *configs, const int nrOfCon
 #ifndef DEVICE_TYPE_STRING_FORCE
     char deviceTypeString[PLATFORM_DEVICE_TYPE_STRING_MAX_LEN];
     char deviceType[PLATFORM_DEVICE_TYPE_MAX_LEN];
-    platformGetDeviceTypeString(deviceTypeString);  //"0;EP20"
-    platformParseDeviceTypeString(deviceTypeString, deviceType); //deviceType="EP20"
+    platformGetDeviceTypeString(deviceTypeString); 
+    platformParseDeviceTypeString(deviceTypeString, deviceType); 
 #else
 #define xstr(s) str(s)
 #define str(s) #s
@@ -92,6 +105,7 @@ int platformInitConfiguration(const platformConfig_t *configs, const int nrOfCon
     for (int i = 0; i < nrOfConfigs; i++) {
         const platformConfig_t *config = &configs[i];
 
+        // If string matches set configuration
         if (strcmp(config->deviceType, deviceType) == 0) {
             active_config = config;
             DEBUG_PRINT_LOCAL("set active config ") ;

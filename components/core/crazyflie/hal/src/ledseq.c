@@ -180,10 +180,10 @@ struct ledseqCmd_s {
 static void runLedseq(xTimerHandle xTimer);
 static void updateActive(led_t led);
 
-NO_DMA_CCM_SAFE_ZERO_INIT static ledseqContext_t* activeSeq[LED_NUM];
+NO_DMA_CCM_SAFE_ZERO_INIT static ledseqContext_t* activeSeq[LED_NUM_MAX];
 
-NO_DMA_CCM_SAFE_ZERO_INIT static xTimerHandle timer[LED_NUM];
-NO_DMA_CCM_SAFE_ZERO_INIT static StaticTimer_t timerBuffer[LED_NUM];
+NO_DMA_CCM_SAFE_ZERO_INIT static xTimerHandle timer[LED_NUM_MAX];
+NO_DMA_CCM_SAFE_ZERO_INIT static StaticTimer_t timerBuffer[LED_NUM_MAX];
 
 static xSemaphoreHandle ledseqMutex;
 static xQueueHandle ledseqCmdQueue;
@@ -212,12 +212,12 @@ void ledseqInit() {
   ledseqRegisterSequence(&seq_linkDown);
 
   //Initialise the sequences state
-  for(int i=0; i<LED_NUM; i++) {
+  for(int i=0; i<LED_NUM_MAX; i++) {
     activeSeq[i] = 0;
   }
 
   //Init the soft timers that runs the led sequences for each leds
-  for(int i=0; i<LED_NUM; i++) {
+  for(int i=0; i<LED_NUM_MAX; i++) {
     timer[i] = xTimerCreateStatic("ledseqTimer", M2T(1000), pdFALSE, (void*)i, runLedseq, &timerBuffer[i]);
   }
 

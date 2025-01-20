@@ -1,4 +1,4 @@
-/*
+/**
  *    ||          ____  _ __
  * +------+      / __ )(_) /_______________ _____  ___
  * | 0xBC |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
@@ -6,9 +6,9 @@
  *  ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
  *
  * ESP-Drone Firmware
- * 
- * Copyright 2019-2020  Espressif Systems (Shanghai) 
- * Copyright (C) 2011-2012 Bitcraze AB
+ *
+ * Copyright 2019-2020  Espressif Systems (Shanghai)
+ * Copyright (C) 2018 Bitcraze AB
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * debug.c - Debugging utility functions
  */
-#include "debug_cf.h"
 
-void debugInit(void)
-{
-#ifdef DEBUG_PRINT_ON_SEGGER_RTT
-  // SEGGER_RTT_Init();
-  // SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
-#endif
-}
+#ifndef __SENSORS_FLYINGFREE_V01_H__
+#define __SENSORS_FLYINGFREE_V01_H__
+
+#include "sensors.h"
+
+void sensorsFF01Init(void);
+bool sensorsFF01Test(void);
+bool sensorsFF01AreCalibrated(void);
+bool sensorsFF01ManufacturingTest(void);
+void sensorsFF01Acquire(sensorData_t *sensors, const uint32_t tick);
+void sensorsFF01WaitDataReady(void);
+bool sensorsFF01ReadGyro(Axis3f *gyro);
+bool sensorsFF01ReadAcc(Axis3f *acc);
+bool sensorsFF01ReadMag(Axis3f *mag);
+bool sensorsFF01ReadBaro(baro_t *baro);
+void sensorsFF01SetAccMode(accModes accMode);
+void sensorsFF01DataAvailableCallback(void);
+
+#endif // __SENSORS_FLYINGFREE_V01_H__
