@@ -67,17 +67,17 @@ static const sensorsImplementation_t sensorImplementations[SensorImplementation_
   {
     .implements = SensorImplementation_flyingfree_v01,
     .init = sensorsFF01Init,
-    .test = sensorsFF01Test,
+    .test = NULL,
     .areCalibrated = sensorsFF01AreCalibrated,
-    .manufacturingTest = sensorsFF01ManufacturingTest,
+    .manufacturingTest = NULL,
     .acquire = sensorsFF01Acquire,
     .waitDataReady = sensorsFF01WaitDataReady,
     .readGyro = sensorsFF01ReadGyro,
     .readAcc = sensorsFF01ReadAcc,
     .readMag = sensorsFF01ReadMag,
     .readBaro = sensorsFF01ReadBaro,
-    .setAccMode = sensorsFF01SetAccMode,
-    .dataAvailableCallback = sensorsFF01DataAvailableCallback,
+    .setAccMode = NULL,
+    .dataAvailableCallback = NULL,
   },
 #endif
 };

@@ -74,6 +74,7 @@ static control_t control;
 
 static StateEstimatorType estimatorType;
 static ControllerType controllerType;
+static MotorsType motorsType;
 
 typedef enum { configureAcc, measureNoiseFloor, measureProp, testBattery, restartBatTest, evaluateResult, testDone } TestState;
 #ifdef RUN_PROP_TEST_AT_STARTUP
@@ -197,11 +198,12 @@ void stabilizerInit(StateEstimatorType estimator)
   }
   stateEstimatorInit(estimator);
   controllerInit(ControllerTypeAny);
-  powerDistributionInit();
+  powerDistributionInit(); // Between stabilizer.c and motors.c there is also the module poerDistribution
   sitAwInit();
   //collisionAvoidanceInit();
   estimatorType = getStateEstimator();
   controllerType = getControllerType();
+  motorsType = getMotorsType();
 
   STATIC_MEM_TASK_CREATE(stabilizerTask, stabilizerTask, STABILIZER_TASK_NAME, NULL, STABILIZER_TASK_PRI);
 

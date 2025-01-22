@@ -61,7 +61,7 @@ static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
 
 void powerDistributionInit(void)
 {
-  motorsInit(platformConfigGetMotorMapping());
+  motorsInit(getMotorsType());
 }
 
 bool powerDistributionTest(void)
@@ -74,6 +74,7 @@ bool powerDistributionTest(void)
 }
 
 #define limitThrust(VAL) limitUint16(VAL)
+
 
 void powerStop()
 {

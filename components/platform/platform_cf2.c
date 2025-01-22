@@ -36,7 +36,7 @@ static platformConfig_t configs[] = {
         .deviceTypeName = "FlyingFree V1.0 ",
         .sensorImplementation = SensorImplementation_flyingfree_v01,
         .physicalLayoutAntennasAreClose = false,
-        .motorMap = motorMapDefaultBrushed,
+        .motorsType = MotorsTypeBrushless,
     },
 };
 

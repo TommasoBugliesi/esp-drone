@@ -203,8 +203,8 @@ void systemTask(void *arg)
   StateEstimatorType estimator = anyEstimator;
   estimatorKalmanTaskInit();
   // deckInit();
-  //estimator = deckGetRequiredEstimator();
-  // stabilizerInit(estimator);
+  estimator = deckGetRequiredEstimator();
+  stabilizerInit(estimator);
 //   //if (deckGetRequiredLowInterferenceRadioMode() && platformConfigPhysicalLayoutAntennasAreClose())
 //   //{
 //   //  platformSetLowInterferenceRadioMode();

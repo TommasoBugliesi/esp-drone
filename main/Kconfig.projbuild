@@ -216,20 +216,6 @@ menu "ESPDrone Config"
         endif
     endmenu
 
-    menu "Sensor Information"
-        config IMU_NAME
-            string
-            default "BMI160" if TARGET_FLYINGFREE_V01 
-        
-        config COMPASS_NAME
-            string
-            default "QMC5883L" if TARGET_FLYINGFREE_V01 
-        
-        config BARO_NAME
-            string
-            default "BMP280" if TARGET_FLYINGFREE_V01 
-    endmenu
-
     menu "Led config"
         config LED_PIN_BLUE_ENABLE
             bool "Blue Led Available"

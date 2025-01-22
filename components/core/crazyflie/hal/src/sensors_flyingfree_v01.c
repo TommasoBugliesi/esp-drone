@@ -54,8 +54,9 @@
 #include "stm32_legacy.h"
 
 #include "spidev.h"
+#include "i2cdev.h"
 #include "bmi160.h"
-#include "bmi160_defs.h"
+#include "qmc5883l.h"
 
 #define DEBUG_MODULE "SENSORS"
 #include "debug_cf.h"
@@ -64,11 +65,6 @@
 /* Include section end*/
 
 /* Macros section start*/
-#define SENSORS_IMU_BUFF_LEN 14 // 6 gyro, 6 accel, 2 temp
-// #define SENSORS_MAG_BUFF_LEN 8 // 6 mag, 2 temp
-// #define SENSORS_BARO_BUFF_S_P_LEN 3 
-// #define SENSORS_BARO_BUFF_T_LEN 3
-// #define SENSORS_BARO_BUFF_LEN (SENSORS_BARO_BUFF_S_P_LEN + SENSORS_BARO_BUFF_T_LEN)
 
 // processAccGyroMeasurement
 #define GYRO_NBR_OF_AXES 3
@@ -100,6 +96,13 @@
     #define SENSORS_DEG_PER_LSB_CFG (float)((2 * 1000.0) / 65536.0)
 #elif BMI160_GYRO_RANGE == BMI160_GYRO_RANGE_2000_DPS
     #define SENSORS_DEG_PER_LSB_CFG (float)((2 * 2000.0) / 65536.0)
+#endif
+
+#define QMC5885L_MAG_RANGE QMC5883L_RNG_2
+#if QMC5885L_MAG_RANGE == QMC5883L_RNG_2
+    #define MAG_GAUSS_PER_LSB (float)((2 * 2.0) / 65536.0)
+#elif QMC5885L_MAG_RANGE == QMC5883L_RNG_8
+    #define MAG_GAUSS_PER_LSB (float)((2 * 8.0) / 65536.0)
 #endif
 
 #define PITCH_CALIB (CONFIG_PITCH_CALIB*1.0/100)
@@ -136,15 +139,18 @@ STATIC_MEM_QUEUE_ALLOC(magnetometerDataQueue, 1, sizeof(Axis3f));
 static xQueueHandle barometerDataQueue;
 STATIC_MEM_QUEUE_ALLOC(barometerDataQueue, 1, sizeof(baro_t));
 
+static xSemaphoreHandle sensorsDataReady;
+static StaticSemaphore_t sensorsDataReadyBuffer;
 static xSemaphoreHandle dataReady;
+static StaticSemaphore_t dataReadyBuffer;
 STATIC_MEM_TASK_ALLOC(sensorsTask, SENSORS_TASK_STACKSIZE);
 
-#ifdef BMP280_ENABLE
+#ifdef CONFIG_BMP280_ENABLE
     static bool isBarometerPresent = true;
 #else
     static bool isBarometerPresent = false;
 #endif
-#ifdef QMC5883L_ENABLE
+#ifdef CONFIG_QMC5883L_ENABLE
     static bool isMagnetometerPresent = true;
 #else
     static bool isMagnetometerPresent = false;
@@ -152,7 +158,9 @@ STATIC_MEM_TASK_ALLOC(sensorsTask, SENSORS_TASK_STACKSIZE);
 
 static bool isInit = false;
 
+static sensorData_t sensorData;
 static struct bmi160_dev bmi160dev;
+bool mag_data_ready = false;
 
 const TickType_t sensorReadIntervalMs = pdMS_TO_TICKS(1);  
 
@@ -175,6 +183,17 @@ const TickType_t sensorReadIntervalMs = pdMS_TO_TICKS(1);
 /* Variables section end*/
 
 /* Functions section start*/
+static void processAccGyroMeasurements(struct bmi160_sensor_data *bmi160_accel, struct bmi160_sensor_data *bmi160_gyro);
+static void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag);
+static void processBarometerMeasurements(const uint8_t *buffer);
+static bool processGyroBias(int16_t gx, int16_t gy, int16_t gz, Axis3f *gyroBiasOut);
+static bool processAccScale(int16_t ax, int16_t ay, int16_t az);
+static void sensorsBiasObjInit(BiasObj *bias);
+static void sensorsCalculateVarianceAndMean(BiasObj *bias, Axis3f *varOut, Axis3f *meanOut);
+static void sensorsAddBiasValue(BiasObj *bias, int16_t x, int16_t y, int16_t z);
+static bool sensorsFindBiasValue(BiasObj *bias);
+static void sensorsAccAlignToGravity(Axis3f *in, Axis3f *out);
+static void timerCallback(TimerHandle_t xTimer);
 static void sensorsDeviceInit(void)
 {
     // Wait for sensors to startup
@@ -183,10 +202,11 @@ static void sensorsDeviceInit(void)
     };
 
     int8_t rslt;
+    i2cdevInit(I2C0_DEV);
     spidevInit(VSPI_DEV);
 
     // Init the bmi160 and then set its options
-    bmi160_init(&bmi160dev);
+    rslt = bmi160_init(&bmi160dev);
 
     if (rslt == BMI160_OK)
     {
@@ -196,7 +216,7 @@ static void sensorsDeviceInit(void)
     else
     {
         DEBUG_PRINTE("BMI160 initialization failure !\n");
-        assert(0); // Terminate the program
+        // assert(0); // Terminate the program
     }
 
     bmi160_soft_reset(&bmi160dev);
@@ -223,19 +243,19 @@ static void sensorsDeviceInit(void)
 
     // TODO : Integrate digital LPF
 
-#ifdef SENSORS_ENABLE_MAG_HM5883L
-    hmc5883lInit(I2C0_DEV);
+#ifdef CONFIG_QMC5883L_ENABLE
+    qmc5883lInit(I2C0_DEV);
 
-    if (hmc5883lTestConnection() == true) {
+    if (qmc5883lGetID() == QMC5883L_CHIP_ID) {
         isMagnetometerPresent = true;
-        hmc5883lSetMode(HMC5883L_MODE_CONTINUOUS); // 16bit 100Hz
-        DEBUG_PRINTI("hmc5883l I2C connection [OK].\n");
+        qmc5883lSetReg1(QMC5883L_OSR_256, QMC5885L_MAG_RANGE, QMC5883L_ODR_200, QMC5883L_MODE_CONTINUOUS); 
+        DEBUG_PRINTI("qmc5883l I2C connection [OK].\n");
     } else {
-        DEBUG_PRINTW("hmc5883l I2C connection [FAIL].\n");
+        DEBUG_PRINTW("qmc5883l I2C connection [FAIL].\n");
     }
 
 #endif
-#ifdef SENSORS_ENABLE_PRESSURE_BMP280
+#ifdef CONFIG_BMP280_ENABLE
     ms5611Init(I2C0_DEV);
 
     if (false) {
@@ -271,51 +291,43 @@ static void sensorsDeviceInit(void)
     DEBUG_PRINTI("pitch_calib = %f,roll_calib = %f",PITCH_CALIB,ROLL_CALIB);
 }
 
-static void sensorsTaskInit(void)
-{
-  accelerometerDataQueue = STATIC_MEM_QUEUE_CREATE(accelerometerDataQueue);
-  gyroDataQueue = STATIC_MEM_QUEUE_CREATE(gyroDataQueue);
-  magnetometerDataQueue = STATIC_MEM_QUEUE_CREATE(magnetometerDataQueue);
-  barometerDataQueue = STATIC_MEM_QUEUE_CREATE(barometerDataQueue);
-
-  STATIC_MEM_TASK_CREATE(sensorsTask, sensorsTask, SENSORS_TASK_NAME, NULL, SENSORS_TASK_PRI);
-  DEBUG_PRINTD("xTaskCreate sensorsTask \n");
+static void timerCallback(TimerHandle_t xTimer){
+    xTaskNotifyGive(xTimer);
 }
-
 static void sensorsTask(void *param)
 {
     //Previous software TODO present. to be clarified
     systemWaitStart();
     vTaskDelay(M2T(200));
+    TimerHandle_t xsensorDataReadyTimer = xTimerCreate("sensorDataReady", pdMS_TO_TICKS(1), pdTRUE, NULL, timerCallback);
 
     DEBUG_PRINTD("xTaskCreate sensorsTask IN");
-
-    // Init 
-    TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize the time reference
+    
     while (1) {
+        if (pdTRUE == xSemaphoreTake(sensorsDataReady, portMAX_DELAY)){
 
-        // Wait for the next cycle (custom frequency control)
-        vTaskDelayUntil(&xLastWakeTime, sensorReadIntervalMs);
-
-        /* sensors step 1 - read data from I2C */
-
-        // --> Start again from here, understand how the data are collected and used
-        // define a buffer for each sensor if available and store data there
+        /* sensors step 1 - read data */
         struct bmi160_sensor_data bmi160_accel;
         struct bmi160_sensor_data bmi160_gyro;
+        struct qmc5883l_raw_data_t qmc5883l_mag;
 
         bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &bmi160_accel, &bmi160_gyro, &bmi160dev);
+        
+        if (qmc5883lGetReadyStatus() && isMagnetometerPresent){
+            qmc5883lGetHeading(&qmc5883l_mag);
+            mag_data_ready = true;
+        }
 
         /* sensors step 2 - process the respective data */
         processAccGyroMeasurements(&bmi160_accel, &bmi160_gyro);
 
         if (isMagnetometerPresent) {
-            processMagnetometerMeasurements(&(buffer[SENSORS_MPU6050_BUFF_LEN]));
+            processMagnetometerMeasurements(&qmc5883l_mag);
         }
 
-        if (isBarometerPresent) {
-            processBarometerMeasurements(&(buffer[isMagnetometerPresent ? SENSORS_MPU6050_BUFF_LEN + SENSORS_MAG_BUFF_LEN : SENSORS_MPU6050_BUFF_LEN]));
-        }
+        // if (isBarometerPresent) {
+        //     processBarometerMeasurements(&(buffer[isMagnetometerPresent ? SENSORS_MPU6050_BUFF_LEN + SENSORS_MAG_BUFF_LEN : SENSORS_MPU6050_BUFF_LEN]));
+        // }
 
         /* sensors step 3 - queue sensors data on the output queues */
         xQueueOverwrite(accelerometerDataQueue, &sensorData.acc);
@@ -332,28 +344,39 @@ static void sensorsTask(void *param)
         /* sensors step 4 - Unlock stabilizer task */
         xSemaphoreGive(dataReady);
 
-    #ifdef DEBUG_EP2
+        #ifdef DEBUG_EP2
             DEBUG_PRINT_LOCAL("ax = %f,  ay = %f,  az = %f,  gx = %f,  gy = %f,  gz = %f , hx = %f , hy = %f, hz =%f \n", 
                             sensorData.acc.x, sensorData.acc.y, sensorData.acc.z, 
                             sensorData.gyro.x, sensorData.gyro.y, sensorData.gyro.z, 
                             sensorData.mag.x, sensorData.mag.y, sensorData.mag.z);
-    #endif
+        #endif
+        }
     }
 }
 
+static void sensorsTaskInit(void)
+{
+  accelerometerDataQueue = STATIC_MEM_QUEUE_CREATE(accelerometerDataQueue);
+  gyroDataQueue = STATIC_MEM_QUEUE_CREATE(gyroDataQueue);
+  magnetometerDataQueue = STATIC_MEM_QUEUE_CREATE(magnetometerDataQueue);
+  barometerDataQueue = STATIC_MEM_QUEUE_CREATE(barometerDataQueue);
 
-void processAccGyroMeasurements(bmi160_sensor_data bmi160_accel, bmi160_sensor_data bmi160_gyro){
+  STATIC_MEM_TASK_CREATE(sensorsTask, sensorsTask, SENSORS_TASK_NAME, NULL, SENSORS_TASK_PRI);
+  DEBUG_PRINTD("xTaskCreate sensorsTask \n");
+}
+
+void processAccGyroMeasurements(struct bmi160_sensor_data *bmi160_accel, struct bmi160_sensor_data *bmi160_gyro){
     /*  Note the ordering to correct the rotated 90º IMU coordinate system */
 
     Axis3f accScaled;
 
     /* sensors step 2.1 read raw data */
-    accelRaw.y = bmi160_accel.x;
-    accelRaw.x = bmi160_accel.y;
-    accelRaw.z = bmi160_accel.z;
-    gyroRaw.y = bmi160_gyro.x;
-    gyroRaw.x = bmi160_gyro.y;
-    gyroRaw.z = bmi160_gyro.z;
+    accelRaw.y = bmi160_accel->x;
+    accelRaw.x = bmi160_accel->y;
+    accelRaw.z = bmi160_accel->z;
+    gyroRaw.y = bmi160_gyro->x;
+    gyroRaw.x = bmi160_gyro->y;
+    gyroRaw.z = bmi160_gyro->z;
 
     /* sensors step 2.2 Calculates the gyro bias first when the  variance is below threshold */
     gyroBiasFound = processGyroBias(gyroRaw.x, gyroRaw.y, gyroRaw.z, &gyroBias);
@@ -532,6 +555,21 @@ static void sensorsAccAlignToGravity(Axis3f *in, Axis3f *out)
     out->z = ry.z;
 }
 
+void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag)
+{
+    if (mag_data_ready) {
+        sensorData.mag.x = (float)qmc5883l_mag->x / MAG_GAUSS_PER_LSB; //to gauss
+        sensorData.mag.y = (float)qmc5883l_mag->y / MAG_GAUSS_PER_LSB;
+        sensorData.mag.z = (float)qmc5883l_mag->z / MAG_GAUSS_PER_LSB;
+
+        mag_data_ready = false;
+        DEBUG_PRINTI("hmc5883l DATA ready");
+    } else {
+
+        DEBUG_PRINTW("hmc5883l DATA not ready");
+    }
+}
+
 static void applyAxis3fLpf(lpf2pData *data, Axis3f *in)
 {
     for (uint8_t i = 0; i < 3; i++) {
@@ -550,6 +588,11 @@ void sensorsFF01Acquire(sensorData_t *sensors, const uint32_t tick)
 bool sensorsFF01ReadGyro(Axis3f *gyro)
 {
     return (pdTRUE == xQueueReceive(gyroDataQueue, gyro, 0));
+}
+
+void sensorsFF01WaitDataReady(void)
+{
+    xSemaphoreTake(dataReady, portMAX_DELAY);
 }
 
 
@@ -581,6 +624,10 @@ void sensorsFF01Init(void)
     }
     sensorsBiasObjInit(&gyroBiasRunning);
     sensorsDeviceInit();
+
+    sensorsDataReady = xSemaphoreCreateBinaryStatic(&sensorsDataReadyBuffer);
+    dataReady = xSemaphoreCreateBinaryStatic(&dataReadyBuffer);
+
     sensorsTaskInit();
     isInit = true;
 }

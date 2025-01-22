@@ -25,6 +25,10 @@ typedef struct {
     spi_device_handle_t handle;
 } spiDrv;
 
+// Definitions of spi busses found in c file.
+extern spiDrv sensorsVBus;
+extern spiDrv sensorsHBus;
+
 // Function to initialize the SPI bus
 void spidrvInit(spiDrv *spi);
 

@@ -148,7 +148,7 @@ static sensorData_t sensorData;
 static volatile uint64_t imuIntTimestamp;
 
 static Axis3i16 gyroRaw;
-static Axis3i16 accelRaw;
+static Axis3i16 accelRaw;STATIC_MEM_TASK_ALLOC
 static BiasObj gyroBiasRunning;
 static Axis3f gyroBias;
 #if defined(SENSORS_GYRO_BIAS_CALCULATE_STDDEV) && defined(GYRO_BIAS_LIGHT_WEIGHT)
