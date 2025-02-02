@@ -52,13 +52,13 @@ void buzzDeckInit()
         return;
     }
 
-    piezoInit();
-    buzzerSetControl(&buzzDeckCtrl);
+    // piezoInit();
+    // buzzerSetControl(&buzzDeckCtrl);
 
     isInit = true;
 }
 
 
 PARAM_GROUP_START(deck)
-PARAM_ADD(PARAM_UINT8 | PARAM_RONLY, bcBuzzer, &isInit)
+PARAM_ADD(PARAM_UINT8 | PARAM_RONLY, isInit, &isInit)
 PARAM_GROUP_STOP(deck)

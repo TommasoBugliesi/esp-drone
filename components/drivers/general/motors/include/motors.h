@@ -37,6 +37,8 @@
 #define MOTOR3_GPIO  CONFIG_MOTOR03_PIN   // M3 for ESP32FC
 #define MOTOR4_GPIO  CONFIG_MOTOR04_PIN   // M4 for ESP32FC
 
+static uint32_t motor_ratios[] = {0, 0, 0, 0};
+
 typedef enum {
   MotorsTypeAny,
   MotorsTypeBrushed,
@@ -46,7 +48,8 @@ typedef enum {
 
 void motorsInit(MotorsType motor);
 bool motorsTest(void);
-void motorsApply(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
+void motorsApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
+void motorsApplyChannel(uint8_t channel, uint16_t ithrust);
 MotorsType getMotorsType(void);
 const char* motorsGetName();
 

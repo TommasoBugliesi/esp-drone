@@ -33,6 +33,12 @@ static unsigned int led_pin[] = {
     [LED_RED]   = LED_GPIO_RED,
     [LED_GREEN] = LED_GPIO_GREEN,
 };
+
+static bool led_pin_enable[] = {
+    [LED_BLUE] = CONFIG_LED_PIN_BLUE_ENABLE,
+    [LED_RED]   = CONFIG_LED_PIN_RED_ENABLE,
+    [LED_GREEN] = CONFIG_LED_PIN_GREEN_ENABLE,
+};
 static int led_polarity[] = {
     [LED_BLUE] = LED_POL_BLUE,
     [LED_RED]   = LED_POL_RED,
@@ -56,7 +62,10 @@ void ledInit()
     }
 
     for (i = 0; i < LED_NUM_MAX; i++) {
-        gpio_config_t io_conf = {
+
+        // Init GPIO only if led defined
+        if (led_pin_enable[i] == true) {
+            gpio_config_t io_conf = {
             //bit mask of the pins that you want to set,e.g.GPIO18/19
             .pin_bit_mask = (1ULL << led_pin[i]),
             //disable pull-down mode
@@ -65,12 +74,13 @@ void ledInit()
             .pull_up_en = 0,
             //set as output mode
             .mode = GPIO_MODE_OUTPUT,
-        };
-        //configure GPIO with the given settings
-        gpio_config(&io_conf);
+            };
+            //configure GPIO with the given settings
+            gpio_config(&io_conf);
 
-        //set led to off at start up
-        ledSet(i, 0);
+            //set led to off at start up
+            ledSet(i, 0);
+        }
     }
 
     isInit = true;

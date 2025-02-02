@@ -394,7 +394,7 @@ static void testProps(sensorData_t *sensors)
   static float accVarXnf;
   static float accVarYnf;
   static float accVarZnf;
-  static int motorToTest = 0;
+  static uint8_t motorToTest = 0;
   static uint8_t nrFailedTests = 0;
   static float idleVoltage;
   static float minSingleLoadedVoltage[NBR_OF_MOTORS];
@@ -445,11 +445,11 @@ static void testProps(sensorData_t *sensors)
 
     if (i == 1)
     {
-      motorsSetRatio(motorToTest, 0xFFFF);
+      motorsApplyChannel(motorToTest, 0xFFFF);
     }
     else if (i == 50)
     {
-      motorsSetRatio(motorToTest, 0);
+      motorsApplyChannel(motorToTest, 0);
     }
     else if (i == PROPTEST_NBR_OF_VARIANCE_VALUES)
     {
@@ -481,10 +481,10 @@ static void testProps(sensorData_t *sensors)
     }
     if (i == 1)
     {
-      motorsSetRatio(MOTOR_M1, 0xFFFF);
-      motorsSetRatio(MOTOR_M2, 0xFFFF);
-      motorsSetRatio(MOTOR_M3, 0xFFFF);
-      motorsSetRatio(MOTOR_M4, 0xFFFF);
+      motorsApplyChannel(MOTOR_M1, 0xFFFF);
+      motorsApplyChannel(MOTOR_M2, 0xFFFF);
+      motorsApplyChannel(MOTOR_M3, 0xFFFF);
+      motorsApplyChannel(MOTOR_M4, 0xFFFF);
     }
     else if (i < 50)
     {
@@ -493,10 +493,10 @@ static void testProps(sensorData_t *sensors)
     }
     else if (i == 50)
     {
-      motorsSetRatio(MOTOR_M1, 0);
-      motorsSetRatio(MOTOR_M2, 0);
-      motorsSetRatio(MOTOR_M3, 0);
-      motorsSetRatio(MOTOR_M4, 0);
+      motorsApplyChannel(MOTOR_M1, 0);
+      motorsApplyChannel(MOTOR_M2, 0);
+      motorsApplyChannel(MOTOR_M3, 0);
+      motorsApplyChannel(MOTOR_M4, 0);
 //      DEBUG_PRINT("IdleV: %f, minV: %f, M1V: %f, M2V: %f, M3V: %f, M4V: %f\n", (double)idleVoltage,
 //                  (double)minLoadedVoltage,
 //                  (double)minSingleLoadedVoltage[MOTOR_M1],
@@ -522,6 +522,7 @@ static void testProps(sensorData_t *sensors)
       i = 0;
     }
   }
+#ifdef CONFIG_BRUSHED
   else if (testState == evaluateResult)
   {
     for (int m = 0; m < NBR_OF_MOTORS; m++)
@@ -538,21 +539,22 @@ static void testProps(sensorData_t *sensors)
         }
       }
     }
-#ifdef PLAY_STARTUP_MELODY_ON_MOTORS
-    if (nrFailedTests == 0)
-    {
-      for (int m = 0; m < NBR_OF_MOTORS; m++)
+  #ifdef PLAY_STARTUP_MELODY_ON_MOTORS
+      if (nrFailedTests == 0)
       {
-        motorsBeep(m, true, testsound[m], (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / A4)/ 20);
-        vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
-        motorsBeep(m, false, 0, 0);
-        vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
+        for (int m = 0; m < NBR_OF_MOTORS; m++)
+        {
+          motorsBeep(m, true, testsound[m], (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / A4)/ 20);
+          vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
+          motorsBeep(m, false, 0, 0);
+          vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
+        }
       }
-    }
-#endif
+  #endif
     motorTestCount++;
     testState = testDone;
   }
+#endif                                   
 }
 PARAM_GROUP_START(health)
 PARAM_ADD(PARAM_UINT8, startPropTest, &startPropTest)

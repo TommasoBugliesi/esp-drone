@@ -150,6 +150,7 @@ void crtpTxTask(void *param)
 
   while (true)
   {
+    // Wait unitl the link is init in commInit
     if (link != &nopLink)
     {
       if (xQueueReceive(txQueue, &p, portMAX_DELAY) == pdTRUE)

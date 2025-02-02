@@ -59,14 +59,15 @@ void commInit(void)
   platformserviceInit();
   logInit();
   paramInit();
-  //locSrvInit();
+  // locSrvInit();
 
   //TODO: check for USB first and prefer USB over radio
   //setup CRTP communication channel
-  //if (usbTest())
-  //  crtpSetLink(usbGetLink);
-  //else if(radiolinkTest())
-  //  crtpSetLink(radiolinkGetLink());
+  // if (usbTest()){
+  //  crtpSetLink(usbGetLink);}
+  // else if(radiolinkTest()){
+  //  crtpSetLink(radiolinkGetLink());}
+
   isInit = true;
 }
 

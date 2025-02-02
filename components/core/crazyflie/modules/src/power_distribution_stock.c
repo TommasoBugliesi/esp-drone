@@ -78,10 +78,10 @@ bool powerDistributionTest(void)
 
 void powerStop()
 {
-  motorsSetRatio(MOTOR_M1, 0);
-  motorsSetRatio(MOTOR_M2, 0);
-  motorsSetRatio(MOTOR_M3, 0);
-  motorsSetRatio(MOTOR_M4, 0);
+  motorsApplyChannel(MOTOR_M1, 0);
+  motorsApplyChannel(MOTOR_M2, 0);
+  motorsApplyChannel(MOTOR_M3, 0);
+  motorsApplyChannel(MOTOR_M4, 0);
 }
 
 void powerDistribution(const control_t *control)
@@ -106,10 +106,10 @@ void powerDistribution(const control_t *control)
 
   if (motorSetEnable)
   {
-    motorsSetRatio(MOTOR_M1, motorPowerSet.m1);
-    motorsSetRatio(MOTOR_M2, motorPowerSet.m2);
-    motorsSetRatio(MOTOR_M3, motorPowerSet.m3);
-    motorsSetRatio(MOTOR_M4, motorPowerSet.m4);
+    motorsApplyChannel(MOTOR_M1, motorPowerSet.m1);
+    motorsApplyChannel(MOTOR_M2, motorPowerSet.m2);
+    motorsApplyChannel(MOTOR_M3, motorPowerSet.m3);
+    motorsApplyChannel(MOTOR_M4, motorPowerSet.m4);
   }
   else
   {
@@ -126,10 +126,10 @@ void powerDistribution(const control_t *control)
       motorPower.m4 = idleThrust;
     }
 
-    motorsSetRatio(MOTOR_M1, motorPower.m1);
-    motorsSetRatio(MOTOR_M2, motorPower.m2);
-    motorsSetRatio(MOTOR_M3, motorPower.m3);
-    motorsSetRatio(MOTOR_M4, motorPower.m4);
+    motorsApplyChannel(MOTOR_M1, motorPower.m1);
+    motorsApplyChannel(MOTOR_M2, motorPower.m2);
+    motorsApplyChannel(MOTOR_M3, motorPower.m3);
+    motorsApplyChannel(MOTOR_M4, motorPower.m4);
   }
 }
 

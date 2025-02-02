@@ -140,6 +140,7 @@ static void wifilinkTask(void *param)
             memcpy(&p.data[12], &tch, 2);
         } else
 #endif
+        // TODO: This is not ESP-NOW protocol. Update menuconfig to register a device 
         if (detectEspNow(&wifiIn)) {
             float rch, pch, ych;
             uint16_t tch;
@@ -159,7 +160,7 @@ static void wifilinkTask(void *param)
             memcpy(&p.data[4], &pch, 4);
             memcpy(&p.data[8], &ych, 4);
             memcpy(&p.data[12], &tch, 2);
-        } else
+        } else // If input packet is not esp-now assume it is CRTP and threat it as such
         {
             /* command step - receive  04 copy CRTP part from packet, the size not contain head */
             p.size = wifiIn.size - 1;
@@ -170,6 +171,9 @@ static void wifilinkTask(void *param)
 
         /* command step - receive 05 send to crtpPacketDelivery queue */
         xQueueSend(crtpPacketDelivery, &p, M2T(sendWaitMs));
+
+        // TODO: Update Tx structure
+        /* Function to send data already available. Update output strcture to send data to GUI */
     }
 
 }

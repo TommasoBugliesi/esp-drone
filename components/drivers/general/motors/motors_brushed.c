@@ -34,10 +34,6 @@
 #define DEBUG_MODULE "MOTORS"
 #include "debug_cf.h"
 
-
-
-uint32_t motor_ratios[] = {0, 0, 0, 0};
-
 const uint32_t MOTORS[] = {MOTOR_M1, MOTOR_M2, MOTOR_M3, MOTOR_M4};
 
 const uint16_t testsound[NBR_OF_MOTORS] = {A4, A5, F5, D5};
@@ -132,14 +128,16 @@ bool motorsBrushedTest(void)
 
     return isInit;
 }
-/**
- * Update the motors driver
- */
-void motorsBrushedApply(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4){
+
+void motorsBrushedApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4){
     motorsSetRatio(MOTOR_M1, ithrust1);
     motorsSetRatio(MOTOR_M2, ithrust2);
     motorsSetRatio(MOTOR_M3, ithrust3);
     motorsSetRatio(MOTOR_M4, ithrust4);
+}
+
+void motorsBrushedApplyChannel(uint8_t channel, uint16_t ithrust){
+    motorsSetRatio(channel, ithrust);
 }
 
 /* Private functions */

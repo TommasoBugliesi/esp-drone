@@ -113,14 +113,13 @@ void systemInit(void)
   canStartMutex = xSemaphoreCreateMutexStatic(&canStartMutexBuffer);
   xSemaphoreTake(canStartMutex, portMAX_DELAY);
 
-  // Send crtp packets
+  // Analyze crtp packets
   wifilinkInit();
 
   // Init system load timer
   sysLoadInit();
 
   /* Initialized here so that DEBUG_PRINT (buffered) can be used early */
-  //debugInit();
   crtpInit();
   consoleInit();
 
@@ -137,19 +136,23 @@ void systemInit(void)
               *((int*)(MCU_ID_ADDRESS+8)), *((int*)(MCU_ID_ADDRESS+4)),
               *((int*)(MCU_ID_ADDRESS+0)), *((short*)(MCU_FLASH_SIZE_ADDRESS)));*/
 
-  // configblockInit(); -> Configuration for EEPROM and I2C which are used differently for this project
+  // configblockInit(); // Configuration for EEPROM and I2C which are used differently for this project
   // storageInit();
+
   workerInit();
-  #ifdef CONFIG_ADC_ENABLE
-    adcInit();
-    pmInit();
-  #endif
-
   ledseqInit();
+  
+#ifdef CONFIG_ADC_ENABLE
+  // Init ADC channel performing calibration
+  adcInit();
 
-  #ifdef CONFIG_BUZZER_ENABLE
-    buzzerInit();
-  #endif
+  // Power management not available without ADC 
+  pmInit();
+#endif
+
+#ifdef CONFIG_BUZZER_ENABLE
+  buzzerInit();
+#endif
 
 //  peerLocalizationInit();
 
@@ -205,21 +208,20 @@ void systemTask(void *arg)
   // deckInit();
   estimator = deckGetRequiredEstimator();
   stabilizerInit(estimator);
-//   //if (deckGetRequiredLowInterferenceRadioMode() && platformConfigPhysicalLayoutAntennasAreClose())
-//   //{
-//   //  platformSetLowInterferenceRadioMode();
-//   //}
-//   soundInit();
-//   memInit();
-//   */
-// #ifdef PROXIMITY_ENABLED
-//   proximityInit();
-// #endif
-//   /* End of init section, start of tests*/
+  //if (deckGetRequiredLowInterferenceRadioMode() && platformConfigPhysicalLayoutAntennasAreClose())
+  //{
+  //  platformSetLowInterferenceRadioMode();
+  //}
+  soundInit();
+  memInit();
+
+#ifdef PROXIMITY_ENABLED
+  proximityInit();
+#endif
+  /* End of init section, start of tests*/
   
-// 	/* Test each modules */
-//   /*
-//   bool pass = true;
+	/* Test each modules */
+  bool pass = true;
 //   pass &= wifiTest();
 //   DEBUG_PRINTI("wifilinkTest = %d ", pass);
 //   pass &= systemTest();
@@ -244,41 +246,41 @@ void systemTask(void *arg)
 //   pass &= cfAssertNormalStartTest();
 // //  pass &= peerLocalizationTest();
 
-//   //Start the firmware
-//   if(pass)
-//   {
-//     selftestPassed = 1;
-//     systemStart();
-//     DEBUG_PRINTI("systemStart ! selftestPassed = %d", selftestPassed);
-//     soundSetEffect(SND_STARTUP);
-//     ledseqRun(&seq_alive);
-//     ledseqRun(&seq_testPassed);
-//   }
-//   else
-//   {
-//     selftestPassed = 0;
-//     if (systemTest())
-//     {
-//       while(1)
-//       {
-//         ledseqRun(&seq_testFailed);
-//         vTaskDelay(M2T(2000));
-//         // System can be forced to start by setting the param to 1 from the cfclient
-//         if (selftestPassed)
-//         {
-// 	        DEBUG_PRINT("Start forced.\n");
-//           systemStart();
-//           break;
-//         }
-//       }
-//     }
-//     else
-//     {
-//       ledInit();
-//       ledSet(SYS_LED, true);
-//     }
-//   }
-//   DEBUG_PRINT("Free heap: %"PRIu32" bytes\n", xPortGetFreeHeapSize());
+  //Start the firmware
+  if(pass)
+  {
+    selftestPassed = 1;
+    systemStart();
+    DEBUG_PRINTI("systemStart ! selftestPassed = %d", selftestPassed);
+    soundSetEffect(SND_STARTUP);
+    ledseqRun(&seq_alive);
+    ledseqRun(&seq_testPassed);
+  }
+  else
+  {
+    selftestPassed = 0;
+    if (systemTest())
+    {
+      while(1)
+      {
+        ledseqRun(&seq_testFailed);
+        vTaskDelay(M2T(2000));
+        // System can be forced to start by setting the param to 1 from the cfclient
+        if (selftestPassed)
+        {
+	        DEBUG_PRINT("Start forced.\n");
+          systemStart();
+          break;
+        }
+      }
+    }
+    else
+    {
+      ledInit();
+      ledSet(SYS_LED, true);
+    }
+  }
+  DEBUG_PRINT("Free heap: %"PRIu32" bytes\n", xPortGetFreeHeapSize());
 
   workerLoop();
 
@@ -310,7 +312,7 @@ void systemWaitStart(void)
 
 void systemSetCanFly(bool val)
 {
-  canFly = val;
+  canFly = true;
 }
 
 bool systemCanFly(void)
@@ -362,6 +364,6 @@ PARAM_GROUP_STOP(sytem)
 
 /* Loggable variables */
 LOG_GROUP_START(sys)
-LOG_ADD(LOG_INT8, canfly, &canFly)
+LOG_ADD(LOG_INT8, canFly, &canFly)
 LOG_ADD(LOG_INT8, armed, &armed)
 LOG_GROUP_STOP(sys)

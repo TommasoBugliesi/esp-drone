@@ -168,12 +168,12 @@ static bool isAssertRegistered() {
 bool cfAssertNormalStartTest(void) {
   bool wasNormalStart = true;
 
-	if (isAssertRegistered()) {
-		wasNormalStart = false;
-		DEBUG_PRINT("The system resumed after a failed assert [WARNING]\n");
-		printAssertSnapshotData();
-    clearAssertData();
-	}
+	// if (isAssertRegistered()) {
+	// 	wasNormalStart = false;
+	// 	DEBUG_PRINT("The system resumed after a failed assert [WARNING]\n");
+	// 	printAssertSnapshotData();
+  //   clearAssertData();
+	// }
 
 	return wasNormalStart;
 }

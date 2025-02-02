@@ -125,9 +125,13 @@ bool motorsBrushedTest(void);
 /**
  * Update the motors driver
  */
-void motorsBrushedApply(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
+void motorsBrushedApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
 
 
+/**
+ * Update a single motor driver
+ */
+void motorsBrushedApplyChannel(uint8_t channel, uint16_t ithrust);
 
 #endif /* __MOTORS_H__ */
 

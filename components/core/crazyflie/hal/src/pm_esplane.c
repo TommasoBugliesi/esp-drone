@@ -65,10 +65,10 @@ typedef struct _PmSyslinkInfo
 #endif
 }  __attribute__((packed)) PmSyslinkInfo;
 
-static float     batteryVoltage;
-static uint16_t  batteryVoltageMV;
-static float     batteryVoltageMin = 6.0;
-static float     batteryVoltageMax = 0.0;
+static float     batteryVoltage = BATTERY_VOLTAGE;
+static uint16_t  batteryVoltageMV = BATTERY_VOLTAGE_MV;
+static float     batteryVoltageMin = BATTERY_VOLTAGE_MIN;
+static float     batteryVoltageMax = BATTERY_VOLTAGE_MAX;
 
 static float     extBatteryVoltage;
 static uint16_t  extBatteryVoltageMV;
@@ -95,7 +95,7 @@ static uint8_t batteryLevel;
 
 static void pmSetBatteryVoltage(float voltage);
 
-const static float bat671723HS25C[10] =
+const static float batLevel[10] =
 {
   3.00, // 00%
   3.78, // 10%
@@ -117,13 +117,10 @@ void pmInit(void)
     return;
   }
 
-    // TODO: Modify function to implement voltage measurement depending on the battery type
-    pmEnableExtBatteryVoltMeasuring(CONFIG_ADC1_PIN, 2); // ADC1 PIN is fixed to ADC channel
+    pmEnableExtBatteryVoltMeasuring(CONFIG_ADC1_PIN); // ADC1 PIN is fixed to ADC channel
 
     pmSyslinkInfo.pgood = false;
     pmSyslinkInfo.chg = false;
-    pmSyslinkInfo.vBat = 3.7f;
-    pmSetBatteryVoltage(pmSyslinkInfo.vBat);
 
     STATIC_MEM_TASK_CREATE(pmTask, pmTask, PM_TASK_NAME, NULL, PM_TASK_PRI);
     isInit = true;
@@ -164,21 +161,21 @@ static void pmSystemShutdown(void)
 
 /**
  * Returns a number from 0 to 9 where 0 is completely discharged
- * and 9 is 90% charged.
+ * and 9 is 90% charged. batLevel is for a single cell.
  */
 static int32_t pmBatteryChargeFromVoltage(float voltage)
 {
   int charge = 0;
 
-  if (voltage < bat671723HS25C[0])
+  if (voltage/BATTERY_MULTIPLIER < batLevel[0])
   {
     return 0;
   }
-  if (voltage > bat671723HS25C[9])
+  if (voltage/BATTERY_MULTIPLIER > batLevel[9])
   {
     return 9;
   }
-  while (voltage >  bat671723HS25C[charge])
+  while (voltage/BATTERY_MULTIPLIER >  batLevel[charge])
   {
     charge++;
   }
@@ -270,11 +267,10 @@ float pmMeasureExtBatteryCurrent(void)
   return current;
 }
 
-void pmEnableExtBatteryVoltMeasuring(uint8_t pin, float multiplier)
+void pmEnableExtBatteryVoltMeasuring(uint8_t pin)
 {
   extBatVoltDeckPin = pin;
   isExtBatVoltDeckPinSet = true;
-  extBatVoltMultiplier = multiplier;
 }
 
 float pmMeasureExtBatteryVoltage(void)
@@ -283,7 +279,7 @@ float pmMeasureExtBatteryVoltage(void)
 
   if (isExtBatVoltDeckPinSet)
   {
-    voltage = analogReadVoltage(extBatVoltDeckPin) * extBatVoltMultiplier;
+    voltage = analogReadVoltage(extBatVoltDeckPin) * BATTERY_MULTIPLIER;
   }
   else
   {
@@ -326,19 +322,23 @@ void pmTask(void *param)
   tickCount = xTaskGetTickCount();
   batteryLowTimeStamp = tickCount;
   batteryCriticalLowTimeStamp = tickCount;
-  pmSetChargeState(charge300mA);
+  // pmSetChargeState(charge300mA);
   systemWaitStart();
+  systemSetCanFly(true);
 
   while (1) {
-  vTaskDelay(M2T(100));
-  extBatteryVoltage = pmMeasureExtBatteryVoltage();
-  extBatteryVoltageMV = (uint16_t)(extBatteryVoltage * 1000);
-  extBatteryCurrent = pmMeasureExtBatteryCurrent();
-  pmSetBatteryVoltage(extBatteryVoltage);
-  batteryLevel = pmBatteryChargeFromVoltage(pmGetBatteryVoltage()) * 10;
-#ifdef DEBUG_EP2
-  DEBUG_PRINTD("batteryLevel=%u extBatteryVoltageMV=%u \n", batteryLevel, extBatteryVoltageMV);
-#endif
+    // Delay task  
+    vTaskDelay(M2T(100));
+
+    // Measure battery voltage
+    extBatteryVoltage = pmMeasureExtBatteryVoltage();
+    extBatteryVoltageMV = (uint16_t)(extBatteryVoltage * 1000);
+    // extBatteryCurrent = pmMeasureExtBatteryCurrent();
+    pmSetBatteryVoltage(extBatteryVoltage);
+    batteryLevel = pmBatteryChargeFromVoltage(pmGetBatteryVoltage()) * 10;
+  #ifdef DEBUG_EP2
+    DEBUG_PRINTD("batteryLevel=%u extBatteryVoltageMV=%u \n", batteryLevel, extBatteryVoltageMV);
+  #endif
     tickCount = xTaskGetTickCount();
 
     if (pmGetBatteryVoltage() > PM_BAT_LOW_VOLTAGE)
@@ -350,7 +350,7 @@ void pmTask(void *param)
       batteryCriticalLowTimeStamp = tickCount;
     }
 
-        pmState = pmUpdateState();
+    pmState = pmUpdateState();
 
     if (pmState != pmStateOld)
     {
@@ -361,20 +361,20 @@ void pmTask(void *param)
           //ledseqStop(&seq_charging);
           //ledseqRunBlocking(&seq_charged);
           soundSetEffect(SND_BAT_FULL);
-          systemSetCanFly(false);
+          systemSetCanFly(true);
           break;
         case charging:
           //ledseqStop(&seq_lowbat);
           //ledseqStop(&seq_charged);
           ledseqRunBlocking(&seq_charging);
           soundSetEffect(SND_USB_CONN);
-          systemSetCanFly(false);
+          systemSetCanFly(true);
           break;
 
         case lowPower:
           ledseqRunBlocking(&seq_lowbat);
           soundSetEffect(SND_BAT_LOW);
-          systemSetCanFly(true);
+          systemSetCanFly(false);
           break;
         case battery:
           //ledseqRunBlocking(&seq_charging);

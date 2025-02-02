@@ -32,13 +32,19 @@
 #define HALF_MAX_UINT16 2048
 #define MIN_UINT16 0
 
-rmt_item32_t _dshotCmd[17];
+static rmt_item32_t _dshotCmd[17];
 #define RMT_CMD_SIZE (sizeof(_dshotCmd) / sizeof(_dshotCmd[0])) // Prevent variable definition rmt_item32_t _dshotCmd[17]; 
 
 #define MOT_RMT_CH1  1      // Motor M1 pwmchannel
 #define MOT_RMT_CH2  2      // Motor M2 pwmchannel
 #define MOT_RMT_CH3  3      // Motor M3 pwmchannel
 #define MOT_RMT_CH4  4      // Motor M4 pwmchannel  
+
+#define MOTOR_TO_RMT_CHANNEL(motor_channel) (motor_channel == MOTOR_M1 ? MOT_RMT_CH1 : \
+                                             motor_channel == MOTOR_M2 ? MOT_RMT_CH2 : \
+                                             motor_channel == MOTOR_M3 ? MOT_RMT_CH3 : \
+                                             motor_channel == MOTOR_M4 ? MOT_RMT_CH4 : \
+                                             0)
 
 #define MOTORS_TEST_RMT         49
 #define MOTORS_TEST_ON_TIME_MS    50
@@ -100,8 +106,12 @@ bool motorsBrushlessTest(void);
 /**
  * Update the motors driver
  */
-void motorsBrushlessApply(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
+void motorsBrushlessApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
 
+/**
+ * Update a single motor driver
+ */
+void motorsBrushlessApplyChannel(uint8_t channel, uint16_t ithrust);
 
 #endif /* __MOTORS_H__ */
 

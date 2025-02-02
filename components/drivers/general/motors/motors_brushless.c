@@ -25,20 +25,16 @@
 #define DEBUG_MODULE "MOTORS"
 #include "debug_cf.h"
 
-const uint32_t MOTORS[] = {MOTOR_M1, MOTOR_M2, MOTOR_M3, MOTOR_M4}; //motors GPIO
-
-double core_ticks_per_bit;     //  This line calculates the number of clock ticks per bit for the DSHOT protocol.
-uint16_t dt_t0h, dt_t0l;       //  Ticks duration to stay low and high for a 0
-uint16_t dt_t1h, dt_t1l;       //  Ticks duration to stay low and high for a 1
-uint16_t dt_tpb;               //  Total duration of a bit (ticks per bit)
-uint16_t dt_pause;             //  Pause between bits
+static double core_ticks_per_bit;     //  This line calculates the number of clock ticks per bit for the DSHOT protocol.
+static uint16_t dt_t0h, dt_t0l;       //  Ticks duration to stay low and high for a 0
+static uint16_t dt_t1h, dt_t1l;       //  Ticks duration to stay low and high for a 1
+static uint16_t dt_tpb;               //  Total duration of a bit (ticks per bit)
+static uint16_t dt_pause;             //  Pause between bits
 
 typedef struct dshot_packet_t{
     uint16_t payload;
     bool telemetry;
 } dshot_packet_t;
-
-uint32_t motor_ratios[NBR_OF_MOTORS] = {0, 0, 0, 0};
 
 /**
  * DHSOTn is a protocol that works at a frequency n mentioned in the name of the protocol.
@@ -48,7 +44,7 @@ uint32_t motor_ratios[NBR_OF_MOTORS] = {0, 0, 0, 0};
  */
 rmt_config_t config[NBR_OF_MOTORS] = {
     {    
-        .channel = MOT_RMT_CH1,                      // rmt channel to be linked to gpio
+        .channel = RMT_CHANNEL_1,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR1_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -57,10 +53,10 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
+        .flags = 0,
     },    
     {    
-        .channel = MOT_RMT_CH2,                      // rmt channel to be linked to gpio
+        .channel = RMT_CHANNEL_2,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR2_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -69,10 +65,10 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
+        .flags = 0,
     },
         {    
-        .channel = MOT_RMT_CH3,                      // rmt channel to be linked to gpio
+        .channel = RMT_CHANNEL_3,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR3_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -81,10 +77,10 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
+        .flags = 0,
     },
         {    
-        .channel = MOT_RMT_CH4,                      // rmt channel to be linked to gpio
+        .channel = RMT_CHANNEL_4,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR4_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -93,7 +89,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
+        .flags = 0,
     },
 };
 
@@ -117,7 +113,7 @@ void DshotSetReversed(bool reversed);
 /* Public functions */
 
 //Initialization. Will set all motors ratio to 0%
-void motorsBrushedInit()
+void motorsBrushlessInit()
 {
     if (isInit) {
         // First to init will configure it
@@ -129,18 +125,18 @@ void motorsBrushedInit()
     isInit = true;
 }
 
-bool motorsBrushedTest(void)
+bool motorsBrushlessTest(void)
 {
     // Sound should be emitted by motors
-    DshotSendThrottle(MOT_RMT_CH1, MOTORS_TEST_RMT);
-    DshotSendThrottle(MOT_RMT_CH2, MOTORS_TEST_RMT);
-    DshotSendThrottle(MOT_RMT_CH3, MOTORS_TEST_RMT);
-    DshotSendThrottle(MOT_RMT_CH4, MOTORS_TEST_RMT);
+    DshotSendThrottle(MOTOR_M1, MOTORS_TEST_RMT);
+    DshotSendThrottle(MOTOR_M2, MOTORS_TEST_RMT);
+    DshotSendThrottle(MOTOR_M3, MOTORS_TEST_RMT);
+    DshotSendThrottle(MOTOR_M4, MOTORS_TEST_RMT);
     vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
-    DshotSendThrottle(MOT_RMT_CH1, 0);
-    DshotSendThrottle(MOT_RMT_CH2, 0);
-    DshotSendThrottle(MOT_RMT_CH3, 0);
-    DshotSendThrottle(MOT_RMT_CH4, 0);
+    DshotSendThrottle(MOTOR_M1, 0);
+    DshotSendThrottle(MOTOR_M2, 0);
+    DshotSendThrottle(MOTOR_M3, 0);
+    DshotSendThrottle(MOTOR_M4, 0);
     vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
 
     return isInit;
@@ -149,17 +145,24 @@ bool motorsBrushedTest(void)
 /**
  * Update the motors driver
  */
-void motorsBrushedApply(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4){
-    DshotSendThrottle(MOT_RMT_CH1, ithrust1);
-    DshotSendThrottle(MOT_RMT_CH2, ithrust2);
-    DshotSendThrottle(MOT_RMT_CH3, ithrust3);
-    DshotSendThrottle(MOT_RMT_CH4, ithrust4);
+void motorsBrushlessApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4){
+    DshotSendThrottle(MOTOR_M1, ithrust1);
+    DshotSendThrottle(MOTOR_M2, ithrust2);
+    DshotSendThrottle(MOTOR_M3, ithrust3);
+    DshotSendThrottle(MOTOR_M4, ithrust4);
+}
+
+/**
+ * Update the motors driver
+ */
+void motorsBrushlessApplyChannel(uint8_t channel, uint16_t ithrust){
+    DshotSendThrottle(channel, ithrust);
 }
 
 /* Private functions */
 void DshotInit(void){
     // Calculate bit timing for RMT peripheral
-	double core_ticks_per_bit = APB_CLK_FREQ/DSHOT_FREQUENCY;   //This line calculates the number of clock ticks per bit for the DSHOT protocol.
+	core_ticks_per_bit = APB_CLK_FREQ/DSHOT_FREQUENCY;   //This line calculates the number of clock ticks per bit for the DSHOT protocol.
     dt_tpb = core_ticks_per_bit/RMT_DIVIDER;               // Ticks per bit
 	dt_t0h = core_ticks_per_bit/RMT_DIVIDER/3;             // Ticks per bit 0 High 
 	dt_t1h = core_ticks_per_bit/RMT_DIVIDER*2/3;           // Ticks per bit 1 High
@@ -170,7 +173,7 @@ void DshotInit(void){
     esp_err_t rslt;
 
     // Assign rmtChannel to internal object variable
-    for (int h = 0; NBR_OF_MOTORS; h++){        
+    for (int h = 0; h<NBR_OF_MOTORS; h++){        
         rslt = rmt_config(&config[h]);               
         
         if (rslt != ESP_OK) {
@@ -201,10 +204,10 @@ void DshotReset(){
     // Set 50 emtpy data to reset DShot device 
     for (int i = 0; i < 50; i++)
     {
-        DshotWriteData(MOT_RMT_CH1, data, true);
-        DshotWriteData(MOT_RMT_CH2, data, true);
-        DshotWriteData(MOT_RMT_CH3, data, true);
-        DshotWriteData(MOT_RMT_CH4, data, true);
+        DshotWriteData(MOTOR_M1, data, true);
+        DshotWriteData(MOTOR_M2, data, true);
+        DshotWriteData(MOTOR_M3, data, true);
+        DshotWriteData(MOTOR_M4, data, true);
     }
 
 }
@@ -222,7 +225,7 @@ void DshotWriteData(uint8_t channel, uint16_t data, bool wait){
 
     // Assemble data in RMT format
     DshotSetData(data);
-    rslt = rmt_write_items(channel, _dshotCmd, RMT_CMD_SIZE, wait);
+    rslt = rmt_write_items(MOTOR_TO_RMT_CHANNEL(channel), _dshotCmd, RMT_CMD_SIZE, wait);
 
     if (rslt != ESP_OK) {
         DEBUG_PRINTE("RMT write failed: %s", esp_err_to_name(rslt));
@@ -292,7 +295,7 @@ void DshotSendThrottle(uint8_t channel, uint16_t ithrust)
     packet.payload = ithrust;
     packet.telemetry = 0;
 
-    motor_ratios[channel-1] = (uint32_t)ithrust;
+    motor_ratios[channel] = (uint32_t)ithrust;
     DshotWritePacket(channel, packet, false);
 }
 
@@ -315,8 +318,8 @@ void DshotSetReversed(bool reversed)
 }
 
 LOG_GROUP_START(pwm)
-LOG_ADD(LOG_UINT32, MOT_RMT_CH1, &motor_ratios[0])
-LOG_ADD(LOG_UINT32, MOT_RMT_CH2, &motor_ratios[1])
-LOG_ADD(LOG_UINT32, MOT_RMT_CH3, &motor_ratios[2])
-LOG_ADD(LOG_UINT32, MOT_RMT_CH4, &motor_ratios[3])
+LOG_ADD(LOG_UINT32, MOTOR_M1, &motor_ratios[0])
+LOG_ADD(LOG_UINT32, MOTOR_M2, &motor_ratios[1])
+LOG_ADD(LOG_UINT32, MOTOR_M3, &motor_ratios[2])
+LOG_ADD(LOG_UINT32, MOTOR_M4, &motor_ratios[3])
 LOG_GROUP_STOP(pwm)

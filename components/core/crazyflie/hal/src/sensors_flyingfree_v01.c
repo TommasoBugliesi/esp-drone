@@ -107,6 +107,8 @@
 
 #define PITCH_CALIB (CONFIG_PITCH_CALIB*1.0/100)
 #define ROLL_CALIB (CONFIG_ROLL_CALIB*1.0/100)
+
+// #define DEBUG_EP2 1
 /* Macros section end*/
 
 /* Datatypes section start*/
@@ -139,6 +141,7 @@ STATIC_MEM_QUEUE_ALLOC(magnetometerDataQueue, 1, sizeof(Axis3f));
 static xQueueHandle barometerDataQueue;
 STATIC_MEM_QUEUE_ALLOC(barometerDataQueue, 1, sizeof(baro_t));
 
+TimerHandle_t xsensorDataReadyTimer;
 static xSemaphoreHandle sensorsDataReady;
 static StaticSemaphore_t sensorsDataReadyBuffer;
 static xSemaphoreHandle dataReady;
@@ -185,7 +188,7 @@ const TickType_t sensorReadIntervalMs = pdMS_TO_TICKS(1);
 /* Functions section start*/
 static void processAccGyroMeasurements(struct bmi160_sensor_data *bmi160_accel, struct bmi160_sensor_data *bmi160_gyro);
 static void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag);
-static void processBarometerMeasurements(const uint8_t *buffer);
+// static void processBarometerMeasurements(const uint8_t *buffer);
 static bool processGyroBias(int16_t gx, int16_t gy, int16_t gz, Axis3f *gyroBiasOut);
 static bool processAccScale(int16_t ax, int16_t ay, int16_t az);
 static void sensorsBiasObjInit(BiasObj *bias);
@@ -194,6 +197,28 @@ static void sensorsAddBiasValue(BiasObj *bias, int16_t x, int16_t y, int16_t z);
 static bool sensorsFindBiasValue(BiasObj *bias);
 static void sensorsAccAlignToGravity(Axis3f *in, Axis3f *out);
 static void timerCallback(TimerHandle_t xTimer);
+
+
+/* BMI160 spi functions to integrate sensor library */
+int8_t bmi160_spi_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t length);
+int8_t bmi160_spi_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t length);
+
+// SPI Read Write function for BMI160
+int8_t bmi160_spi_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t length) {
+    if (spidevRead(VSPI_DEV, reg_addr, data, length)) {
+        return BMI160_OK;
+    }
+    return BMI160_E_COM_FAIL;
+}
+
+// Write function for BMI160
+int8_t bmi160_spi_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t length) {
+    if (spidevWrite(VSPI_DEV, reg_addr, data, length)) {
+        return BMI160_OK;
+    }
+    return BMI160_E_COM_FAIL;
+}
+
 static void sensorsDeviceInit(void)
 {
     // Wait for sensors to startup
@@ -204,6 +229,13 @@ static void sensorsDeviceInit(void)
     int8_t rslt;
     i2cdevInit(I2C0_DEV);
     spidevInit(VSPI_DEV);
+
+    // Assign the SPI device pointer to the dev_id field
+    bmi160dev.id = (uint8_t)VSPI_DEV.def->spiPort; // Cast the address of spiDevice as uint8_t (Bosch uses this as a handle)
+    bmi160dev.intf = BMI160_SPI_INTF; // Set interface type to SPI
+    bmi160dev.read = bmi160_spi_read;       // Set read function
+    bmi160dev.write = bmi160_spi_write;     // Set write function
+    bmi160dev.delay_ms = vTaskDelay;        // Delay function (uses FreeRTOS)
 
     // Init the bmi160 and then set its options
     rslt = bmi160_init(&bmi160dev);
@@ -216,7 +248,7 @@ static void sensorsDeviceInit(void)
     else
     {
         DEBUG_PRINTE("BMI160 initialization failure !\n");
-        // assert(0); // Terminate the program
+        assert(0); // Terminate the program
     }
 
     bmi160_soft_reset(&bmi160dev);
@@ -241,7 +273,12 @@ static void sensorsDeviceInit(void)
     // Set the sensor configuration 
     rslt = bmi160_set_sens_conf(&bmi160dev);
 
-    // TODO : Integrate digital LPF
+    // Integrate digital LPF
+    for (uint8_t i = 0; i < 3; i++) {
+        lpf2pInit(&gyroLpf[i], 1000, GYRO_LPF_CUTOFF_FREQ);
+        lpf2pInit(&accLpf[i], 1000, ACCEL_LPF_CUTOFF_FREQ);
+    }
+
 
 #ifdef CONFIG_QMC5883L_ENABLE
     qmc5883lInit(I2C0_DEV);
@@ -292,14 +329,25 @@ static void sensorsDeviceInit(void)
 }
 
 static void timerCallback(TimerHandle_t xTimer){
-    xTaskNotifyGive(xTimer);
+    xSemaphoreGive(sensorsDataReady); // Give the semaphore
 }
 static void sensorsTask(void *param)
 {
     //Previous software TODO present. to be clarified
     systemWaitStart();
     vTaskDelay(M2T(200));
-    TimerHandle_t xsensorDataReadyTimer = xTimerCreate("sensorDataReady", pdMS_TO_TICKS(1), pdTRUE, NULL, timerCallback);
+    xsensorDataReadyTimer = xTimerCreate("sensorDataReady", pdMS_TO_TICKS(1), pdTRUE, NULL, timerCallback);
+
+    // Check if the timer was created successfully
+    if (xsensorDataReadyTimer == NULL) {
+        printf("Failed to create sensorDataReady timer!\n");
+        return;
+    }
+
+    // Start the timer
+    if (xTimerStart(xsensorDataReadyTimer, 0) != pdPASS) {
+        printf("Failed to start timer!\n");
+    }
 
     DEBUG_PRINTD("xTaskCreate sensorsTask IN");
     
@@ -313,9 +361,11 @@ static void sensorsTask(void *param)
 
         bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &bmi160_accel, &bmi160_gyro, &bmi160dev);
         
-        if (qmc5883lGetReadyStatus() && isMagnetometerPresent){
-            qmc5883lGetHeading(&qmc5883l_mag);
-            mag_data_ready = true;
+        if (isMagnetometerPresent){
+            if (qmc5883lGetReadyStatus()){
+                qmc5883lGetHeading(&qmc5883l_mag);
+                mag_data_ready = true;
+            }
         }
 
         /* sensors step 2 - process the respective data */
@@ -563,10 +613,10 @@ void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag)
         sensorData.mag.z = (float)qmc5883l_mag->z / MAG_GAUSS_PER_LSB;
 
         mag_data_ready = false;
-        DEBUG_PRINTI("hmc5883l DATA ready");
+        // DEBUG_PRINTI("hmc5883l DATA ready");
     } else {
 
-        DEBUG_PRINTW("hmc5883l DATA not ready");
+        // DEBUG_PRINTW("hmc5883l DATA not ready");
     }
 }
 

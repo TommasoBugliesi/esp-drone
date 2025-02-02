@@ -17,14 +17,15 @@ static void initMotors();
 typedef struct {
   void (*init)(void);
   bool (*test)(void);
-  void (*apply)(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
+  void (*applyAll)(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
+  void (*applyChannel)(uint8_t channel, uint16_t ithrust);
   const char* name;
 } MotorsFcns;
 
 static MotorsFcns motorsFunctions[] = {
-  {.init = 0, .test = 0, .apply = 0, .name = "None"}, // Any
-  {.init = motorsBrushedInit, .test = motorsBrushedTest, .apply = motorsBrushedApply, .name = "Brushed"},
-  {.init = motorsBrushlessInit, .test = motorsBrushlessTest, .apply = motorsBrushlessApply, .name = "Brushless"},
+  {.init = 0, .test = 0, .applyAll = 0, .applyChannel = 0, .name = "None"}, // Any
+  {.init = motorsBrushedInit, .test = motorsBrushedTest, .applyAll = motorsBrushedApplyAll, .applyChannel = motorsBrushlessApplyChannel, .name = "Brushed"},
+  {.init = motorsBrushlessInit, .test = motorsBrushlessTest, .applyAll = motorsBrushlessApplyAll, .applyChannel = motorsBrushlessApplyChannel, .name = "Brushless"},
 };
 
 void motorsInit(MotorsType motors) {
@@ -66,6 +67,10 @@ bool motorsTest(void) {
   return motorsFunctions[currentMotors].test();
 }
 
-void motorsApply(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4) {
-  motorsFunctions[currentMotors].apply(ithrust1, ithrust2, ithrust3, ithrust4);
+void motorsApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4) {
+  motorsFunctions[currentMotors].applyAll(ithrust1, ithrust2, ithrust3, ithrust4);
+}
+
+void motorsApplyChannel(uint8_t channel, uint16_t ithrust) {
+  motorsFunctions[currentMotors].applyChannel(channel, ithrust);
 }

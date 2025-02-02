@@ -33,6 +33,20 @@
 #include "driver/adc.h"
 //#include "deck.h"
 
+#ifdef CONFIG_BATTERY_3S 
+  #define BATTERY_VOLTAGE 11.1f //3.7*3.0 
+  #define BATTERY_VOLTAGE_MV 11100
+  #define BATTERY_VOLTAGE_MIN 9.0f
+  #define BATTERY_VOLTAGE_MAX 12.5f
+  #define BATTERY_MULTIPLIER 3.0f
+#elif CONFIG_BATTERY_4S
+  #define BATTERY_VOLTAGE 14.8f //3.7*4.0 
+  #define BATTERY_VOLTAGE_MV 14800
+  #define BATTERY_VOLTAGE_MIN 12.0f
+  #define BATTERY_VOLTAGE_MAX 15.6f
+  #define BATTERY_MULTIPLIER 4.0f
+#endif
+
 #ifndef CRITICAL_LOW_VOLTAGE
   #define PM_BAT_CRITICAL_LOW_VOLTAGE   3.0f
 #else
@@ -161,7 +175,7 @@ bool pmIsDischarging(void);
 /**
  * Enable or disable external battery voltage measuring.
  */
-void pmEnableExtBatteryVoltMeasuring(uint8_t pin, float multiplier);
+void pmEnableExtBatteryVoltMeasuring(uint8_t pin);
 
 /**
  * Measure an external voltage.

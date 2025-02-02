@@ -345,14 +345,14 @@ void pmTask(void *param)
           ledseqStop(&seq_charging);
           ledseqRunBlocking(&seq_charged);
           soundSetEffect(SND_BAT_FULL);
-          systemSetCanFly(false);
+          systemSetCanFly(true);
           break;
         case charging:
           ledseqStop(&seq_lowbat);
           ledseqStop(&seq_charged);
           ledseqRunBlocking(&seq_charging);
           soundSetEffect(SND_USB_CONN);
-          systemSetCanFly(false);
+          systemSetCanFly(true);
           break;
         case lowPower:
           ledseqRunBlocking(&seq_lowbat);
