@@ -28,6 +28,10 @@ menu "ESPDrone Config"
         config BMP280_ENABLE
             bool "Enable BMP280 sensor"
             default n
+
+        config UPSIDEDOWN_ENABLE
+            bool "Board installed upside down"
+            default y
     endmenu
     endif
     

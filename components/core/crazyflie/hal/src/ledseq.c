@@ -168,7 +168,7 @@ ledseqContext_t seq_testPassed = {
 
 ledseqContext_t seq_testFailed = {
   .sequence = seq_testPassed_def,
-  .led = SYS_LED,
+  .led = ERR_LED1,
 };
 
 struct ledseqCmd_s {

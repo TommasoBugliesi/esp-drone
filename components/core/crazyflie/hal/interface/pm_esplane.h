@@ -33,6 +33,10 @@
 #include "driver/adc.h"
 //#include "deck.h"
 
+#ifdef CONFIG_TARGET_FLYINGFREE_V01
+  #define VOLTAGE_DIVIDER 0.1546391753f // 15kOhm/82kOhm
+#endif
+
 #ifdef CONFIG_BATTERY_3S 
   #define BATTERY_VOLTAGE 11.1f //3.7*3.0 
   #define BATTERY_VOLTAGE_MV 11100

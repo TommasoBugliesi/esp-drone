@@ -134,6 +134,7 @@ static void wifilinkTask(void *param)
             p.size = wifiIn.size - 1;
             p.header = CRTP_HEADER(CRTP_PORT_SETPOINT, 0x00); //head redefine
 
+            printf("rch: %.2f, pch: %.2f, tch: %d, ych: %.2f\n", rch, pch, tch, ych);
             memcpy(&p.data[0], &rch, 4);
             memcpy(&p.data[4], &pch, 4);
             memcpy(&p.data[8], &ych, 4);
@@ -155,7 +156,7 @@ static void wifilinkTask(void *param)
             p.size = wifiIn.size - 1;
             p.header = CRTP_HEADER(CRTP_PORT_SETPOINT, 0x00); //head redefine
 
-            //printf("rch: %.2f, pch: %.2f, tch: %d, ych: %.2f\n", rch, pch, tch, ych);
+            printf("rch: %.2f, pch: %.2f, tch: %d, ych: %.2f\n", rch, pch, tch, ych);
             memcpy(&p.data[0], &rch, 4);
             memcpy(&p.data[4], &pch, 4);
             memcpy(&p.data[8], &ych, 4);

@@ -52,8 +52,8 @@ void buzzDeckInit()
         return;
     }
 
-    // piezoInit();
-    // buzzerSetControl(&buzzDeckCtrl);
+    piezoInit();
+    buzzerSetControl(&buzzDeckCtrl);
 
     isInit = true;
 }

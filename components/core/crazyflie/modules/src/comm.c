@@ -50,9 +50,9 @@ void commInit(void)
 
   /* These functions  are moved to be initialized early so
     * that DEBUG_PRINTD can be used early */
-  //wifilinkInit();
-  //crtpInit();
-  //consoleInit();
+    //wifilinkInit();
+    //crtpInit();
+    //consoleInit();
 
   crtpSetLink(wifilinkGetLink());
   crtpserviceInit();

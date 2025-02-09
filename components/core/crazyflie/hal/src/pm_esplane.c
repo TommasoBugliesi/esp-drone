@@ -46,6 +46,8 @@
 #include "debug_cf.h"
 #include "static_mem.h"
 
+// #define DEBUG_EP2 1
+
 typedef struct _PmSyslinkInfo
 {
   union
@@ -279,7 +281,7 @@ float pmMeasureExtBatteryVoltage(void)
 
   if (isExtBatVoltDeckPinSet)
   {
-    voltage = analogReadVoltage(extBatVoltDeckPin) * BATTERY_MULTIPLIER;
+    voltage = analogReadVoltage(extBatVoltDeckPin) / VOLTAGE_DIVIDER;
   }
   else
   {
@@ -337,7 +339,7 @@ void pmTask(void *param)
     pmSetBatteryVoltage(extBatteryVoltage);
     batteryLevel = pmBatteryChargeFromVoltage(pmGetBatteryVoltage()) * 10;
   #ifdef DEBUG_EP2
-    DEBUG_PRINTD("batteryLevel=%u extBatteryVoltageMV=%u \n", batteryLevel, extBatteryVoltageMV);
+    DEBUG_PRINT_LOCAL("batteryLevel=%u extBatteryVoltageMV=%u \n", batteryLevel, extBatteryVoltageMV);
   #endif
     tickCount = xTaskGetTickCount();
 
@@ -361,20 +363,20 @@ void pmTask(void *param)
           //ledseqStop(&seq_charging);
           //ledseqRunBlocking(&seq_charged);
           soundSetEffect(SND_BAT_FULL);
-          systemSetCanFly(true);
+          systemSetCanFly(false);
           break;
         case charging:
           //ledseqStop(&seq_lowbat);
           //ledseqStop(&seq_charged);
           ledseqRunBlocking(&seq_charging);
           soundSetEffect(SND_USB_CONN);
-          systemSetCanFly(true);
+          systemSetCanFly(false);
           break;
 
         case lowPower:
           ledseqRunBlocking(&seq_lowbat);
           soundSetEffect(SND_BAT_LOW);
-          systemSetCanFly(false);
+          systemSetCanFly(true);
           break;
         case battery:
           //ledseqRunBlocking(&seq_charging);

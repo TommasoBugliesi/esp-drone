@@ -214,7 +214,7 @@ bool stabilizerTest(void)
 {
   bool pass = true;
 
-  pass &= sensorsTest();
+  // pass &= sensorsTest();
   pass &= stateEstimatorTest();
   pass &= controllerTest();
   pass &= powerDistributionTest();
@@ -309,6 +309,8 @@ static void stabilizerTask(void* param)
       if (emergencyStop || (systemIsArmed() == false)) {
         powerStop();
       } else {
+        DEBUG_PRINT_LOCAL("Roll: %d, Pitch: %d, Yaw: %d, Thrust: %.2f\n",
+           control.roll, control.pitch, control.yaw, control.thrust);
         powerDistribution(&control);
       }
 

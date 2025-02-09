@@ -906,7 +906,7 @@ static bool sensorsFindBiasValue(BiasObj *bias)
     if (bias->isBufferFilled) {
         sensorsCalculateVarianceAndMean(bias, &bias->variance, &bias->mean);
 
-        if (bias->variance.x < GYRO_VARIANCE_THRESHOLD_X &&
+        if (bias->variance.x <  &&
             bias->variance.y < GYRO_VARIANCE_THRESHOLD_Y &&
             bias->variance.z < GYRO_VARIANCE_THRESHOLD_Z &&
             (varianceSampleTime + GYRO_MIN_BIAS_TIMEOUT_MS < xTaskGetTickCount())) 

@@ -69,14 +69,14 @@
 // processAccGyroMeasurement
 #define GYRO_NBR_OF_AXES 3
 #define SENSORS_NBR_OF_BIAS_SAMPLES 1024
-#define GYRO_VARIANCE_BASE 5000
+#define GYRO_VARIANCE_BASE 8000 // If bmi parameters are updated a new value may be required
 #define GYRO_MIN_BIAS_TIMEOUT_MS M2T(1 * 1000)
 #define GYRO_VARIANCE_THRESHOLD_X (GYRO_VARIANCE_BASE)
 #define GYRO_VARIANCE_THRESHOLD_Y (GYRO_VARIANCE_BASE)
 #define GYRO_VARIANCE_THRESHOLD_Z (GYRO_VARIANCE_BASE)
 #define SENSORS_ACC_SCALE_SAMPLES 200
 
-#define BMI160_ACCEL_RANGE BMI160_ACCEL_RANGE_4G
+#define BMI160_ACCEL_RANGE BMI160_ACCEL_RANGE_8G
 #if BMI160_ACCEL_RANGE == BMI160_ACCEL_RANGE_2G
     #define SENSORS_G_PER_LSB_CFG      (float)((2 * 2) / 65536.0)
 #elif BMI160_ACCEL_RANGE == BMI160_ACCEL_RANGE_4G
@@ -87,7 +87,7 @@
     #define SENSORS_G_PER_LSB_CFG     (float)((2 * 16) / 65536.0)
 #endif
 
-#define BMI160_GYRO_RANGE BMI160_GYRO_RANGE_500_DPS
+#define BMI160_GYRO_RANGE BMI160_GYRO_RANGE_2000_DPS
 #if BMI160_GYRO_RANGE == BMI160_GYRO_RANGE_250_DPS
     #define SENSORS_DEG_PER_LSB_CFG  (float)((2 * 250.0) / 65536.0)
 #elif BMI160_GYRO_RANGE == BMI160_GYRO_RANGE_500_DPS
@@ -105,8 +105,24 @@
     #define MAG_GAUSS_PER_LSB (float)((2 * 8.0) / 65536.0)
 #endif
 
-#define PITCH_CALIB (CONFIG_PITCH_CALIB*1.0/100)
-#define ROLL_CALIB (CONFIG_ROLL_CALIB*1.0/100)
+// #define PITCH_CALIB (CONFIG_PITCH_CALIB*1.0/100)
+// #define ROLL_CALIB (CONFIG_ROLL_CALIB*1.0/100)
+#define PITCH_CALIB (-168.0f*1.0/100)
+#define ROLL_CALIB (300.0f*1.0/100)
+
+#ifdef CONFIG_UPSIDEDOWN_ENABLE
+    #define UPSIDEDOWN -1.0f // Z axis depends on board installation 
+#endif
+#ifndef CONFIG_UPSIDEDOWN_ENABLE
+    #define UPSIDEDOWN 1.0f
+#endif
+
+#ifdef CONFIG_TARGET_FLYINGFREE_V01
+    #define IMU_X_TOFRAME -1.0f // Sensors axis must be brought back to MPU axis of S2_Drone_V1_2
+    #define IMU_Y_TOFRAME -1.0f
+    #define MAG_X_TOFRAME 1.0f
+    #define MAG_Y_TOFRAME 1.0f
+#endif
 
 // #define DEBUG_EP2 1
 /* Macros section end*/
@@ -257,15 +273,15 @@ static void sensorsDeviceInit(void)
     // Select the Output data rate, range of accelerometer sensor 
     bmi160dev.accel_cfg.odr = BMI160_ACCEL_ODR_1600HZ;
     bmi160dev.accel_cfg.range = BMI160_ACCEL_RANGE;
-    bmi160dev.accel_cfg.bw = BMI160_ACCEL_BW_NORMAL_AVG4;
+    bmi160dev.accel_cfg.bw = BMI160_ACCEL_BW_OSR2_AVG2;
 
     // Select the power mode of accelerometer sensor 
     bmi160dev.accel_cfg.power = BMI160_ACCEL_NORMAL_MODE;
 
     // Select the Output data rate, range of Gyroscope sensor 
-    bmi160dev.gyro_cfg.odr = BMI160_GYRO_ODR_3200HZ;
+    bmi160dev.gyro_cfg.odr = BMI160_GYRO_ODR_1600HZ;
     bmi160dev.gyro_cfg.range = BMI160_GYRO_RANGE;
-    bmi160dev.gyro_cfg.bw = BMI160_GYRO_BW_NORMAL_MODE;
+    bmi160dev.gyro_cfg.bw = BMI160_GYRO_BW_OSR4_MODE;
 
     // Select the power mode of Gyroscope sensor 
     bmi160dev.gyro_cfg.power = BMI160_GYRO_NORMAL_MODE;
@@ -282,7 +298,7 @@ static void sensorsDeviceInit(void)
 
 #ifdef CONFIG_QMC5883L_ENABLE
     qmc5883lInit(I2C0_DEV);
-
+    
     if (qmc5883lGetID() == QMC5883L_CHIP_ID) {
         isMagnetometerPresent = true;
         qmc5883lSetReg1(QMC5883L_OSR_256, QMC5885L_MAG_RANGE, QMC5883L_ODR_200, QMC5883L_MODE_CONTINUOUS); 
@@ -391,15 +407,15 @@ static void sensorsTask(void *param)
             xQueueOverwrite(barometerDataQueue, &sensorData.baro);
         }
 
-        /* sensors step 4 - Unlock stabilizer task */
-        xSemaphoreGive(dataReady);
-
         #ifdef DEBUG_EP2
             DEBUG_PRINT_LOCAL("ax = %f,  ay = %f,  az = %f,  gx = %f,  gy = %f,  gz = %f , hx = %f , hy = %f, hz =%f \n", 
                             sensorData.acc.x, sensorData.acc.y, sensorData.acc.z, 
                             sensorData.gyro.x, sensorData.gyro.y, sensorData.gyro.z, 
                             sensorData.mag.x, sensorData.mag.y, sensorData.mag.z);
         #endif
+
+        /* sensors step 4 - Unlock stabilizer task */
+        xSemaphoreGive(dataReady);
         }
     }
 }
@@ -440,12 +456,12 @@ void processAccGyroMeasurements(struct bmi160_sensor_data *bmi160_accel, struct 
     // TODO : convert both data and offsets
 
     /* sensors step 2.4 convert  digtal value to physical angle */
-    sensorData.gyro.x = (gyroRaw.x - gyroBias.x) * SENSORS_DEG_PER_LSB_CFG;
-    sensorData.gyro.y = (gyroRaw.y - gyroBias.y) * SENSORS_DEG_PER_LSB_CFG;
-    sensorData.gyro.z = (gyroRaw.z - gyroBias.z) * SENSORS_DEG_PER_LSB_CFG;
-    accScaled.x       = (accelRaw.x)             * SENSORS_G_PER_LSB_CFG / accScale;   
-    accScaled.y       = (accelRaw.y)             * SENSORS_G_PER_LSB_CFG / accScale;
-    accScaled.z       = (accelRaw.z)             * SENSORS_G_PER_LSB_CFG / accScale;
+    sensorData.gyro.y = IMU_X_TOFRAME               * ((gyroRaw.x - gyroBias.x) * SENSORS_DEG_PER_LSB_CFG);
+    sensorData.gyro.x = IMU_Y_TOFRAME * UPSIDEDOWN  * ((gyroRaw.y - gyroBias.y) * SENSORS_DEG_PER_LSB_CFG);
+    sensorData.gyro.z = UPSIDEDOWN                  * ((gyroRaw.z - gyroBias.z) * SENSORS_DEG_PER_LSB_CFG);
+    accScaled.y       = IMU_X_TOFRAME               * ((accelRaw.x)             * SENSORS_G_PER_LSB_CFG / accScale);   
+    accScaled.x       = IMU_Y_TOFRAME * UPSIDEDOWN  * ((accelRaw.y)             * SENSORS_G_PER_LSB_CFG / accScale);
+    accScaled.z       = UPSIDEDOWN                  * ((accelRaw.z)             * SENSORS_G_PER_LSB_CFG / accScale);
 
     /* sensors step 2.5 low pass filter */
     applyAxis3fLpf((lpf2pData *)(&gyroLpf), &sensorData.gyro);
@@ -554,6 +570,9 @@ static void sensorsCalculateVarianceAndMean(BiasObj *bias, Axis3f *varOut, Axis3
     meanOut->x = (float)sum[0] / SENSORS_NBR_OF_BIAS_SAMPLES;
     meanOut->y = (float)sum[1] / SENSORS_NBR_OF_BIAS_SAMPLES;
     meanOut->z = (float)sum[2] / SENSORS_NBR_OF_BIAS_SAMPLES;
+
+    // DEBUG_PRINT_LOCAL("Variance X: %f, Y: %f, Z: %f\n", varOut->x, varOut->y, varOut->z);
+    // DEBUG_PRINT_LOCAL("Mean X: %f, Y: %f, Z: %f\n", meanOut->x, meanOut->y, meanOut->z);
 }
 
 
@@ -608,9 +627,9 @@ static void sensorsAccAlignToGravity(Axis3f *in, Axis3f *out)
 void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag)
 {
     if (mag_data_ready) {
-        sensorData.mag.x = (float)qmc5883l_mag->x / MAG_GAUSS_PER_LSB; //to gauss
-        sensorData.mag.y = (float)qmc5883l_mag->y / MAG_GAUSS_PER_LSB;
-        sensorData.mag.z = (float)qmc5883l_mag->z / MAG_GAUSS_PER_LSB;
+        sensorData.mag.y = MAG_X_TOFRAME *              ((float)qmc5883l_mag->x / MAG_GAUSS_PER_LSB); //to gauss
+        sensorData.mag.x = MAG_Y_TOFRAME * UPSIDEDOWN * ((float)qmc5883l_mag->y / MAG_GAUSS_PER_LSB);
+        sensorData.mag.z = UPSIDEDOWN *                 ((float)qmc5883l_mag->z / MAG_GAUSS_PER_LSB);
 
         mag_data_ready = false;
         // DEBUG_PRINTI("hmc5883l DATA ready");

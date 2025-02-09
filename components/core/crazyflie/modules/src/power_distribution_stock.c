@@ -37,7 +37,7 @@
 #define DEBUG_MODULE "PWR_DIST"
 #include "debug_cf.h"
 
-static bool motorSetEnable = false;
+static bool motorSetEnable = true;
 
 static struct {
   uint32_t m1;
@@ -53,8 +53,12 @@ static struct {
   uint16_t m4;
 } motorPowerSet;
 
+#if defined(CONFIG_DSHOT_600) || defined(CONFIG_DSHOT_300) || defined(CONFIG_DSHOT_150)
+  #define DEFAULT_IDLE_THRUST 48 // Default value 0 speed DShot
+#endif
+
 #ifndef DEFAULT_IDLE_THRUST
-#define DEFAULT_IDLE_THRUST 0
+  #define DEFAULT_IDLE_THRUST 0
 #endif
 
 static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
@@ -110,6 +114,7 @@ void powerDistribution(const control_t *control)
     motorsApplyChannel(MOTOR_M2, motorPowerSet.m2);
     motorsApplyChannel(MOTOR_M3, motorPowerSet.m3);
     motorsApplyChannel(MOTOR_M4, motorPowerSet.m4);
+    // DEBUG_PRINT_LOCAL("motorPower m1 : %d , m2 : %d , m3 : %d , m4 : %d", motorPower.m1, motorPower.m2, motorPower.m3, motorPower.m4);
   }
   else
   {
@@ -130,7 +135,9 @@ void powerDistribution(const control_t *control)
     motorsApplyChannel(MOTOR_M2, motorPower.m2);
     motorsApplyChannel(MOTOR_M3, motorPower.m3);
     motorsApplyChannel(MOTOR_M4, motorPower.m4);
+    // DEBUG_PRINT_LOCAL("motorPower Idle m1 : %d , m2 : %d , m3 : %d , m4 : %d", motorPower.m1, motorPower.m2, motorPower.m3, motorPower.m4);
   }
+
 }
 
 PARAM_GROUP_START(motorPowerSet)

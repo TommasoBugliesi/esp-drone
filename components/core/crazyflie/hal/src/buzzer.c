@@ -36,9 +36,7 @@ extern void buzzDeckInit();
 
 void buzzerInit()
 {
-#ifdef CONFIG_BUZZER_ON
     buzzDeckInit();
-#endif
 }
 
 bool buzzerTest()

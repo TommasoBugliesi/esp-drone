@@ -217,11 +217,13 @@ void DshotWriteData(uint8_t channel, uint16_t data, bool wait){
 
     // Max time to wait for TX done can be an option in case for fast control loops
     if (wait){
-        rmt_wait_tx_done(channel, WAIT_FOR_TX_DONE);
+        rmt_wait_tx_done(MOTOR_TO_RMT_CHANNEL(channel), WAIT_FOR_TX_DONE);
     }
     else{
-        rmt_wait_tx_done(channel, 0);
+        rmt_wait_tx_done(MOTOR_TO_RMT_CHANNEL(channel), 0); 
     }
+
+    // DEBUG_PRINT_LOCAL("Channel: %d", channel);
 
     // Assemble data in RMT format
     DshotSetData(data);

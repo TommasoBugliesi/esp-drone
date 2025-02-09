@@ -74,9 +74,9 @@
 #include "cfassert.h"
 
 #ifndef START_DISARMED
-#define ARM_INIT true
+  #define ARM_INIT true
 #else
-#define ARM_INIT false
+  #define ARM_INIT false
 #endif
 
 /* Private variable */
@@ -145,8 +145,7 @@ void systemInit(void)
 #ifdef CONFIG_ADC_ENABLE
   // Init ADC channel performing calibration
   adcInit();
-
-  // Power management not available without ADC 
+  // Power management not available without ADC and compilation fails
   pmInit();
 #endif
 
@@ -202,7 +201,6 @@ void systemTask(void *arg)
   commInit();
   commanderInit();
 
-  // TODO: Why any estimator? Option from menu?
   StateEstimatorType estimator = anyEstimator;
   estimatorKalmanTaskInit();
   // deckInit();
@@ -222,32 +220,32 @@ void systemTask(void *arg)
   
 	/* Test each modules */
   bool pass = true;
-//   pass &= wifiTest();
-//   DEBUG_PRINTI("wifilinkTest = %d ", pass);
-//   pass &= systemTest();
-//   DEBUG_PRINTI("systemTest = %d ", pass);
-//   pass &= configblockTest();
-//   DEBUG_PRINTI("configblockTest = %d ", pass);
-//   //pass &= storageTest();
-//   pass &= commTest();
-//   DEBUG_PRINTI("commTest = %d ", pass);
-//   pass &= commanderTest();
-//   DEBUG_PRINTI("commanderTest = %d ", pass);
-//   pass &= stabilizerTest();
-//   DEBUG_PRINTI("stabilizerTest = %d ", pass);
-//   pass &= estimatorKalmanTaskTest();
-//   DEBUG_PRINTI("estimatorKalmanTaskTest = %d ", pass);
-//   //pass &= deckTest();
-//   pass &= soundTest();
-//   DEBUG_PRINTI("soundTest = %d ", pass);
-//   pass &= memTest();
-//   DEBUG_PRINTI("memTest = %d ", pass);
-//   //pass &= watchdogNormalStartTest();
-//   pass &= cfAssertNormalStartTest();
-// //  pass &= peerLocalizationTest();
+  pass &= wifiTest();
+  DEBUG_PRINTI("wifilinkTest = %d ", pass);
+  pass &= systemTest();
+  DEBUG_PRINTI("systemTest = %d ", pass);
+  pass &= configblockTest();
+  DEBUG_PRINTI("configblockTest = %d ", pass);
+  //pass &= storageTest();
+  pass &= commTest();
+  DEBUG_PRINTI("commTest = %d ", pass);
+  pass &= commanderTest();
+  DEBUG_PRINTI("commanderTest = %d ", pass);
+  pass &= stabilizerTest();
+  DEBUG_PRINTI("stabilizerTest = %d ", pass);
+  pass &= estimatorKalmanTaskTest();
+  DEBUG_PRINTI("estimatorKalmanTaskTest = %d ", pass);
+  //pass &= deckTest();
+  pass &= soundTest();
+  DEBUG_PRINTI("soundTest = %d ", pass);
+  // pass &= memTest();
+  DEBUG_PRINTI("memTest = %d ", pass);
+  //pass &= watchdogNormalStartTest();
+  pass &= cfAssertNormalStartTest();
+  //pass &= peerLocalizationTest();
 
   //Start the firmware
-  if(pass)
+  if(pass)  
   {
     selftestPassed = 1;
     systemStart();
@@ -312,7 +310,7 @@ void systemWaitStart(void)
 
 void systemSetCanFly(bool val)
 {
-  canFly = true;
+  canFly = val;
 }
 
 bool systemCanFly(void)
