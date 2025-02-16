@@ -36,6 +36,8 @@ typedef struct dshot_packet_t{
     bool telemetry;
 } dshot_packet_t;
 
+static uint32_t motor_ratios[4] = {0, 0, 0, 0};
+
 /**
  * DHSOTn is a protocol that works at a frequency n mentioned in the name of the protocol.
  * DHOT600 -> 600kHz (number of bits per seconds)
@@ -53,7 +55,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = 0,
+        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },    
     {    
         .channel = RMT_CHANNEL_2,                      // rmt channel to be linked to gpio
@@ -65,7 +67,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = 0,
+        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },
         {    
         .channel = RMT_CHANNEL_3,                      // rmt channel to be linked to gpio
@@ -77,7 +79,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = 0,
+        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },
         {    
         .channel = RMT_CHANNEL_4,                      // rmt channel to be linked to gpio
@@ -89,7 +91,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .tx_config.carrier_en = false,               // No carrier wave
         .tx_config.idle_level = RMT_IDLE_LEVEL_HIGH,    
         .tx_config.idle_output_en = true,
-        .flags = 0,
+        .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },
 };
 
@@ -121,25 +123,23 @@ void motorsBrushlessInit()
     }
 
     DshotInit();
+    DshotReset();
+    DshotSetReversed(false);
+
+    int armCounter;
+    for (armCounter=0; armCounter<50; armCounter++){
+       motorsBrushlessApplyAll(DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN);  
+       armCounter ++;   
+    }
 
     isInit = true;
 }
 
 bool motorsBrushlessTest(void)
 {
-    // Sound should be emitted by motors
-    DshotSendThrottle(MOTOR_M1, MOTORS_TEST_RMT);
-    DshotSendThrottle(MOTOR_M2, MOTORS_TEST_RMT);
-    DshotSendThrottle(MOTOR_M3, MOTORS_TEST_RMT);
-    DshotSendThrottle(MOTOR_M4, MOTORS_TEST_RMT);
-    vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
-    DshotSendThrottle(MOTOR_M1, 0);
-    DshotSendThrottle(MOTOR_M2, 0);
-    DshotSendThrottle(MOTOR_M3, 0);
-    DshotSendThrottle(MOTOR_M4, 0);
-    vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
+    // TODO : Function to test motors
 
-    return isInit;
+    return true;
 }
 
 /**
@@ -157,6 +157,13 @@ void motorsBrushlessApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithr
  */
 void motorsBrushlessApplyChannel(uint8_t channel, uint16_t ithrust){
     DshotSendThrottle(channel, ithrust);
+}
+
+/**
+ * Get a single motor driver
+ */
+int motorsBrushlessGetChannel(uint8_t id){
+    return motor_ratios[id];
 }
 
 /* Private functions */
@@ -227,6 +234,8 @@ void DshotWriteData(uint8_t channel, uint16_t data, bool wait){
 
     // Assemble data in RMT format
     DshotSetData(data);
+
+    // Send data
     rslt = rmt_write_items(MOTOR_TO_RMT_CHANNEL(channel), _dshotCmd, RMT_CMD_SIZE, wait);
 
     if (rslt != ESP_OK) {
@@ -261,12 +270,15 @@ uint8_t DshotChecksum(uint16_t data){
 
     // Calculate checksum
 	uint16_t csum = 0;
-
-    csum ^= data;
-    data >>= 4;
+    
+	for (int i = 0; i < 3; i++){
+		csum ^= data;
+		data >>= 4;
+	}
 
 	return csum & 0xf;
 }
+
 
 void DshotWritePacket(uint8_t channel, dshot_packet_t packet, bool wait){
     uint16_t data;
@@ -318,6 +330,7 @@ void DshotSetReversed(bool reversed)
     }
     
 }
+
 
 LOG_GROUP_START(pwm)
 LOG_ADD(LOG_UINT32, MOTOR_M1, &motor_ratios[0])

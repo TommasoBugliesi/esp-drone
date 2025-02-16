@@ -24,6 +24,7 @@
 #define __MOTORS_H__
 
 #include "stabilizer_types.h"
+#include "sdkconfig.h"
 
 #define NBR_OF_MOTORS 4 //Do not change 
 
@@ -37,8 +38,6 @@
 #define MOTOR3_GPIO  CONFIG_MOTOR03_PIN   // M3 for ESP32FC
 #define MOTOR4_GPIO  CONFIG_MOTOR04_PIN   // M4 for ESP32FC
 
-static uint32_t motor_ratios[] = {0, 0, 0, 0};
-
 typedef enum {
   MotorsTypeAny,
   MotorsTypeBrushed,
@@ -50,6 +49,7 @@ void motorsInit(MotorsType motor);
 bool motorsTest(void);
 void motorsApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
 void motorsApplyChannel(uint8_t channel, uint16_t ithrust);
+int motorsGetChannel(uint8_t id);
 MotorsType getMotorsType(void);
 const char* motorsGetName();
 

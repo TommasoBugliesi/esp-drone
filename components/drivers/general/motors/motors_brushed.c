@@ -38,6 +38,8 @@ const uint32_t MOTORS[] = {MOTOR_M1, MOTOR_M2, MOTOR_M3, MOTOR_M4};
 
 const uint16_t testsound[NBR_OF_MOTORS] = {A4, A5, F5, D5};
 
+static uint32_t motor_ratios[4] = {0, 0, 0, 0};
+
 static bool isInit = false;
 static bool isTimerInit = false;
 
@@ -47,7 +49,6 @@ static uint16_t motorsConv16ToBits(uint16_t bits);
 bool pwm_timmer_init();
 void motorsDeInit();
 void motorsSetRatio(uint32_t id, uint16_t ratio);
-int motorsGetRatio(uint32_t id);
 void motorsPlayTone(uint16_t frequency, uint16_t duration_msec);
 void motorsPlayMelody(uint16_t *notes);
 void motorsBeep(int id, bool enable, uint16_t frequency, uint16_t ratio);
@@ -140,6 +141,13 @@ void motorsBrushedApplyChannel(uint8_t channel, uint16_t ithrust){
     motorsSetRatio(channel, ithrust);
 }
 
+int motorsBrushedGetChannel(uint8_t id){
+    int ratio;
+    ASSERT(id < NBR_OF_MOTORS);
+    ratio = motorsConvBitsTo16((uint16_t)ledc_get_duty(motors_channel[id].speed_mode, motors_channel[id].channel));
+    return ratio; 
+}
+
 /* Private functions */
 
 static uint16_t motorsConvBitsTo16(uint16_t bits)
@@ -217,14 +225,6 @@ void motorsSetRatio(uint32_t id, uint16_t ithrust)
         DEBUG_PRINT_LOCAL("motors ID = %d ,ithrust_10bit = %d", id, (uint32_t)motorsConv16ToBits(ratio));
 #endif
     }
-}
-
-int motorsGetRatio(uint32_t id)
-{
-    int ratio;
-    ASSERT(id < NBR_OF_MOTORS);
-    ratio = motorsConvBitsTo16((uint16_t)ledc_get_duty(motors_channel[id].speed_mode, motors_channel[id].channel));
-    return ratio;
 }
 
 void motorsBeep(int id, bool enable, uint16_t frequency, uint16_t ratio)

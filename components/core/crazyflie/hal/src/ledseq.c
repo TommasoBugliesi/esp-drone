@@ -198,8 +198,6 @@ void ledseqInit() {
     return;
   }
 
-  ledInit();
-
   /* Led sequence priority */
   ledseqRegisterSequence(&seq_testPassed);
   ledseqRegisterSequence(&seq_testFailed);

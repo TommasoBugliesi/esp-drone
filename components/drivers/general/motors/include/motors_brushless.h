@@ -51,17 +51,17 @@ static rmt_item32_t _dshotCmd[17];
 #define MOTORS_TEST_DELAY_TIME_MS 150
 
 #ifdef CONFIG_DSHOT_600
-    #define DSHOT_FREQUENCY 600000
+    #define DSHOT_FREQUENCY 600000UL
 #endif
 #ifdef CONFIG_DSHOT_300
-    #define DSHOT_FREQUENCY 300000
+    #define DSHOT_FREQUENCY 300000UL
 #endif
 #ifdef CONFIG_DSHOT_150
-    #define DSHOT_FREQUENCY 150000
+    #define DSHOT_FREQUENCY 150000UL
 #endif
 
 #define RMT_DIVIDER  3
-#define WAIT_FOR_TX_DONE M2T(1)
+#define WAIT_FOR_TX_DONE M2T(0)
 
 enum DSHOT_CMD
 {
@@ -112,6 +112,11 @@ void motorsBrushlessApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithr
  * Update a single motor driver
  */
 void motorsBrushlessApplyChannel(uint8_t channel, uint16_t ithrust);
+
+/**
+ * Get a single motor driver
+ */
+int motorsBrushlessGetChannel(uint8_t id);
 
 #endif /* __MOTORS_H__ */
 

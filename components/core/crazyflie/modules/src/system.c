@@ -107,8 +107,8 @@ void systemInit(void)
   if(isInit)
     return;
 
-  DEBUG_PRINT_LOCAL("----------------------------\n");
-  DEBUG_PRINT_LOCAL("%s is up and running!\n", platformConfigGetDeviceTypeName());
+  // DEBUG_PRINT_LOCAL("----------------------------\n");
+  // DEBUG_PRINT_LOCAL("%s is up and running!\n", platformConfigGetDeviceTypeName());
 
   canStartMutex = xSemaphoreCreateMutexStatic(&canStartMutexBuffer);
   xSemaphoreTake(canStartMutex, portMAX_DELAY);
@@ -123,20 +123,20 @@ void systemInit(void)
   crtpInit();
   consoleInit();
 
-  /* DEBUG_PRINT("----------------------------\n");
-  DEBUG_PRINT("%s is up and running!\n", platformConfigGetDeviceTypeName());
+  // DEBUG_PRINT("----------------------------\n");
+  // DEBUG_PRINT("%s is up and running!\n", platformConfigGetDeviceTypeName());
 
-  if (V_PRODUCTION_RELEASE) {
-    DEBUG_PRINT("Production release %s\n", V_STAG);
-  } else {
-    DEBUG_PRINT("Build %s:%s (%s) %s\n", V_SLOCAL_REVISION,
-                V_SREVISION, V_STAG, (V_MODIFIED)?"MODIFIED":"CLEAN");
-  }
-  DEBUG_PRINT("I am 0x%08X%08X%08X and I have %dKB of flash!\n",
-              *((int*)(MCU_ID_ADDRESS+8)), *((int*)(MCU_ID_ADDRESS+4)),
-              *((int*)(MCU_ID_ADDRESS+0)), *((short*)(MCU_FLASH_SIZE_ADDRESS)));*/
+  // if (V_PRODUCTION_RELEASE) {
+  //   DEBUG_PRINT("Production release %s\n", V_STAG);
+  // } else {
+  //   DEBUG_PRINT("Build %s:%s (%s) %s\n", V_SLOCAL_REVISION,
+  //               V_SREVISION, V_STAG, (V_MODIFIED)?"MODIFIED":"CLEAN");
+  // }
+  // DEBUG_PRINT("I am 0x%08X%08X%08X and I have %dKB of flash!\n",
+  //             *((int*)(MCU_ID_ADDRESS+8)), *((int*)(MCU_ID_ADDRESS+4)),
+  //             *((int*)(MCU_ID_ADDRESS+0)), *((short*)(MCU_FLASH_SIZE_ADDRESS)));
 
-  // configblockInit(); // Configuration for EEPROM and I2C which are used differently for this project
+  // configblockInit(); // Configuration for EEPROM and I2C 
   // storageInit();
 
   workerInit();
@@ -202,9 +202,9 @@ void systemTask(void *arg)
   commanderInit();
 
   StateEstimatorType estimator = anyEstimator;
-  estimatorKalmanTaskInit();
+  // estimatorKalmanTaskInit();
   // deckInit();
-  estimator = deckGetRequiredEstimator();
+  // estimator = deckGetRequiredEstimator();
   stabilizerInit(estimator);
   //if (deckGetRequiredLowInterferenceRadioMode() && platformConfigPhysicalLayoutAntennasAreClose())
   //{
@@ -233,8 +233,8 @@ void systemTask(void *arg)
   DEBUG_PRINTI("commanderTest = %d ", pass);
   pass &= stabilizerTest();
   DEBUG_PRINTI("stabilizerTest = %d ", pass);
-  pass &= estimatorKalmanTaskTest();
-  DEBUG_PRINTI("estimatorKalmanTaskTest = %d ", pass);
+  // pass &= estimatorKalmanTaskTest();
+  // DEBUG_PRINTI("estimatorKalmanTaskTest = %d ", pass);
   //pass &= deckTest();
   pass &= soundTest();
   DEBUG_PRINTI("soundTest = %d ", pass);

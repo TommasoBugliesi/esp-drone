@@ -224,6 +224,7 @@ static void espnow_ctrl_data_cb(espnow_attribute_t initiator_attribute,
     inPacket.data[5] = ry_value & 0xFF;
     inPacket.data[6] = rx_value & 0xFF;
     xQueueSend(udpDataRx, &inPacket, 0);
+    DEBUG_PRINT_LOCAL("espnow_ctrl_data_cb");
 }
 
 static void app_espnow_event_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
@@ -291,7 +292,7 @@ void wifiInit(void)
     // Get the mac address of the AP
     ESP_ERROR_CHECK(esp_wifi_get_mac(ESP_IF_WIFI_AP, mac));
     sprintf(WIFI_SSID, "%s_%02X%02X%02X%02X%02X%02X", CONFIG_WIFI_BASE_SSID, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-
+    
     // Set the WIFI configuration
     wifi_config_t wifi_config = {
         .ap = {

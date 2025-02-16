@@ -111,11 +111,6 @@ void spidrvAddDevice(spiDrv *spi)
         return;
     }
 
-    // if (spi->handle == NULL) {
-    //     DEBUG_PRINTE("SPI device handle pointer is NULL");
-    //     return;
-    // }
-
     spi_device_interface_config_t devcfg = {
         .clock_speed_hz = spi->def->speed,
         .mode = 0,  // SPI mode 0

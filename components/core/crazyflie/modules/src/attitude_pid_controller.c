@@ -37,8 +37,20 @@
 #define ATTITUDE_RATE_LPF_CUTOFF_FREQ 30.0f
 #define ATTITUDE_RATE_LPF_ENABLE false
 
+#define REMAP_INT16_TO_1000(x) ((int16_t)(((int32_t)(x) * 1000 + (x < 0 ? -16384 : 16384)) / 32767))
 
 static inline int16_t saturateSignedInt16(float in)
+{
+  // don't use INT16_MIN, because later we may negate it, which won't work for that value.
+  if (in > INT16_MAX)
+    return INT16_MAX;
+  else if (in < -INT16_MAX)
+    return -INT16_MAX;
+  else
+    return (int16_t)in;
+}
+
+static inline int16_t saturateDshotInt16(float in)
 {
   // don't use INT16_MIN, because later we may negate it, which won't work for that value.
   if (in > INT16_MAX)
@@ -102,14 +114,14 @@ void attitudeControllerCorrectRatePID(
        float rollRateActual, float pitchRateActual, float yawRateActual,
        float rollRateDesired, float pitchRateDesired, float yawRateDesired)
 {
-  pidSetDesired(&pidRollRate, rollRateDesired);
-  rollOutput = saturateSignedInt16(pidUpdate(&pidRollRate, rollRateActual, true));
+    pidSetDesired(&pidRollRate, rollRateDesired);
+    rollOutput = saturateSignedInt16(pidUpdate(&pidRollRate, rollRateActual, true));
 
-  pidSetDesired(&pidPitchRate, pitchRateDesired);
-  pitchOutput = saturateSignedInt16(pidUpdate(&pidPitchRate, pitchRateActual, true));
+    pidSetDesired(&pidPitchRate, pitchRateDesired);
+    pitchOutput = saturateSignedInt16(pidUpdate(&pidPitchRate, pitchRateActual, true));
 
-  pidSetDesired(&pidYawRate, yawRateDesired);
-  yawOutput = saturateSignedInt16(pidUpdate(&pidYawRate, yawRateActual, true));
+    pidSetDesired(&pidYawRate, yawRateDesired);
+    yawOutput = saturateSignedInt16(pidUpdate(&pidYawRate, yawRateActual, true));
 }
 
 void attitudeControllerCorrectAttitudePID(
@@ -157,9 +169,16 @@ void attitudeControllerResetAllPID(void)
 
 void attitudeControllerGetActuatorOutput(int16_t* roll, int16_t* pitch, int16_t* yaw)
 {
-  *roll = rollOutput;
-  *pitch = pitchOutput;
-  *yaw = yawOutput;
+  #ifdef CONFIG_BRUSHLESS
+    *roll = REMAP_INT16_TO_1000(rollOutput);
+    *pitch = REMAP_INT16_TO_1000(pitchOutput); 
+    *yaw = REMAP_INT16_TO_1000(yawOutput);
+  #endif
+  #ifdef CONFIG_BRUSHED
+    *roll  = rollOutput;
+    *pitch = pitchOutput; 
+    *yaw   = yawOutput;
+  #endif
 }
 
 LOG_GROUP_START(pid_attitude)

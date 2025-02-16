@@ -143,7 +143,7 @@ void zRangerInit(void)
     DEBUG_PRINT( "VL53L0X I2C commection [OK].\n");
   }
 
-  vl53l0xInit(&dev, I2C1_DEV, true);
+  vl53l0xInit(&dev, I2C0_DEV, true);
 
   xTaskCreate(zRangerTask, ZRANGER_TASK_NAME, ZRANGER_TASK_STACKSIZE, NULL, ZRANGER_TASK_PRI, NULL);
 

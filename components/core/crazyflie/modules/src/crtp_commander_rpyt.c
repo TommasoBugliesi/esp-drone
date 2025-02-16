@@ -29,7 +29,7 @@
 
 #include "crtp_commander.h"
 #include "commander.h"
-#include "estimator.h"
+#include "stabilizer.h"
 #include "crtp.h"
 #include "param.h"
 #include "FreeRTOS.h"
@@ -38,8 +38,13 @@
 #define DEBUG_MODULE "MODE"
 #include "debug_cf.h"
 
-#define MIN_THRUST  1000
-#define MAX_THRUST  60000
+#ifdef CONFIG_TARGET_FLYINGFREE_V01
+  #define MIN_THRUST  48
+  #define MAX_THRUST  2047
+#else 
+  #define MIN_THRUST  1000
+  #define MAX_THRUST  60000
+#endif
 
 /**
  * CRTP commander rpyt packet format
@@ -50,6 +55,7 @@ struct CommanderCrtpLegacyValues
   float pitch;      // deg
   float yaw;        // deg
   uint16_t thrust;
+  uint8_t buttons;
 } __attribute__((packed));
 
 /**
@@ -257,6 +263,15 @@ void crtpCommanderRpytDecodeSetpoint(setpoint_t *setpoint, CRTPPacket *pk)
       setpoint->attitude.yaw = values->yaw;
     }
   }
+
+  // Buttons for special functions
+  if (values->buttons & 0x01){
+    stabilizerSetEmergencyStop();
+  }
+  else{
+    stabilizerResetEmergencyStop();
+  }
+    
 }
 
 // Params for flight modes

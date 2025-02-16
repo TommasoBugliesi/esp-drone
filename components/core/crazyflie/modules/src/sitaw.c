@@ -120,9 +120,9 @@ static void sitAwPostStateUpdateCallOut(const sensorData_t *sensorData,
   /* check if we actually fly */
   int sumRatio = 0;
   for (int i = 0; i < NBR_OF_MOTORS; ++i) {
-    sumRatio += motorsGetRatio(i);
+    sumRatio += motorsGetChannel(i);
   }
-  bool isFlying = sumRatio > SITAW_TU_IN_FLIGHT_THRESHOLD;
+    bool isFlying = sumRatio > SITAW_TU_IN_FLIGHT_THRESHOLD;
   if (isFlying) {
     /* Test values for Tumbled detection. */
     sitAwTuTest(sensorData->acc.z);
@@ -312,7 +312,7 @@ void sitAwTuInit(void)
  * propellers at significant thrust when accidentally crashing into walls
  * or the ground.
 
- * @param The current accelerometer reading in z direction
+ * @param accz The current accelerometer reading in z direction
  */
 void sitAwTuTest(float accz)
 {

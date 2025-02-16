@@ -48,6 +48,12 @@
 
 #define WIFI_ACTIVITY_TIMEOUT_MS (1000)
 
+#ifdef CONFIG_TARGET_FLYINGFREE_V01
+    #define THRUST_TO_CONTROL 1.1764700f
+#else 
+    #define THRUST_TO_CONTROL 257.0f
+#endif
+
 static bool isInit = false;
 static xQueueHandle crtpPacketDelivery;
 STATIC_MEM_QUEUE_ALLOC(crtpPacketDelivery, 16, sizeof(CRTPPacket));
@@ -88,7 +94,7 @@ static bool detectOldVersionApp(UDPPacket *in)
 
 static bool detectEspNow(UDPPacket *in)
 {
-    if (in->size == 7 && (in->data)[0] == 'n' && (in->data)[1] == 'o' && (in->data)[2] == 'w') {
+    if (in->size <= 16 && (in->data)[0] == 'n' && (in->data)[1] == 'o' && (in->data)[2] == 'w') {
         return true;
     }
     return false;
@@ -141,26 +147,32 @@ static void wifilinkTask(void *param)
             memcpy(&p.data[12], &tch, 2);
         } else
 #endif
-        // TODO: This is not ESP-NOW protocol. Update menuconfig to register a device 
         if (detectEspNow(&wifiIn)) {
             float rch, pch, ych;
             uint16_t tch;
-            rch  = (float)((int8_t)wifiIn.data[6] * 15.0 / 128);; //-15~+15
-            pch  = (float)((int8_t)wifiIn.data[5] * 15.0 / -128);; //-15~+15
-            if ((int8_t)wifiIn.data[4] < 0) {
+            uint8_t bch;
+            rch  = (((float)wifiIn.data[5] - 127.0f) / 128.0f) * 15.0f ; //-15~+15
+            pch  = (((float)wifiIn.data[6] - 127.0f) / 128.0f) * 15.0f ; //-15~+15
+            ych  = (((float)wifiIn.data[3] - 127.0f) / 128.0f) * 15.0f ; //-15~+15
+            if ((int16_t)wifiIn.data[4] < 0) {
                 tch  = 0;
             } else {
-                tch  = (int8_t)wifiIn.data[4] * 59000.0 / 128;
+                tch  = (uint16_t)((wifiIn.data[4]) * THRUST_TO_CONTROL); 
             }
-            ych  = (float)((int8_t)wifiIn.data[3] * 15.0 / 128); //-15~+15
             p.size = wifiIn.size - 1;
             p.header = CRTP_HEADER(CRTP_PORT_SETPOINT, 0x00); //head redefine
 
-            printf("rch: %.2f, pch: %.2f, tch: %d, ych: %.2f\n", rch, pch, tch, ych);
+            // Joysticks
             memcpy(&p.data[0], &rch, 4);
             memcpy(&p.data[4], &pch, 4);
             memcpy(&p.data[8], &ych, 4);
             memcpy(&p.data[12], &tch, 2);
+
+            // Buttons
+            bch = (uint8_t)wifiIn.data[7];
+            memcpy(&p.data[14], &bch, 1);
+
+            // DEBUG_PRINT_LOCAL("rch: %.2f, pch: %.2f, tch: %d, ych: %.2f, bch: %u\n", rch, pch, tch, ych, bch);
         } else // If input packet is not esp-now assume it is CRTP and threat it as such
         {
             /* command step - receive  04 copy CRTP part from packet, the size not contain head */

@@ -133,7 +133,7 @@ void stateEstimatorSwitchTo(StateEstimatorType estimator) {
   currentEstimator = newEstimator;
   deinitEstimator(previousEstimator);
 
-  DEBUG_PRINTI("Using %s (%d) estimator\n", stateEstimatorGetName(), currentEstimator);
+  DEBUG_PRINTI("Using %s (%d) estimator", stateEstimatorGetName(), currentEstimator);
 }
 
 StateEstimatorType getStateEstimator(void) {

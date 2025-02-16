@@ -133,5 +133,10 @@ void motorsBrushedApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrus
  */
 void motorsBrushedApplyChannel(uint8_t channel, uint16_t ithrust);
 
+/**
+ * Update a single motor driver
+ */
+int motorsBrushedGetChannel(uint8_t id);
+
 #endif /* __MOTORS_H__ */
 

@@ -29,7 +29,6 @@
 int spidevInit(spiDrv *dev) {
     spidrvInit(dev);
     return true;
-    // The SPI bus is not available yet, first a device must be registered
 }
 
 bool spidevTransfer(spiDrv *dev, uint8_t *txData, uint8_t *rxData, size_t length) {

@@ -39,8 +39,8 @@ void sitAwUpdateSetpoint(setpoint_t *setpoint, const sensorData_t *sensorData,
 #define SITAW_ENABLED
 /* Enable the different functions of the situation awareness framework. */
 //#define SITAW_FF_ENABLED           /* Uncomment to enable */
-#define SITAW_AR_ENABLED           /* Uncomment to enable */
-// #define SITAW_TU_ENABLED           /* Uncomment to enable */
+//#define SITAW_AR_ENABLED           /* Uncomment to enable */
+#define SITAW_TU_ENABLED           /* Uncomment to enable */
 
 /* Configuration options for the 'Free Fall' detection. */
 #define SITAW_FF_THRESHOLD 0.1     /* The default tolerance for AccWZ deviations from -1, indicating Free Fall. */
@@ -53,7 +53,12 @@ void sitAwUpdateSetpoint(setpoint_t *setpoint, const sensorData_t *sensorData,
 /* Configuration options for the 'Tumbled' detection. */
 #define SITAW_TU_ACC_THRESHOLD (-0.5f)     /* The maximum acc.z value indicating a Tumbled situation. */
 #define SITAW_TU_ACC_TRIGGER_COUNT 30      /* The number of consecutive tests for Tumbled to be detected. Configured for 250Hz testing. */
-#define SITAW_TU_IN_FLIGHT_THRESHOLD 1000  /* Minimum summed motor PWM that means we are flying */
+
+#ifdef CONFIG_TARGET_FLYINGFREE_V01 
+    #define SITAW_TU_IN_FLIGHT_THRESHOLD 200  /* Minimum summed motor PWM that means we are flying */
+#else 
+    #define SITAW_TU_IN_FLIGHT_THRESHOLD 0 /* Minimum summed motor PWM that means we are flying */
+#endif
 
 /* LOG configurations. Enable these to be able to log detection in the cfclient. */
 #define SITAW_LOG_ENABLED            /* Uncomment to enable LOG framework. */

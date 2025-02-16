@@ -134,6 +134,8 @@ void controllerPid(control_t *control, setpoint_t *setpoint,
     control->thrust = actuatorThrust;
   }
 
+  // DEBUG_PRINT_LOCAL("thrust = %f, roll = %d, pitch = %d, yaw = %d", control->thrust, control->roll, control->pitch, control->yaw);
+
   if (control->thrust == 0)
   {
     control->thrust = 0;

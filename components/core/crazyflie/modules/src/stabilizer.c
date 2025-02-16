@@ -280,7 +280,8 @@ static void stabilizerTask(void* param)
     if (testState != testDone) {
       sensorsAcquire(&sensorData, tick);
       testProps(&sensorData);
-    } else {
+      } 
+    else {
       // allow to update estimator dynamically
       if (getStateEstimator() != estimatorType) {
         stateEstimatorSwitchTo(estimatorType);
@@ -309,8 +310,8 @@ static void stabilizerTask(void* param)
       if (emergencyStop || (systemIsArmed() == false)) {
         powerStop();
       } else {
-        DEBUG_PRINT_LOCAL("Roll: %d, Pitch: %d, Yaw: %d, Thrust: %.2f\n",
-           control.roll, control.pitch, control.yaw, control.thrust);
+        // DEBUG_PRINT_LOCAL("Roll: %d, Pitch: %d, Yaw: %d, Thrust: %.2f\n",
+          //  control.roll, control.pitch, control.yaw, control.thrust);
         powerDistribution(&control);
       }
 
@@ -447,10 +448,6 @@ static void testProps(sensorData_t *sensors)
 
     if (i == 1)
     {
-      motorsApplyChannel(motorToTest, 0xFFFF);
-    }
-    else if (i == 50)
-    {
       motorsApplyChannel(motorToTest, 0);
     }
     else if (i == PROPTEST_NBR_OF_VARIANCE_VALUES)
@@ -483,10 +480,10 @@ static void testProps(sensorData_t *sensors)
     }
     if (i == 1)
     {
-      motorsApplyChannel(MOTOR_M1, 0xFFFF);
-      motorsApplyChannel(MOTOR_M2, 0xFFFF);
-      motorsApplyChannel(MOTOR_M3, 0xFFFF);
-      motorsApplyChannel(MOTOR_M4, 0xFFFF);
+      motorsApplyChannel(MOTOR_M1, 0);
+      motorsApplyChannel(MOTOR_M2, 0);
+      motorsApplyChannel(MOTOR_M3, 0);
+      motorsApplyChannel(MOTOR_M4, 0);
     }
     else if (i < 50)
     {
@@ -524,9 +521,11 @@ static void testProps(sensorData_t *sensors)
       i = 0;
     }
   }
-#ifdef CONFIG_BRUSHED
+
   else if (testState == evaluateResult)
   {
+
+#ifdef CONFIG_BRUSHED
     for (int m = 0; m < NBR_OF_MOTORS; m++)
     {
       if (!evaluateTest(0, PROPELLER_BALANCE_TEST_THRESHOLD,  accVarX[m] + accVarY[m], m))
@@ -553,11 +552,14 @@ static void testProps(sensorData_t *sensors)
         }
       }
   #endif
+
+#endif   
     motorTestCount++;
     testState = testDone;
   }
-#endif                                   
+                                
 }
+
 PARAM_GROUP_START(health)
 PARAM_ADD(PARAM_UINT8, startPropTest, &startPropTest)
 PARAM_GROUP_STOP(health)

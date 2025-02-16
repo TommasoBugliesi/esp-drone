@@ -10,7 +10,7 @@
 #ifdef CONFIG_BRUSHED
     #define DEFAULT_MOTORS MotorsTypeBrushed  
 #endif
-static MotorsType currentMotors = MotorsTypeAny;
+static MotorsType currentMotors = DEFAULT_MOTORS;
 
 static void initMotors();
 
@@ -19,13 +19,14 @@ typedef struct {
   bool (*test)(void);
   void (*applyAll)(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uint16_t ithrust4);
   void (*applyChannel)(uint8_t channel, uint16_t ithrust);
+  int  (*getChannel)(uint8_t id);
   const char* name;
 } MotorsFcns;
 
 static MotorsFcns motorsFunctions[] = {
-  {.init = 0, .test = 0, .applyAll = 0, .applyChannel = 0, .name = "None"}, // Any
-  {.init = motorsBrushedInit, .test = motorsBrushedTest, .applyAll = motorsBrushedApplyAll, .applyChannel = motorsBrushlessApplyChannel, .name = "Brushed"},
-  {.init = motorsBrushlessInit, .test = motorsBrushlessTest, .applyAll = motorsBrushlessApplyAll, .applyChannel = motorsBrushlessApplyChannel, .name = "Brushless"},
+  {.init = 0, .test = 0, .applyAll = 0, .applyChannel = 0, .getChannel = 0, .name = "None"}, // Any
+  {.init = motorsBrushedInit, .test = motorsBrushedTest, .applyAll = motorsBrushedApplyAll, .applyChannel = motorsBrushlessApplyChannel, .getChannel = motorsBrushlessGetChannel, .name = "Brushed"},
+  {.init = motorsBrushlessInit, .test = motorsBrushlessTest, .applyAll = motorsBrushlessApplyAll, .applyChannel = motorsBrushlessApplyChannel, .getChannel = motorsBrushedGetChannel, .name = "Brushless"},
 };
 
 void motorsInit(MotorsType motors) {
@@ -62,6 +63,10 @@ const char* motorsGetName() {
   return motorsFunctions[currentMotors].name;
 }
 
+int motorsGetRatio(uint8_t id)
+{
+    return motorsFunctions[currentMotors].getChannel(id);
+}
 
 bool motorsTest(void) {
   return motorsFunctions[currentMotors].test();
@@ -73,4 +78,8 @@ void motorsApplyAll(uint16_t ithrust1, uint16_t ithrust2, uint16_t ithrust3, uin
 
 void motorsApplyChannel(uint8_t channel, uint16_t ithrust) {
   motorsFunctions[currentMotors].applyChannel(channel, ithrust);
+}
+
+int motorsGetChannel(uint8_t id) {
+  return motorsFunctions[currentMotors].getChannel(id);
 }

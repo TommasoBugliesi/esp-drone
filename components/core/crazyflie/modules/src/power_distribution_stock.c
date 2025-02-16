@@ -37,7 +37,7 @@
 #define DEBUG_MODULE "PWR_DIST"
 #include "debug_cf.h"
 
-static bool motorSetEnable = true;
+static bool motorSetEnable = false;
 
 static struct {
   uint32_t m1;
@@ -53,12 +53,12 @@ static struct {
   uint16_t m4;
 } motorPowerSet;
 
-#if defined(CONFIG_DSHOT_600) || defined(CONFIG_DSHOT_300) || defined(CONFIG_DSHOT_150)
-  #define DEFAULT_IDLE_THRUST 48 // Default value 0 speed DShot
-#endif
-
-#ifndef DEFAULT_IDLE_THRUST
+#if (defined(CONFIG_DSHOT_600) || defined(CONFIG_DSHOT_300) || defined(CONFIG_DSHOT_150))
+  #define DEFAULT_IDLE_THRUST 48// Default value 0 speed DShot
+  #define DEFAULT_MAX_THRUST 1000 // Default value 0 speed DShot
+#else 
   #define DEFAULT_IDLE_THRUST 0
+  #define DEFAULT_MAX_THRUST 0 // Default value 0 speed DShot
 #endif
 
 static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
@@ -77,7 +77,8 @@ bool powerDistributionTest(void)
   return pass;
 }
 
-#define limitThrust(VAL) limitUint16(VAL)
+#define limitThrustBrushed(VAL) limitUint16(VAL)
+#define limitThrustBrushless(VAL) ((VAL) < DEFAULT_IDLE_THRUST ? DEFAULT_IDLE_THRUST : ((VAL) > DEFAULT_MAX_THRUST ? DEFAULT_MAX_THRUST : (VAL)))
 
 
 void powerStop()
@@ -93,20 +94,40 @@ void powerDistribution(const control_t *control)
   #ifdef QUAD_FORMATION_X
     int16_t r = control->roll / 2.0f;
     int16_t p = control->pitch / 2.0f;
-    motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
-    motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
-    motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
-    motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
+    #ifdef CONFIG_BRUSHLESS
+      motorPower.m1 =  limitThrustBrushless(control->thrust + r - p + control->yaw);
+      motorPower.m2 =  limitThrustBrushless(control->thrust - r - p - control->yaw);
+      motorPower.m3 =  limitThrustBrushless(control->thrust + r + p - control->yaw);
+      motorPower.m4 =  limitThrustBrushless(control->thrust - r + p + control->yaw);
+    #else 
+      motorPower.m1 =  limitThrustBrushed(control->thrust - r + p + control->yaw);
+      motorPower.m2 =  limitThrustBrushed(control->thrust - r - p - control->yaw);
+      motorPower.m3 =  limitThrustBrushed(control->thrust + r - p + control->yaw);
+      motorPower.m4 =  limitThrustBrushed(control->thrust + r + p - control->yaw);
+    #endif
   #else // QUAD_FORMATION_NORMAL
-    motorPower.m1 = limitThrust(control->thrust + control->pitch +
-                               control->yaw);
-    motorPower.m2 = limitThrust(control->thrust - control->roll -
-                               control->yaw);
-    motorPower.m3 =  limitThrust(control->thrust - control->pitch +
-                               control->yaw);
-    motorPower.m4 =  limitThrust(control->thrust + control->roll -
-                               control->yaw);
+    #ifdef CONFIG_BRUSHLESS
+      motorPower.m1 = limitThrustBrushless(control->thrust + control->pitch +
+                                control->yaw);
+      motorPower.m2 = limitThrustBrushless(control->thrust - control->roll -
+                                control->yaw);
+      motorPower.m3 =  limitThrustBrushless(control->thrust - control->pitch +
+                                control->yaw);
+      motorPower.m4 =  limitThrustBrushless(control->thrust + control->roll -
+                                control->yaw);
+    #else 
+      motorPower.m1 = limitThrustBrushed(control->thrust + control->pitch +
+                                control->yaw);
+      motorPower.m2 = limitThrustBrushed(control->thrust - control->roll -
+                                control->yaw);
+      motorPower.m3 =  limitThrustBrushed(control->thrust - control->pitch +
+                                control->yaw);
+      motorPower.m4 =  limitThrustBrushed(control->thrust + control->roll -
+                                control->yaw);
+    #endif
   #endif
+
+  // TODO : Logic to prevent non symmetric output from other quad project 
 
   if (motorSetEnable)
   {

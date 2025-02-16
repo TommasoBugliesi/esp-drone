@@ -76,7 +76,7 @@ static const sensorsImplementation_t sensorImplementations[SensorImplementation_
     .readAcc = sensorsFF01ReadAcc,
     .readMag = sensorsFF01ReadMag,
     .readBaro = sensorsFF01ReadBaro,
-    .setAccMode = NULL,
+    .setAccMode = sensorsFF01SetAccMode,
     .dataAvailableCallback = NULL,
   },
 #endif

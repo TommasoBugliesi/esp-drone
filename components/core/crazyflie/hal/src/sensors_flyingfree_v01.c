@@ -57,6 +57,8 @@
 #include "i2cdev.h"
 #include "bmi160.h"
 #include "qmc5883l.h"
+#include "zranger.h"
+#include "vl53l0x.h"
 
 #define DEBUG_MODULE "SENSORS"
 #include "debug_cf.h"
@@ -105,10 +107,8 @@
     #define MAG_GAUSS_PER_LSB (float)((2 * 8.0) / 65536.0)
 #endif
 
-// #define PITCH_CALIB (CONFIG_PITCH_CALIB*1.0/100)
-// #define ROLL_CALIB (CONFIG_ROLL_CALIB*1.0/100)
-#define PITCH_CALIB (-168.0f*1.0/100)
-#define ROLL_CALIB (300.0f*1.0/100)
+#define PITCH_CALIB (CONFIG_PITCH_CALIB*1.0/100)
+#define ROLL_CALIB (CONFIG_ROLL_CALIB*1.0/100)
 
 #ifdef CONFIG_UPSIDEDOWN_ENABLE
     #define UPSIDEDOWN -1.0f // Z axis depends on board installation 
@@ -173,6 +173,11 @@ STATIC_MEM_TASK_ALLOC(sensorsTask, SENSORS_TASK_STACKSIZE);
     static bool isMagnetometerPresent = true;
 #else
     static bool isMagnetometerPresent = false;
+#endif
+#ifdef CONFIG_RANGE_VL53L0X_ENABLE
+    static bool isVl53l0xPresent = true;
+#else
+    static bool isVl53l0xPresent = false;
 #endif
 
 static bool isInit = false;
@@ -258,12 +263,12 @@ static void sensorsDeviceInit(void)
 
     if (rslt == BMI160_OK)
     {
-        DEBUG_PRINTI("BMI160 initialization success !\n");
-        DEBUG_PRINTI("Chip ID 0x%X\n", bmi160dev.chip_id);
+        DEBUG_PRINTI("BMI160 initialization success !");
+        DEBUG_PRINTI("Chip ID 0x%X", bmi160dev.chip_id);
     }
     else
     {
-        DEBUG_PRINTE("BMI160 initialization failure !\n");
+        DEBUG_PRINTE("BMI160 initialization failure !");
         assert(0); // Terminate the program
     }
 
@@ -302,9 +307,11 @@ static void sensorsDeviceInit(void)
     if (qmc5883lGetID() == QMC5883L_CHIP_ID) {
         isMagnetometerPresent = true;
         qmc5883lSetReg1(QMC5883L_OSR_256, QMC5885L_MAG_RANGE, QMC5883L_ODR_200, QMC5883L_MODE_CONTINUOUS); 
-        DEBUG_PRINTI("qmc5883l I2C connection [OK].\n");
+        vTaskDelay(M2T(50));
+        DEBUG_PRINTI("qmc5883l I2C connection [OK].");
     } else {
-        DEBUG_PRINTW("qmc5883l I2C connection [FAIL].\n");
+        DEBUG_PRINTE("qmc5883l I2C connection [FAIL].");
+        assert(0); // Terminate the program
     }
 
 #endif
@@ -321,15 +328,15 @@ static void sensorsDeviceInit(void)
 
 #endif
 
-#ifdef SENSORS_ENABLE_RANGE_VL53L1X
-    zRanger2Init();
+#ifdef CONFIG_RANGE_VL53L0X_ENABLE
+    zRangerInit();
 
-    if (zRanger2Test() == true) {
-        isVl53l1xPresent = true;
-        DEBUG_PRINTI("VL53L1X I2C connection [OK].\n");
+    if (zRangerTest() == true) {
+        isVl53l0xPresent = true;
+        DEBUG_PRINTI("VL53L0X I2C connection [OK].");
     } else {
         //TODO: Should sensor test fail hard if no connection
-        DEBUG_PRINTW("VL53L1X I2C connection [FAIL].\n");
+        DEBUG_PRINTW("VL53L0X I2C connection [FAIL].");
     }
 
 #endif
@@ -369,53 +376,54 @@ static void sensorsTask(void *param)
     
     while (1) {
         if (pdTRUE == xSemaphoreTake(sensorsDataReady, portMAX_DELAY)){
+            sensorData.interruptTimestamp =  usecTimestamp(); //This function returns the number of microseconds since esp_timer was initialized
 
-        /* sensors step 1 - read data */
-        struct bmi160_sensor_data bmi160_accel;
-        struct bmi160_sensor_data bmi160_gyro;
-        struct qmc5883l_raw_data_t qmc5883l_mag;
+            /* sensors step 1 - read data */
+            struct bmi160_sensor_data bmi160_accel;
+            struct bmi160_sensor_data bmi160_gyro;
+            struct qmc5883l_raw_data_t qmc5883l_mag;
 
-        bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &bmi160_accel, &bmi160_gyro, &bmi160dev);
-        
-        if (isMagnetometerPresent){
-            if (qmc5883lGetReadyStatus()){
-                qmc5883lGetHeading(&qmc5883l_mag);
-                mag_data_ready = true;
+            bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &bmi160_accel, &bmi160_gyro, &bmi160dev);
+            
+            if (isMagnetometerPresent){
+                if (qmc5883lGetReadyStatus()){
+                    qmc5883lGetHeading(&qmc5883l_mag);
+                    mag_data_ready = true;
+                }
             }
-        }
 
-        /* sensors step 2 - process the respective data */
-        processAccGyroMeasurements(&bmi160_accel, &bmi160_gyro);
+            /* sensors step 2 - process the respective data */
+            processAccGyroMeasurements(&bmi160_accel, &bmi160_gyro);
 
-        if (isMagnetometerPresent) {
-            processMagnetometerMeasurements(&qmc5883l_mag);
-        }
+            if (isMagnetometerPresent) {
+                processMagnetometerMeasurements(&qmc5883l_mag);
+            }
 
-        // if (isBarometerPresent) {
-        //     processBarometerMeasurements(&(buffer[isMagnetometerPresent ? SENSORS_MPU6050_BUFF_LEN + SENSORS_MAG_BUFF_LEN : SENSORS_MPU6050_BUFF_LEN]));
-        // }
+            // if (isBarometerPresent) {
+            //     processBarometerMeasurements(&(buffer[isMagnetometerPresent ? SENSORS_MPU6050_BUFF_LEN + SENSORS_MAG_BUFF_LEN : SENSORS_MPU6050_BUFF_LEN]));
+            // }
 
-        /* sensors step 3 - queue sensors data on the output queues */
-        xQueueOverwrite(accelerometerDataQueue, &sensorData.acc);
-        xQueueOverwrite(gyroDataQueue, &sensorData.gyro);
+            /* sensors step 3 - queue sensors data on the output queues */
+            xQueueOverwrite(accelerometerDataQueue, &sensorData.acc);
+            xQueueOverwrite(gyroDataQueue, &sensorData.gyro);
 
-        if (isMagnetometerPresent) {
-            xQueueOverwrite(magnetometerDataQueue, &sensorData.mag);
-        }
+            if (isMagnetometerPresent) {
+                xQueueOverwrite(magnetometerDataQueue, &sensorData.mag);
+            }
 
-        if (isBarometerPresent) {
-            xQueueOverwrite(barometerDataQueue, &sensorData.baro);
-        }
+            if (isBarometerPresent) {
+                xQueueOverwrite(barometerDataQueue, &sensorData.baro);
+            }
 
-        #ifdef DEBUG_EP2
-            DEBUG_PRINT_LOCAL("ax = %f,  ay = %f,  az = %f,  gx = %f,  gy = %f,  gz = %f , hx = %f , hy = %f, hz =%f \n", 
-                            sensorData.acc.x, sensorData.acc.y, sensorData.acc.z, 
-                            sensorData.gyro.x, sensorData.gyro.y, sensorData.gyro.z, 
-                            sensorData.mag.x, sensorData.mag.y, sensorData.mag.z);
-        #endif
+            #ifdef DEBUG_EP2
+                DEBUG_PRINT_LOCAL("ax = %f,  ay = %f,  az = %f,  gx = %f,  gy = %f,  gz = %f , hx = %f , hy = %f, hz =%f \n", 
+                                sensorData.acc.x, sensorData.acc.y, sensorData.acc.z, 
+                                sensorData.gyro.x, sensorData.gyro.y, sensorData.gyro.z, 
+                                sensorData.mag.x, sensorData.mag.y, sensorData.mag.z);
+            #endif
 
-        /* sensors step 4 - Unlock stabilizer task */
-        xSemaphoreGive(dataReady);
+            /* sensors step 4 - Unlock stabilizer task */
+            xSemaphoreGive(dataReady);
         }
     }
 }
@@ -624,6 +632,15 @@ static void sensorsAccAlignToGravity(Axis3f *in, Axis3f *out)
     out->z = ry.z;
 }
 
+/** set different low pass filters in different environment
+ *
+ *
+ */
+void sensorsFF01SetAccMode(accModes accMode)
+{
+    // TODO : Check if 
+}
+
 void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag)
 {
     if (mag_data_ready) {
@@ -652,6 +669,7 @@ void sensorsFF01Acquire(sensorData_t *sensors, const uint32_t tick)
     sensorsReadAcc(&sensors->acc);
     sensorsReadMag(&sensors->mag);
     sensorsReadBaro(&sensors->baro);
+    sensors->interruptTimestamp = sensorData.interruptTimestamp;
 }
 
 bool sensorsFF01ReadGyro(Axis3f *gyro)

@@ -23,12 +23,16 @@ menu "ESPDrone Config"
 
         config QMC5883L_ENABLE
             bool "Enable QMC5883L sensor"
-            default n
+            default y
         
         config BMP280_ENABLE
             bool "Enable BMP280 sensor"
             default n
 
+        config RANGE_VL53L0X_ENABLE
+            bool "Enable VL53L0X sensor"
+            default y
+            
         config UPSIDEDOWN_ENABLE
             bool "Board installed upside down"
             default y
@@ -369,14 +373,14 @@ menu "ESPDrone Config"
     menu "Calibration angle"
         config PITCH_CALIB
             int "PITCH_CALIB deg*100"
-            range -200 200
+            range -400 400
             default 0
             help
                 if PITCH error angle is 0.90,set this 90
 
         config ROLL_CALIB
             int "ROLL_CALIB deg*100"
-            range -200 200
+            range -400 400
             default 0
             help
                 if ROLL error angle is 0.90,set this 90
