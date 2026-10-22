@@ -55,6 +55,7 @@
 #include "commander.h"
 #include "console.h"
 #include "wifilink.h"
+#include "espnow_link.h"
 #include "mem.h"
 //#include "proximity.h"
 //#include "watchdog.h"
@@ -184,6 +185,7 @@ void systemTask(void *arg)
   ledSet(CHG_LED, 1);
 
   wifiInit();
+  espnowLinkInit();
   vTaskDelay(M2T(500));
 
 #ifdef DEBUG_QUEUE_MONITOR
@@ -222,6 +224,8 @@ void systemTask(void *arg)
   bool pass = true;
   pass &= wifiTest();
   DEBUG_PRINTI("wifilinkTest = %d ", pass);
+  pass &= espnowLinkTest();
+  DEBUG_PRINTI("espnowLinkTest = %d ", pass);
   pass &= systemTest();
   DEBUG_PRINTI("systemTest = %d ", pass);
   pass &= configblockTest();

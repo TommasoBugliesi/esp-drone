@@ -48,12 +48,6 @@
 
 #define WIFI_ACTIVITY_TIMEOUT_MS (1000)
 
-#ifdef CONFIG_TARGET_FLYINGFREE_V01
-    #define THRUST_TO_CONTROL 1.1764700f
-#else 
-    #define THRUST_TO_CONTROL 257.0f
-#endif
-
 static bool isInit = false;
 static xQueueHandle crtpPacketDelivery;
 STATIC_MEM_QUEUE_ALLOC(crtpPacketDelivery, 16, sizeof(CRTPPacket));
@@ -92,14 +86,6 @@ static bool detectOldVersionApp(UDPPacket *in)
 }
 #endif
 
-static bool detectEspNow(UDPPacket *in)
-{
-    if (in->size <= 16 && (in->data)[0] == 'n' && (in->data)[1] == 'o' && (in->data)[2] == 'w') {
-        return true;
-    }
-    return false;
-}
-
 /**
  * @brief Wifi link task
  *
@@ -109,24 +95,21 @@ static bool detectEspNow(UDPPacket *in)
  * If the packet is a legacy app packet, it is converted to a CRTP setpoint packet
  * and sent to the crtpPacketDelivery queue.
  *
- * If the packet is an ESP-NOW packet, it is converted to a CRTP setpoint packet
- * and sent to the crtpPacketDelivery queue.
- *
  * If the packet is a CRTP packet, it is sent to the crtpPacketDelivery queue
  * without modification.
  *
- * The task also handles the case where the packet is not a CRTP packet or a
- * legacy app packet or an ESP-NOW packet. In this case, the task prints an error
- * message and discards the packet.
+ * ESP-NOW control frames do not pass through here, see espnow_link.c.
  *
  * The task is implemented as an infinite loop and does not return.
  */
 static void wifilinkTask(void *param)
 {
-    CRTPPacket p = {0};
+    CRTPPacket p;
     while (1) {
         /* command step - receive  03 Fetch a wifi packet off the queue */
         wifiGetDataBlocking(&wifiIn);
+        // Do not carry bytes of the previous packet over into the unused tail
+        memset(&p, 0, sizeof(p));
         lastPacketTick = xTaskGetTickCount();
         uint16_t sendWaitMs = 0;
 #ifdef CONFIG_ENABLE_LEGACY_APP
@@ -147,33 +130,6 @@ static void wifilinkTask(void *param)
             memcpy(&p.data[12], &tch, 2);
         } else
 #endif
-        if (detectEspNow(&wifiIn)) {
-            float rch, pch, ych;
-            uint16_t tch;
-            uint8_t bch;
-            rch  = (((float)wifiIn.data[5] - 127.0f) / 128.0f) * 15.0f ; //-15~+15
-            pch  = (((float)wifiIn.data[6] - 127.0f) / 128.0f) * 15.0f ; //-15~+15
-            ych  = (((float)wifiIn.data[3] - 127.0f) / 128.0f) * 15.0f ; //-15~+15
-            if ((int16_t)wifiIn.data[4] < 0) {
-                tch  = 0;
-            } else {
-                tch  = (uint16_t)((wifiIn.data[4]) * THRUST_TO_CONTROL); 
-            }
-            p.size = wifiIn.size - 1;
-            p.header = CRTP_HEADER(CRTP_PORT_SETPOINT, 0x00); //head redefine
-
-            // Joysticks
-            memcpy(&p.data[0], &rch, 4);
-            memcpy(&p.data[4], &pch, 4);
-            memcpy(&p.data[8], &ych, 4);
-            memcpy(&p.data[12], &tch, 2);
-
-            // Buttons
-            bch = (uint8_t)wifiIn.data[7];
-            memcpy(&p.data[14], &bch, 1);
-
-            // DEBUG_PRINT_LOCAL("rch: %.2f, pch: %.2f, tch: %d, ych: %.2f, bch: %u\n", rch, pch, tch, ych, bch);
-        } else // If input packet is not esp-now assume it is CRTP and threat it as such
         {
             /* command step - receive  04 copy CRTP part from packet, the size not contain head */
             p.size = wifiIn.size - 1;
