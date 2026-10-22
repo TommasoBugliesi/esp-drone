@@ -65,19 +65,13 @@
 #define UDP_RX_TASK_PRI         2
 #define ESPNOW_LINK_TASK_PRI    3
 #define MOTORS_KEEPALIVE_TASK_PRI 2
-#define EXTRX_TASK_PRI          2
-#define UART2_TASK_PRI          2
-#define SYSLINK_TASK_PRI        2
-#define USBLINK_TASK_PRI        2
 #define WIFILINK_TASK_PRI       2
 #define CRTP_RX_TASK_PRI        2
 #define CMD_HIGH_LEVEL_TASK_PRI 3
-#define INFO_TASK_PRI           2
 #define LOG_TASK_PRI            2
 #define MEM_TASK_PRI            2
 #define PARAM_TASK_PRI          2
 // sensors and stabilize related tasks
-#define PROXIMITY_TASK_PRI      5
 #define FLOW_TASK_PRI           5
 #define ZRANGER2_TASK_PRI       5
 #define ZRANGER_TASK_PRI        5
@@ -96,7 +90,6 @@
 #define CMD_HIGH_LEVEL_TASK_NAME "CMDHL"
 #define CRTP_RX_TASK_NAME       "CRTP-RX"
 #define CRTP_TX_TASK_NAME       "CRTP-TX"
-#define EXTRX_TASK_NAME         "EXTRX"
 #define ESPNOW_LINK_TASK_NAME   "ESPNOWLINK"
 #define MOTORS_KEEPALIVE_TASK_NAME "DSHOT-KA"
 #define FLOW_TASK_NAME          "FLOW"
@@ -106,15 +99,11 @@
 #define MEM_TASK_NAME           "MEM"
 #define PARAM_TASK_NAME         "PARAM"
 #define PM_TASK_NAME            "PWRMGNT"
-#define PROXIMITY_TASK_NAME     "PROXIMITY"
 #define SENSORS_TASK_NAME       "SENSORS"
 #define STABILIZER_TASK_NAME    "STABILIZER"
-#define SYSLINK_TASK_NAME       "SYSLINK"
 #define SYSTEM_TASK_NAME        "SYSTEM"
-#define UART2_TASK_NAME         "UART2"
 #define UDP_RX_TASK_NAME        "UDP_RX"
 #define UDP_TX_TASK_NAME        "UDP_TX"
-#define USBLINK_TASK_NAME       "USBLINK"
 #define WIFILINK_TASK_NAME      "WIFILINK"
 #define ZRANGER2_TASK_NAME      "ZRANGER2"
 #define ZRANGER_TASK_NAME       "ZRANGER"
@@ -124,7 +113,6 @@
 #define CMD_HIGH_LEVEL_TASK_STACKSIZE (2 * configBASE_STACK_SIZE)
 #define CRTP_RX_TASK_STACKSIZE        (3 * configBASE_STACK_SIZE)
 #define CRTP_TX_TASK_STACKSIZE        (3 * configBASE_STACK_SIZE)
-#define EXTRX_TASK_STACKSIZE          (1 * configBASE_STACK_SIZE)
 #define ESPNOW_LINK_TASK_STACKSIZE    (4 * configBASE_STACK_SIZE)
 #define MOTORS_KEEPALIVE_TASK_STACKSIZE (2 * configBASE_STACK_SIZE)
 #define FLOW_TASK_STACKSIZE           (3 * configBASE_STACK_SIZE)
@@ -136,12 +124,9 @@
 #define PM_TASK_STACKSIZE             (4 * configBASE_STACK_SIZE)
 #define SENSORS_TASK_STACKSIZE        (5 * configBASE_STACK_SIZE)
 #define STABILIZER_TASK_STACKSIZE     (5 * configBASE_STACK_SIZE)
-#define SYSLINK_TASK_STACKSIZE        (1 * configBASE_STACK_SIZE)
 #define SYSTEM_TASK_STACKSIZE         (6 * configBASE_STACK_SIZE)
-#define UART2_TASK_STACKSIZE          (1 * configBASE_STACK_SIZE)
 #define UDP_RX_TASK_STACKSIZE         (4 * configBASE_STACK_SIZE)
 #define UDP_TX_TASK_STACKSIZE         (4 * configBASE_STACK_SIZE)
-#define USBLINK_TASK_STACKSIZE        (1 * configBASE_STACK_SIZE)
 #define WIFILINK_TASK_STACKSIZE       (4 * configBASE_STACK_SIZE)
 #define ZRANGER2_TASK_STACKSIZE       (4 * configBASE_STACK_SIZE)
 #define ZRANGER_TASK_STACKSIZE        (2 * configBASE_STACK_SIZE)

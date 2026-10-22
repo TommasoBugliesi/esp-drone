@@ -48,25 +48,11 @@ void commInit(void)
     return;
   }
 
-  /* These functions  are moved to be initialized early so
-    * that DEBUG_PRINTD can be used early */
-    //wifilinkInit();
-    //crtpInit();
-    //consoleInit();
-
   crtpSetLink(wifilinkGetLink());
   crtpserviceInit();
   platformserviceInit();
   logInit();
   paramInit();
-  // locSrvInit();
-
-  //TODO: check for USB first and prefer USB over radio
-  //setup CRTP communication channel
-  // if (usbTest()){
-  //  crtpSetLink(usbGetLink);}
-  // else if(radiolinkTest()){
-  //  crtpSetLink(radiolinkGetLink());}
 
   isInit = true;
 }
