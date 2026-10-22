@@ -80,9 +80,10 @@ void qmc5883lGetHeading(struct qmc5883l_raw_data_t *raw)
 {
     i2cdevReadReg8(I2Cx, devAddr, QMC5883L_REG_XOUT_L, 6, buffer);
 
-    raw->x = (((int16_t)buffer[0]) << 8) | buffer[1];
-    raw->y = (((int16_t)buffer[4]) << 8) | buffer[5];
-    raw->z = (((int16_t)buffer[2]) << 8) | buffer[3];
+    // Registers 0x00-0x05 are X, Y, Z, each LSB first (unlike the HMC5883L)
+    raw->x = (int16_t)(((uint16_t)buffer[1] << 8) | buffer[0]);
+    raw->y = (int16_t)(((uint16_t)buffer[3] << 8) | buffer[2]);
+    raw->z = (int16_t)(((uint16_t)buffer[5] << 8) | buffer[4]);
 }
 
 void qmc5883lSetReg1(uint8_t osr, uint8_t rng, uint8_t odr, uint8_t mode)
