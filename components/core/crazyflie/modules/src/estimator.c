@@ -128,6 +128,13 @@ void stateEstimatorSwitchTo(StateEstimatorType estimator) {
     newEstimator = forcedEstimator;
   }
 
+  // The Kalman filter runs in its own task. Switching to it without that task
+  // (estimatorKalmanTaskInit() is optional) would block on a missing semaphore.
+  if (kalmanEstimator == newEstimator && !estimatorKalmanTaskTest()) {
+    DEBUG_PRINTW("Kalman estimator not started, using the default estimator");
+    newEstimator = DEFAULT_ESTIMATOR;
+  }
+
   initEstimator(newEstimator);
   StateEstimatorType previousEstimator = currentEstimator;
   currentEstimator = newEstimator;
