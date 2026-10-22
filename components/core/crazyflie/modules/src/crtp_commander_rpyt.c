@@ -55,7 +55,6 @@ struct CommanderCrtpLegacyValues
   float pitch;      // deg
   float yaw;        // deg
   uint16_t thrust;
-  uint8_t buttons;
 } __attribute__((packed));
 
 /**
@@ -263,15 +262,6 @@ void crtpCommanderRpytDecodeSetpoint(setpoint_t *setpoint, CRTPPacket *pk)
       setpoint->attitude.yaw = values->yaw;
     }
   }
-
-  // Buttons for special functions
-  if (values->buttons & 0x01){
-    stabilizerSetEmergencyStop();
-  }
-  else{
-    stabilizerResetEmergencyStop();
-  }
-    
 }
 
 // Params for flight modes

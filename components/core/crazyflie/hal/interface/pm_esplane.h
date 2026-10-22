@@ -51,8 +51,11 @@
   #define BATTERY_MULTIPLIER 4.0f
 #endif
 
+/* The measured value is the whole pack voltage, so the per-cell thresholds
+ * are scaled by the number of cells (BATTERY_MULTIPLIER). LOW_VOLTAGE and
+ * CRITICAL_LOW_VOLTAGE overrides are pack voltages. */
 #ifndef CRITICAL_LOW_VOLTAGE
-  #define PM_BAT_CRITICAL_LOW_VOLTAGE   3.0f
+  #define PM_BAT_CRITICAL_LOW_VOLTAGE   (3.0f * BATTERY_MULTIPLIER)
 #else
   #define PM_BAT_CRITICAL_LOW_VOLTAGE   CRITICAL_LOW_VOLTAGE
 #endif
@@ -63,7 +66,7 @@
 #endif
 
 #ifndef LOW_VOLTAGE
-  #define PM_BAT_LOW_VOLTAGE   3.2f
+  #define PM_BAT_LOW_VOLTAGE   (3.2f * BATTERY_MULTIPLIER)
 #else
   #define PM_BAT_LOW_VOLTAGE   LOW_VOLTAGE
 #endif

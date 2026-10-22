@@ -25,8 +25,8 @@ typedef struct {
 
 static MotorsFcns motorsFunctions[] = {
   {.init = 0, .test = 0, .applyAll = 0, .applyChannel = 0, .getChannel = 0, .name = "None"}, // Any
-  {.init = motorsBrushedInit, .test = motorsBrushedTest, .applyAll = motorsBrushedApplyAll, .applyChannel = motorsBrushlessApplyChannel, .getChannel = motorsBrushlessGetChannel, .name = "Brushed"},
-  {.init = motorsBrushlessInit, .test = motorsBrushlessTest, .applyAll = motorsBrushlessApplyAll, .applyChannel = motorsBrushlessApplyChannel, .getChannel = motorsBrushedGetChannel, .name = "Brushless"},
+  {.init = motorsBrushedInit, .test = motorsBrushedTest, .applyAll = motorsBrushedApplyAll, .applyChannel = motorsBrushedApplyChannel, .getChannel = motorsBrushedGetChannel, .name = "Brushed"},
+  {.init = motorsBrushlessInit, .test = motorsBrushlessTest, .applyAll = motorsBrushlessApplyAll, .applyChannel = motorsBrushlessApplyChannel, .getChannel = motorsBrushlessGetChannel, .name = "Brushless"},
 };
 
 void motorsInit(MotorsType motors) {
