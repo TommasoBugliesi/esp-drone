@@ -38,9 +38,10 @@
 #define DEBUG_MODULE "MODE"
 #include "debug_cf.h"
 
-#ifdef CONFIG_TARGET_FLYINGFREE_V01
+#ifdef CONFIG_BRUSHLESS
+  // DShot units, the mixer in power_distribution_stock.c uses the same limit
   #define MIN_THRUST  48
-  #define MAX_THRUST  2047
+  #define MAX_THRUST  CONFIG_MOTOR_THRUST_MAX
 #else 
   #define MIN_THRUST  1000
   #define MAX_THRUST  60000

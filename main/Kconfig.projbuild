@@ -389,6 +389,14 @@ menu "ESPDrone Config"
                 bool "PWM"
         endchoice
 
+        config MOTOR_THRUST_MAX
+            int "Maximum motor command (DShot units, 48 = 0 %, 2047 = 100 %)"
+            depends on BRUSHLESS
+            range 100 2047
+            default 1000
+            help
+                Upper limit of the commander thrust and of every motor output after mixing.
+                1000 is about 48 % throttle, raise it once the vehicle is tuned.
         config MOTOR01_PIN
             int "MOTOR01_PIN GPIO number"
             range 0 39 if TARGET_FLYINGFREE_V01

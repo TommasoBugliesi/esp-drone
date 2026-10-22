@@ -54,6 +54,13 @@
 #define STATUS_PERIOD       M2T(CONFIG_ESPNOW_CTRL_STATUS_PERIOD_MS)
 
 #define CRTP_RPYT_SIZE      14 // roll, pitch, yaw (float) + thrust (uint16)
+
+// Full throttle on the transmitter never exceeds the commander thrust limit
+#if defined(CONFIG_MOTOR_THRUST_MAX) && (CONFIG_ESPNOW_CTRL_THRUST_MAX > CONFIG_MOTOR_THRUST_MAX)
+  #define THRUST_FULL       CONFIG_MOTOR_THRUST_MAX
+#else
+  #define THRUST_FULL       CONFIG_ESPNOW_CTRL_THRUST_MAX
+#endif
 #define KEY_LEN             16 // ESP-NOW PMK / LMK length
 
 typedef struct {
@@ -220,7 +227,7 @@ static void applyControl(const espnowLinkControl_t *c)
   uint16_t thrust = 0;
   if (systemIsArmed() && !killLatched) {
     uint32_t t = (c->thrust > ESPNOW_LINK_THRUST_MAX) ? ESPNOW_LINK_THRUST_MAX : c->thrust;
-    thrust = (uint16_t)(t * CONFIG_ESPNOW_CTRL_THRUST_MAX / ESPNOW_LINK_THRUST_MAX);
+    thrust = (uint16_t)(t * THRUST_FULL / ESPNOW_LINK_THRUST_MAX);
   }
 
   pushSetpoint(axisToFloat(c->roll, CONFIG_ESPNOW_CTRL_MAX_ANGLE_DEG),

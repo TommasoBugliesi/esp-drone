@@ -54,11 +54,11 @@ static struct {
 } motorPowerSet;
 
 #if (defined(CONFIG_DSHOT_600) || defined(CONFIG_DSHOT_300) || defined(CONFIG_DSHOT_150))
-  #define DEFAULT_IDLE_THRUST 48// Default value 0 speed DShot
-  #define DEFAULT_MAX_THRUST 1000 // Default value 0 speed DShot
+  #define DEFAULT_IDLE_THRUST 48  // DShot throttle 0 %
+  #define DEFAULT_MAX_THRUST CONFIG_MOTOR_THRUST_MAX // see Kconfig, same limit as the commander
 #else 
   #define DEFAULT_IDLE_THRUST 0
-  #define DEFAULT_MAX_THRUST 0 // Default value 0 speed DShot
+  #define DEFAULT_MAX_THRUST 0 // only used by the brushless mixer
 #endif
 
 static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
