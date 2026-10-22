@@ -214,7 +214,7 @@ static StaticSemaphore_t dataMutexBuffer;
  * For more information, refer to the paper
  */
 
-NO_DMA_CCM_SAFE_ZERO_INIT static kalmanCoreData_t coreData;
+static kalmanCoreData_t coreData;
 
 /**
  * Internal variables. Note that static declaration results in default initialization (to 0)
@@ -263,7 +263,7 @@ static void kalmanTask(void* parameters);
 static bool predictStateForward(uint32_t osTick, float dt);
 static bool updateQueuedMeasurments(const Axis3f *gyro, const uint32_t tick);
 
-STATIC_MEM_TASK_ALLOC_STACK_NO_DMA_CCM_SAFE(kalmanTask, KALMAN_TASK_STACKSIZE);
+STATIC_MEM_TASK_ALLOC(kalmanTask, KALMAN_TASK_STACKSIZE);
 
 // --------------------------------------------------
 
