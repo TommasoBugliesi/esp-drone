@@ -30,9 +30,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-void systemInit(void);
-bool systemTest(void);
-
 void systemLaunch(void);
 
 

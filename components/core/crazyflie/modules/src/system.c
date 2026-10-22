@@ -36,19 +36,15 @@
 #include "config.h"
 #include "param.h"
 #include "log.h"
+#include "led.h"
 #include "ledseq.h"
 #include "adc_esp32.h"
 #include "pm_esplane.h"
 #include "config.h"
 #include "system.h"
 #include "platform.h"
-//#include "storage.h"
-#include "configblock.h"
 #include "worker.h"
 #include "freeRTOSdebug.h"
-//#include "uart_syslink.h"
-//#include "uart1.h"
-//#include "uart2.h"
 #include "wifi_esp32.h"
 #include "comm.h"
 #include "stabilizer.h"
@@ -57,21 +53,16 @@
 #include "wifilink.h"
 #include "espnow_link.h"
 #include "mem.h"
-//#include "proximity.h"
-//#include "watchdog.h"
 #include "queuemonitor.h"
 #include "buzzer.h"
 #include "sound.h"
 #include "sysload.h"
 #include "estimator_kalman.h"
-//#include "deck.h"
-//#include "extrx.h"
 #include "app.h"
 #include "stm32_legacy.h"
 #define DEBUG_MODULE "SYS"
 #include "debug_cf.h"
 #include "static_mem.h"
-//#include "peer_localization.h"
 #include "cfassert.h"
 
 #ifndef START_DISARMED
@@ -102,77 +93,124 @@ void systemLaunch(void)
   STATIC_MEM_TASK_CREATE(systemTask, systemTask, SYSTEM_TASK_NAME, NULL, SYSTEM_TASK_PRI);
 }
 
-// This must be the first module to be initialized!
-void systemInit(void)
-{
-  if(isInit)
-    return;
+/* Modules in the order they are initialised.
+ *
+ * - A module without init is only tested, one without test is only initialised.
+ * - Modules that are covered by the test of another one (wifilink, crtp,
+ *   console and the log/param services are tested by commTest) have no test.
+ * - If the test of an essential module fails the system is unusable, any other
+ *   failure can be overridden by setting system.selftestPassed from the client.
+ * - settleMs is a pause after the init.
+ * - crtp and console come early so that DEBUG_PRINT can be used from here on.
+ * - The Kalman estimator task is optional: add estimatorKalmanTaskInit() and
+ *   estimatorKalmanTaskTest() after "commander" to enable it.
+ */
+typedef struct {
+  const char *name;
+  void (*init)(void);
+  bool (*test)(void);
+  bool essential;
+  uint16_t settleMs;
+} systemModule_t;
 
-  // DEBUG_PRINT_LOCAL("----------------------------\n");
-  // DEBUG_PRINT_LOCAL("%s is up and running!\n", platformConfigGetDeviceTypeName());
+static void systemCoreInit(void);
+static void ledStartupInit(void);
+static void stabilizerStartupInit(void);
+
+static const systemModule_t systemModules[] = {
+  { "led",        ledStartupInit,         NULL,               false, 0 },
+  { "wifi",       wifiInit,               wifiTest,           false, 0 },
+  { "espnow",     espnowLinkInit,         espnowLinkTest,     false, 500 },
+#ifdef DEBUG_QUEUE_MONITOR
+  { "queuemon",   queueMonitorInit,       NULL,               false, 0 },
+#endif
+  { "system",     systemCoreInit,         NULL,               false, 0 },
+  { "wifilink",   wifilinkInit,           NULL,               false, 0 },
+  { "sysload",    sysLoadInit,            NULL,               false, 0 },
+  { "crtp",       crtpInit,               NULL,               false, 0 },
+  { "console",    consoleInit,            NULL,               false, 0 },
+  { "worker",     workerInit,             workerTest,         true,  0 },
+  { "ledseq",     ledseqInit,             ledseqTest,         true,  0 },
+#ifdef CONFIG_ADC_ENABLE
+  // Power management needs the ADC
+  { "adc",        adcInit,                NULL,               false, 0 },
+  { "pm",         pmInit,                 pmTest,             true,  0 },
+#endif
+#ifdef CONFIG_BUZZER_ENABLE
+  { "buzzer",     buzzerInit,             buzzerTest,         true,  0 },
+#endif
+#ifdef APP_ENABLED
+  { "app",        appInit,                NULL,               false, 0 },
+#endif
+  { "comm",       commInit,               commTest,           false, 0 },
+  { "commander",  commanderInit,          commanderTest,      false, 0 },
+  { "stabilizer", stabilizerStartupInit,  stabilizerTest,     false, 0 },
+  { "sound",      soundInit,              soundTest,          false, 0 },
+  { "mem",        memInit,                NULL,               false, 0 },
+  { "assert",     NULL,                   cfAssertNormalStartTest, false, 0 },
+};
+
+#define SYSTEM_MODULE_COUNT (sizeof(systemModules) / sizeof(systemModules[0]))
+
+static void ledStartupInit(void)
+{
+  ledInit();
+  ledSet(CHG_LED, 1);   // stays on until the system has started
+}
+
+static void stabilizerStartupInit(void)
+{
+  stabilizerInit(anyEstimator);
+}
+
+/* Creates the lock the other tasks wait on in systemWaitStart(). It is held
+ * until systemStart(). */
+static void systemCoreInit(void)
+{
+  if (isInit) {
+    return;
+  }
 
   canStartMutex = xSemaphoreCreateMutexStatic(&canStartMutexBuffer);
   xSemaphoreTake(canStartMutex, portMAX_DELAY);
 
-  // Analyze crtp packets
-  wifilinkInit();
-
-  // Init system load timer
-  sysLoadInit();
-
-  /* Initialized here so that DEBUG_PRINT (buffered) can be used early */
-  crtpInit();
-  consoleInit();
-
-  // DEBUG_PRINT("----------------------------\n");
-  // DEBUG_PRINT("%s is up and running!\n", platformConfigGetDeviceTypeName());
-
-  // if (V_PRODUCTION_RELEASE) {
-  //   DEBUG_PRINT("Production release %s\n", V_STAG);
-  // } else {
-  //   DEBUG_PRINT("Build %s:%s (%s) %s\n", V_SLOCAL_REVISION,
-  //               V_SREVISION, V_STAG, (V_MODIFIED)?"MODIFIED":"CLEAN");
-  // }
-  // DEBUG_PRINT("I am 0x%08X%08X%08X and I have %dKB of flash!\n",
-  //             *((int*)(MCU_ID_ADDRESS+8)), *((int*)(MCU_ID_ADDRESS+4)),
-  //             *((int*)(MCU_ID_ADDRESS+0)), *((short*)(MCU_FLASH_SIZE_ADDRESS)));
-
-  // configblockInit(); // Configuration for EEPROM and I2C 
-  // storageInit();
-
-  workerInit();
-  ledseqInit();
-  
-#ifdef CONFIG_ADC_ENABLE
-  // Init ADC channel performing calibration
-  adcInit();
-  // Power management not available without ADC and compilation fails
-  pmInit();
-#endif
-
-#ifdef CONFIG_BUZZER_ENABLE
-  buzzerInit();
-#endif
-
-//  peerLocalizationInit();
-
-#ifdef APP_ENABLED
-  appInit();
-#endif
-
   isInit = true;
 }
 
-bool systemTest()
+static void systemInitModules(void)
 {
-  bool pass=isInit;
+  for (size_t i = 0; i < SYSTEM_MODULE_COUNT; i++) {
+    const systemModule_t *module = &systemModules[i];
 
-  pass &= ledseqTest();
-  pass &= pmTest();
-  DEBUG_PRINTI("pmTest = %d", pass);
-  pass &= workerTest();
-  DEBUG_PRINTI("workerTest = %d", pass);
-  pass &= buzzerTest();
+    if (module->init) {
+      module->init();
+    }
+    if (module->settleMs) {
+      vTaskDelay(M2T(module->settleMs));
+    }
+  }
+}
+
+/* Runs the test of every module and reports each failure by name.
+ * Returns true if all passed, essentialOk tells if the essential ones did. */
+static bool systemTestModules(bool *essentialOk)
+{
+  bool pass = isInit;
+
+  *essentialOk = isInit;
+
+  for (size_t i = 0; i < SYSTEM_MODULE_COUNT; i++) {
+    const systemModule_t *module = &systemModules[i];
+
+    if (module->test && !module->test()) {
+      DEBUG_PRINTE("Self-test of %s failed", module->name);
+      pass = false;
+      if (module->essential) {
+        *essentialOk = false;
+      }
+    }
+  }
+
   return pass;
 }
 
@@ -180,76 +218,11 @@ bool systemTest()
 
 void systemTask(void *arg)
 {
-  // Init leds
-  ledInit();
-  ledSet(CHG_LED, 1);
+  bool essentialOk;
 
-  wifiInit();
-  espnowLinkInit();
-  vTaskDelay(M2T(500));
+  systemInitModules();
 
-#ifdef DEBUG_QUEUE_MONITOR
-  queueMonitorInit();
-#endif
-
-#ifdef CONFIG_UART1_AVAILABLE
-  uart1Init(9600);
-#endif
-#ifdef CONFIG_UART2_AVAILABLE
-  uart2Init(115200);
-#endif
-  //Init the high-levels modules
-  systemInit();
-  commInit();
-  commanderInit();
-
-  StateEstimatorType estimator = anyEstimator;
-  // estimatorKalmanTaskInit();
-  // deckInit();
-  // estimator = deckGetRequiredEstimator();
-  stabilizerInit(estimator);
-  //if (deckGetRequiredLowInterferenceRadioMode() && platformConfigPhysicalLayoutAntennasAreClose())
-  //{
-  //  platformSetLowInterferenceRadioMode();
-  //}
-  soundInit();
-  memInit();
-
-#ifdef PROXIMITY_ENABLED
-  proximityInit();
-#endif
-  /* End of init section, start of tests*/
-  
-	/* Test each modules */
-  bool pass = true;
-  pass &= wifiTest();
-  DEBUG_PRINTI("wifilinkTest = %d ", pass);
-  pass &= espnowLinkTest();
-  DEBUG_PRINTI("espnowLinkTest = %d ", pass);
-  pass &= systemTest();
-  DEBUG_PRINTI("systemTest = %d ", pass);
-  pass &= configblockTest();
-  DEBUG_PRINTI("configblockTest = %d ", pass);
-  //pass &= storageTest();
-  pass &= commTest();
-  DEBUG_PRINTI("commTest = %d ", pass);
-  pass &= commanderTest();
-  DEBUG_PRINTI("commanderTest = %d ", pass);
-  pass &= stabilizerTest();
-  DEBUG_PRINTI("stabilizerTest = %d ", pass);
-  // pass &= estimatorKalmanTaskTest();
-  // DEBUG_PRINTI("estimatorKalmanTaskTest = %d ", pass);
-  //pass &= deckTest();
-  pass &= soundTest();
-  DEBUG_PRINTI("soundTest = %d ", pass);
-  // pass &= memTest();
-  DEBUG_PRINTI("memTest = %d ", pass);
-  //pass &= watchdogNormalStartTest();
-  pass &= cfAssertNormalStartTest();
-  //pass &= peerLocalizationTest();
-
-  //Start the firmware
-  if(pass)  
+  if (systemTestModules(&essentialOk))
   {
     selftestPassed = 1;
     systemStart();
@@ -261,7 +234,7 @@ void systemTask(void *arg)
   else
   {
     selftestPassed = 0;
-    if (systemTest())
+    if (essentialOk)
     {
       while(1)
       {
@@ -270,7 +243,7 @@ void systemTask(void *arg)
         // System can be forced to start by setting the param to 1 from the cfclient
         if (selftestPassed)
         {
-	        DEBUG_PRINT("Start forced.\n");
+          DEBUG_PRINT("Start forced.\n");
           systemStart();
           break;
         }
@@ -278,7 +251,6 @@ void systemTask(void *arg)
     }
     else
     {
-      ledInit();
       ledSet(SYS_LED, true);
     }
   }
