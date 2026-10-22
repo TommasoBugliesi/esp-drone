@@ -18,7 +18,9 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 
+#include "config.h"
 #include "stm32_legacy.h"
 #include "motors_brushless.h"
 #include "log.h"
@@ -37,6 +39,18 @@ typedef struct dshot_packet_t{
 } dshot_packet_t;
 
 static uint32_t motor_ratios[4] = {0, 0, 0, 0};
+
+// The ESCs need a continuous stream of valid frames to stay armed. The frames
+// are normally sent by the stabilizer loop; the keepalive task only steps in
+// when that loop is not running (before system start, or if it stalls) and
+// always sends minimum throttle, never the last commanded value.
+#define DSHOT_ARM_FRAMES            500   // 1 ms apart
+#define DSHOT_KEEPALIVE_PERIOD_MS   5
+#define DSHOT_KEEPALIVE_TIMEOUT_MS  10
+
+static SemaphoreHandle_t dshotMutex;       // _dshotCmd is shared by all channels
+static volatile TickType_t lastFrameTick;
+static void dshotKeepAliveTask(void *param);
 
 /**
  * DHSOTn is a protocol that works at a frequency n mentioned in the name of the protocol.
@@ -122,17 +136,37 @@ void motorsBrushlessInit()
         return;
     }
 
+    dshotMutex = xSemaphoreCreateMutex();
+    if (dshotMutex == NULL) {
+        DEBUG_PRINTE("DShot mutex creation failed");
+        return;
+    }
+
     DshotInit();
     DshotReset();
     DshotSetReversed(false);
 
-    int armCounter;
-    for (armCounter=0; armCounter<50; armCounter++){
-       motorsBrushlessApplyAll(DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN);  
-       armCounter ++;   
+    // Arming: minimum throttle at a steady rate for long enough for the ESCs
+    for (int i = 0; i < DSHOT_ARM_FRAMES; i++) {
+        motorsBrushlessApplyAll(DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN);
+        vTaskDelay(M2T(1));
     }
 
+    xTaskCreate(dshotKeepAliveTask, MOTORS_KEEPALIVE_TASK_NAME, MOTORS_KEEPALIVE_TASK_STACKSIZE,
+                NULL, MOTORS_KEEPALIVE_TASK_PRI, NULL);
+
     isInit = true;
+}
+
+static void dshotKeepAliveTask(void *param)
+{
+    while (1) {
+        vTaskDelay(M2T(DSHOT_KEEPALIVE_PERIOD_MS));
+
+        if (xTaskGetTickCount() - lastFrameTick > M2T(DSHOT_KEEPALIVE_TIMEOUT_MS)) {
+            motorsBrushlessApplyAll(DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN, DSHOT_THROTTLE_MIN);
+        }
+    }
 }
 
 bool motorsBrushlessTest(void)
@@ -222,6 +256,8 @@ void DshotReset(){
 void DshotWriteData(uint8_t channel, uint16_t data, bool wait){
     esp_err_t rslt;
 
+    xSemaphoreTake(dshotMutex, portMAX_DELAY);
+
     // Max time to wait for TX done can be an option in case for fast control loops
     if (wait){
         rmt_wait_tx_done(MOTOR_TO_RMT_CHANNEL(channel), WAIT_FOR_TX_DONE);
@@ -241,6 +277,9 @@ void DshotWriteData(uint8_t channel, uint16_t data, bool wait){
     if (rslt != ESP_OK) {
         DEBUG_PRINTE("RMT write failed: %s", esp_err_to_name(rslt));
     }
+
+    lastFrameTick = xTaskGetTickCount();
+    xSemaphoreGive(dshotMutex);
 }
 
 void DshotSetData(uint16_t data){
