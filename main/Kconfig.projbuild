@@ -225,7 +225,7 @@ menu "ESPDrone Config"
     endmenu
 
     menu "Motors & ESC"
-        choice
+        choice MOTOR_TYPE
             prompt "Motor Type"
             default BRUSHLESS if TARGET_FLYINGFREE_V01
             
@@ -237,7 +237,7 @@ menu "ESPDrone Config"
 
         endchoice
 
-        choice
+        choice MOTOR_PROTOCOL
             prompt "Control protocol"
             default DSHOT_150 if BRUSHLESS
             default PWM if BRUSHED
@@ -298,7 +298,7 @@ menu "ESPDrone Config"
 
     menu "Power"
 
-        choice
+        choice BATTERY
             prompt "Battery"
             default BATTERY_3S
 
