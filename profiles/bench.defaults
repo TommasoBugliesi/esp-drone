@@ -1,0 +1,5 @@
+# First power-up / props-off bench testing: low throttle ceiling, drone boots disarmed.
+CONFIG_MOTOR_THRUST_MAX=300
+CONFIG_ESPNOW_CTRL_THRUST_MAX=300
+CONFIG_ESPNOW_CTRL_START_DISARMED=y
+CONFIG_ESPNOW_CTRL_FAILSAFE_DISARM=y

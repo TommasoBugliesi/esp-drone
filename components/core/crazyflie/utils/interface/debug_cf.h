@@ -35,15 +35,6 @@
 #ifdef CONFIG_DEBUG_PRINT_ON_SEGGER_RTT
   #define DEBUG_PRINT_ON_SEGGER_RTT 1
 #endif
-#ifdef CONFIG_DEBUG_PRINT_ON_UART
-  #define DEBUG_PRINT_ON_UART 1
-#endif
-
-#ifdef DEBUG_PRINT_ON_UART
-  #include "uart1.h"
-  #define uartPrintf uart1Printf
-#endif
-
 #ifdef DEBUG_PRINT_ON_SEGGER_RTT
   #include "SEGGER_SYSVIEW.h"
 #endif
@@ -65,13 +56,7 @@ void debugInit(void);
 #define DEBUG_PRINT_LOCAL(fmt, ...) ESP_LOG_LEVEL_LOCAL(ESP_LOG_INFO,DEBUG_MODULE,fmt, ##__VA_ARGS__)
 #define DEBUG_PRINT_REMOT(fmt, ...) consolePrintf(DEBUG_FMT(fmt), ##__VA_ARGS__)
 
-#if defined(DEBUG_PRINT_ON_UART)
-  #define DEBUG_PRINT(fmt, ...) uartPrintf(DEBUG_FMT(fmt), ##__VA_ARGS__)
-  #define DEBUG_PRINT_OS(fmt, ...) uartPrintf(DEBUG_FMT(fmt), ##__VA_ARGS__)
-#elif defined(DEBUG_PRINT_ON_SWO)
-  #define DEBUG_PRINT(fmt, ...) eprintf(ITM_SendChar, fmt, ## __VA_ARGS__)
-  #define DEBUG_PRINT_OS(fmt, ...) eprintf(ITM_SendChar, fmt, ## __VA_ARGS__)
-#elif defined(DEBUG_PRINT_ON_SEGGER_RTT)
+#if defined(DEBUG_PRINT_ON_SEGGER_RTT)
   #define DEBUG_PRINT(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ## __VA_ARGS__)
   #define DEBUG_PRINT_OS(fmt, ...) SEGGER_SYSVIEW_PrintfHost(fmt, ## __VA_ARGS__)
   #define DEBUG_PRINTE(fmt, ...) SEGGER_SYSVIEW_ErrorfHost(fmt, ##__VA_ARGS__)

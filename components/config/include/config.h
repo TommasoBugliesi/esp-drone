@@ -46,18 +46,8 @@
 #define PROTOCOL_VERSION 4
 #define QUAD_FORMATION_X
 
-#ifdef CONFIG_TARGET_ESPLANE_V2_S2
-#ifndef CONFIG_IDF_TARGET_ESP32S2
-#error "ESPLANE_V2 hardware with ESP32S2 onboard"
-#endif
-#elif defined(CONFIG_TARGET_ESPLANE_V1)
 #ifndef CONFIG_IDF_TARGET_ESP32
-#error "ESPLANE_V1 hardware with ESP32 onboard"
-#endif
-#elif defined(CONFIG_TARGET_ESP32_S2_DRONE_V1_2)
-#ifdef CONFIG_IDF_TARGET_ESP32
-#error "ESP32_S2_DRONE_V1_2 hardware with ESP32S2/S3 onboard"
-#endif
+#error "FlyingFree V1 needs an ESP32 target (idf.py set-target esp32)"
 #endif
 
 //#define DEBUG_UDP

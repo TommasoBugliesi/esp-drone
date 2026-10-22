@@ -1,364 +1,230 @@
 menu "ESPDrone Config"
 
-    choice
-        prompt "Board Name"
+    choice BOARD
+        prompt "Board"
         default TARGET_FLYINGFREE_V01
+        help
+            Hardware definition. Every pin below has its default for the selected board.
 
         config TARGET_FLYINGFREE_V01
-            bool "TARGET_FLYINGFREE_V01"
-    
-    endchoice   
+            bool "FlyingFree V1.0 (ESP32)"
+            depends on IDF_TARGET_ESP32
+    endchoice
 
-    if TARGET_FLYINGFREE_V01
-    menu "FlyingFree 1.0 configurator"
+    comment "Board: wiring of the selected target. Change only if the PCB differs."
+    menu "Board"
+
         config PLATFORM_STRING
-            string "Platform specific"
+            string "Platform identification string"
             default "0;FF01"
             help
-                Platoform specific identification string ("0;" required chars)
+                Device type reported by the platform layer, "0;" is required.
+                The part after it must match a deviceType in platform_cf2.c.
+
+        menu "I2C"
+            config I2C0_ENABLE
+                bool "Activate I2C channel 0"
+                default y if TARGET_FLYINGFREE_V01
+                help
+                    Tick if you want to use I2C channel 0
+
+            config I2C1_ENABLE
+                bool "Activate I2C channel 1"
+                default n if TARGET_FLYINGFREE_V01
+                help
+                    Tick if you want to use I2C channel 1
+
+            if I2C0_ENABLE
+                config I2C0_PIN_SDA
+                    int "I2C0_PIN_SDA GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 21 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) I2C0_PIN_SDA
+
+                config I2C0_PIN_SCL
+                    int "I2C0_PIN_SCL GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 22 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) I2C0_PIN_SCL
+            endif
+
+            if I2C1_ENABLE
+                config I2C1_PIN_SDA
+                    int "I2C1_PIN_SDA GPIO number"
+                    help
+                        GPIO number (IOxx) I2C0_PIN_SDA
+
+                config I2C1_PIN_SCL
+                    int "I2C1_PIN_SCL GPIO number"
+                    help
+                        GPIO number (IOxx) I2C0_PIN_SCL
+            endif
+        endmenu
+
+
+        menu "SPI"
+            config VSPI_ENABLE
+                bool "Activate VSPI channel"
+                default y if TARGET_FLYINGFREE_V01
+                help
+                    Tick if you want to use VSPI channel 0
+
+            if VSPI_ENABLE
+                config VSPI_PIN_MISO
+                    int "VSPI_PIN_MISO GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 19 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) VSPI_PIN_MISO
+
+                config VSPI_PIN_MOSI
+                    int "VSPI_PIN_MOSI GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 23 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) VSPI_PIN_MOSI
+
+                config VSPI_PIN_CLK
+                    int "VSPI_PIN_CLK GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 18 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) VSPI_PIN_CLK
+
+                config VSPI_PIN_CS0
+                    int "VSPI_PIN_CS0 GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 05 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) VSPI_PIN_CS0
+            endif
+        endmenu
+
+
+        menu "LEDs"
+            config LED_PIN_BLUE_ENABLE
+                bool "Blue Led Available"
+                default y if TARGET_FLYINGFREE_V01 
+                help
+                    Tick if blue led available
+
+            config LED_PIN_GREEN_ENABLE
+                bool "Green Led Available"
+                default y if TARGET_FLYINGFREE_V01 
+                help
+                    Tick if blue led available
+
+            config LED_PIN_RED_ENABLE
+                bool "Red Led Available"
+                default y if TARGET_FLYINGFREE_V01 
+                help
+                    Tick if blue led available
         
-        config BMI160_ENABLE
-            bool "Enable BMI160 sensor"
-            default y
+            config LED_PIN_BLUE
+                int "LED_PIN_BLUE GPIO number"
+                depends on LED_PIN_BLUE_ENABLE
+                range 0 39 if TARGET_FLYINGFREE_V01 
+                default 16 if TARGET_FLYINGFREE_V01
+                default -1 if !LED_PIN_BLUE_ENABLE
+                help
+                    GPIO number (IOxx) LED_PIN_BLUE
+
+            config LED_PIN_GREEN
+                int "LED_PIN_GREEN GPIO number"
+                depends on LED_PIN_GREEN_ENABLE
+                range 0 39 if TARGET_FLYINGFREE_V01 
+                default 04 if TARGET_FLYINGFREE_V01
+                default -1 if !LED_PIN_GREEN_ENABLE
+                help
+                    GPIO number (IOxx) LED_PIN_GREEN
+
+            config LED_PIN_RED
+                int "LED_PIN_RED GPIO number"
+                depends on LED_PIN_RED_ENABLE
+                range 0 39 if TARGET_FLYINGFREE_V01 
+                default 17 if TARGET_FLYINGFREE_V01
+                default -1 if !LED_PIN_RED_ENABLE
+                help
+                    GPIO number (IOxx) LED_PIN_RED
+        endmenu
+
+
+        menu "Buzzer"
+            config BUZZER_ENABLE
+                bool "enable buzzer to play sound"
+                default y if TARGET_FLYINGFREE_V01
+                    help
+                    Tick if buzzer available
+
+            if BUZZER_ENABLE
+                config BUZ1_PIN_POS
+                    int "BUZ1_PIN_POS GPIO number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 02 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) BUZ1_PIN_POS
+            endif
+        endmenu
+
+
+        menu "Battery voltage sense (ADC)"
+            config ADC_ENABLE
+                bool "At least one ADC channel available"
+                default y if TARGET_FLYINGFREE_V01
+                help
+                    Tick if you want to use an ADC channel
+
+            if ADC_ENABLE
+                config ADC1_PIN
+                    int "ADC1_PIN Channel number"
+                    range 0 39 if TARGET_FLYINGFREE_V01
+                    default 34 if TARGET_FLYINGFREE_V01
+                    help
+                        GPIO number (IOxx) ADC1_PIN
+            endif
+        endmenu
+
+    endmenu
+
+    menu "Sensors"
 
         config QMC5883L_ENABLE
-            bool "Enable QMC5883L sensor"
+            bool "Magnetometer QMC5883L"
             default y
-        
+
         config BMP280_ENABLE
-            bool "Enable BMP280 sensor"
+            bool "Barometer BMP280"
             default n
 
         config RANGE_VL53L0X_ENABLE
-            bool "Enable VL53L0X sensor"
+            bool "Range finder VL53L0X"
             default y
-            
+
         config UPSIDEDOWN_ENABLE
-            bool "Board installed upside down"
-            default y
-    endmenu
-    endif
-    
-    if TARGET_FLYINGFREE_V01
-    choice
-        prompt "Battery input"
-        default BATTERY_3S
-
-        config BATTERY_3S
-            bool "3S"
-        config BATTERY_4S
-            bool "4S"
-    endchoice   
-    endif
-    
-
-    menu "App set"
-        config ENABLE_LEGACY_APP
-            bool "Enable legacy ESPlane1.0 APP"
-            default n
-            help
-                This enables the udp_server_rx2_task of wifi.
-        config ENABLE_POSITION_HOLD_MODE
-            bool "Enable position hold mode"
+            bool "Board mounted upside down"
             default y
             help
-                This enables position hold mode when pmw3901 sensors available.
-        config ENABLE_COMMAND_MODE_SET
-            bool "Enable \'setCommandermode\' to transform command"
-            depends on ENABLE_POSITION_HOLD_MODE
-            default y if ENABLE_POSITION_HOLD_MODE
-            default n if !ENABLE_POSITION_HOLD_MODE
-            help
-                This enables assit mode when use old version app.
-    endmenu
+                Flips the Z axis (and the matching X) of the IMU and the magnetometer.
 
-    menu "Wireless config"
-        config WIFI_BASE_SSID
-            string "Wi-Fi Base SSID"
-            default "ESP-DRONE"
+        config PITCH_CALIB
+            int "Pitch trim (deg*100)"
+            range -400 400
+            default 0
             help
-                Wi-Fi Base SSID, 1-16 characters. the final SSID will be BASE_SSID-MAC
-        config WIFI_PASSWORD
-            string "Wi-Fi Password"
-            default "12345678"
-            help
-                Wi-Fi Password, 8-64 characters
-        config WIFI_CHANNEL
-            int "Wi-Fi/ESP-Now Channel"
-            range 1 13
-            default 6
-            help
-                Wi-Fi/ESP-Now Channel, 1-13
-        config WIFI_MAX_STA_CONN
-            int "Wi-Fi Max Station Connection"
-            range 1 6
-            default 3
-            help
-                Wi-Fi Max Station Connection, 1-6
-    endmenu
-    menu "ESP-NOW control link"
-        config ESPNOW_CTRL_ENABLE
-            bool "Enable the ESP-NOW control link"
-            default y
-            help
-                Receive control frames from a transmitter over ESP-NOW. The wire format is in
-                espnow_link.h. ESP-NOW uses the channel of the Wi-Fi access point.
-        config ESPNOW_CTRL_PEER_MAC
-            string "Transmitter MAC address (STA MAC)"
-            depends on ESPNOW_CTRL_ENABLE
-            default ""
-            help
-                Format aa:bb:cc:dd:ee:ff. Only frames from this address are accepted.
-                Leave empty to accept control from ANY transmitter on the channel (bench use only).
-        config ESPNOW_CTRL_ENCRYPT
-            bool "Encrypt the control link"
-            depends on ESPNOW_CTRL_ENABLE
-            default n
-            help
-                Needs a transmitter MAC and the same PMK and LMK on the transmitter. The transmitter
-                must send unicast to the drone's AP MAC.
-        config ESPNOW_CTRL_PMK
-            string "Primary master key (16 characters)"
-            depends on ESPNOW_CTRL_ENCRYPT
-            default ""
-        config ESPNOW_CTRL_LMK
-            string "Local master key (16 characters)"
-            depends on ESPNOW_CTRL_ENCRYPT
-            default ""
-        config ESPNOW_CTRL_LINK_TIMEOUT_MS
-            int "Link timeout (ms)"
-            depends on ESPNOW_CTRL_ENABLE
-            range 50 2000
-            default 250
-            help
-                Time without a valid control frame after which the failsafe is triggered.
-        config ESPNOW_CTRL_FAILSAFE_DISARM
-            bool "Disarm on link loss"
-            depends on ESPNOW_CTRL_ENABLE
-            default y
-            help
-                On link loss the setpoint is set to level attitude with zero thrust. This also disarms
-                the drone, arming again needs a new ARM edge from the transmitter.
-        config ESPNOW_CTRL_START_DISARMED
-            bool "Start disarmed"
-            depends on ESPNOW_CTRL_ENABLE
-            default y
-            help
-                Boot disarmed so the transmitter has to arm the drone. cfclient can still arm by
-                setting the system.forceArm parameter.
-        config ESPNOW_CTRL_STATUS_PERIOD_MS
-            int "Status frame period (ms)"
-            depends on ESPNOW_CTRL_ENABLE
-            range 20 1000
-            default 100
-        config ESPNOW_CTRL_MAX_ANGLE_DEG
-            int "Roll/pitch angle at full stick (deg)"
-            depends on ESPNOW_CTRL_ENABLE
-            range 1 45
-            default 15
-        config ESPNOW_CTRL_MAX_YAW_RATE_DPS
-            int "Yaw rate at full stick (deg/s)"
-            depends on ESPNOW_CTRL_ENABLE
-            range 1 360
-            default 30
-        config ESPNOW_CTRL_THRUST_MAX
-            int "Thrust sent to the commander at full throttle"
-            depends on ESPNOW_CTRL_ENABLE
-            range 48 2047
-            default 300
-            help
-                Same scale as the commander thrust (DShot 48-2047). The brushless mixer limits the
-                output to DEFAULT_MAX_THRUST in power_distribution_stock.c. The previous ESP-NOW
-                decoder topped out at 300, which is kept as the default.
-    endmenu
+                If the vehicle rests at a pitch error of 0.90 degrees, enter 90.
 
-    menu "System"
-
-        config BASE_STACK_SIZE
-            int "base stack size for system task"
-            range 512 1024
-            default 1024 if IDF_TARGET_ESP32
-            default 512 if IDF_TARGET_ESP32S2
-            default 1024 if IDF_TARGET_ESP32S3
+        config ROLL_CALIB
+            int "Roll trim (deg*100)"
+            range -400 400
+            default 0
+            help
+                If the vehicle rests at a roll error of 0.90 degrees, enter 90.
 
     endmenu
 
-    menu "Buzzer"
-        config BUZZER_ENABLE
-            bool "enable buzzer to play sound"
-            default y if TARGET_FLYINGFREE_V01
-                help
-                Tick if buzzer available
-
-        if BUZZER_ENABLE
-            config BUZ1_PIN_POS
-                int "BUZ1_PIN_POS GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 02 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) BUZ1_PIN_POS
-        endif
-    endmenu
-    
-    menu "UART"
-        config UART1_AVAILABLE
-            bool "UART1 Available"
-            default n if TARGET_FLYINGFREE_V01
-            help
-                Tick if UART1 available
-
-        config UART2_AVAILABLE
-            bool "UART2 Available"
-            default n if TARGET_FLYINGFREE_V01
-            help
-                Tick if UART2 available
-    endmenu
-
-    menu "ADC"
-        config ADC_ENABLE
-            bool "At least one ADC channel available"
-            default y if TARGET_FLYINGFREE_V01
-            help
-                Tick if you want to use an ADC channel
-
-        if ADC_ENABLE
-            config ADC1_PIN
-                int "ADC1_PIN Channel number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 34 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) ADC1_PIN
-        endif
-    endmenu
-
-    menu "I2C"
-        config I2C0_ENABLE
-            bool "Activate I2C channel 0"
-            default y if TARGET_FLYINGFREE_V01
-            help
-                Tick if you want to use I2C channel 0
-
-        config I2C1_ENABLE
-            bool "Activate I2C channel 1"
-            default n if TARGET_FLYINGFREE_V01
-            help
-                Tick if you want to use I2C channel 1
-
-        if I2C0_ENABLE
-            config I2C0_PIN_SDA
-                int "I2C0_PIN_SDA GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 21 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) I2C0_PIN_SDA
-
-            config I2C0_PIN_SCL
-                int "I2C0_PIN_SCL GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 22 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) I2C0_PIN_SCL
-        endif
-
-        if I2C1_ENABLE
-            config I2C1_PIN_SDA
-                int "I2C1_PIN_SDA GPIO number"
-                help
-                    GPIO number (IOxx) I2C0_PIN_SDA
-
-            config I2C1_PIN_SCL
-                int "I2C1_PIN_SCL GPIO number"
-                help
-                    GPIO number (IOxx) I2C0_PIN_SCL
-        endif
-    endmenu
-
-    menu "SPI"
-        config VSPI_ENABLE
-            bool "Activate VSPI channel"
-            default y if TARGET_FLYINGFREE_V01
-            help
-                Tick if you want to use VSPI channel 0
-
-        if VSPI_ENABLE
-            config VSPI_PIN_MISO
-                int "VSPI_PIN_MISO GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 19 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) VSPI_PIN_MISO
-
-            config VSPI_PIN_MOSI
-                int "VSPI_PIN_MOSI GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 23 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) VSPI_PIN_MOSI
-
-            config VSPI_PIN_CLK
-                int "VSPI_PIN_CLK GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 18 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) VSPI_PIN_CLK
-
-            config VSPI_PIN_CS0
-                int "VSPI_PIN_CS0 GPIO number"
-                range 0 39 if TARGET_FLYINGFREE_V01
-                default 05 if TARGET_FLYINGFREE_V01
-                help
-                    GPIO number (IOxx) VSPI_PIN_CS0
-        endif
-    endmenu
-
-    menu "Led config"
-        config LED_PIN_BLUE_ENABLE
-            bool "Blue Led Available"
-            default y if TARGET_FLYINGFREE_V01 
-            help
-                Tick if blue led available
-
-        config LED_PIN_GREEN_ENABLE
-            bool "Green Led Available"
-            default y if TARGET_FLYINGFREE_V01 
-            help
-                Tick if blue led available
-
-        config LED_PIN_RED_ENABLE
-            bool "Red Led Available"
-            default y if TARGET_FLYINGFREE_V01 
-            help
-                Tick if blue led available
-        
-        config LED_PIN_BLUE
-            int "LED_PIN_BLUE GPIO number"
-            depends on LED_PIN_BLUE_ENABLE
-            range 0 39 if TARGET_FLYINGFREE_V01 
-            default 16 if TARGET_FLYINGFREE_V01
-            default -1 if !LED_PIN_BLUE_ENABLE
-            help
-                GPIO number (IOxx) LED_PIN_BLUE
-
-        config LED_PIN_GREEN
-            int "LED_PIN_GREEN GPIO number"
-            depends on LED_PIN_GREEN_ENABLE
-            range 0 39 if TARGET_FLYINGFREE_V01 
-            default 04 if TARGET_FLYINGFREE_V01
-            default -1 if !LED_PIN_GREEN_ENABLE
-            help
-                GPIO number (IOxx) LED_PIN_GREEN
-
-        config LED_PIN_RED
-            int "LED_PIN_RED GPIO number"
-            depends on LED_PIN_RED_ENABLE
-            range 0 39 if TARGET_FLYINGFREE_V01 
-            default 17 if TARGET_FLYINGFREE_V01
-            default -1 if !LED_PIN_RED_ENABLE
-            help
-                GPIO number (IOxx) LED_PIN_RED
-    endmenu
-
-    menu "Motors config"
+    menu "Motors & ESC"
         choice
             prompt "Motor Type"
             default BRUSHLESS if TARGET_FLYINGFREE_V01
@@ -378,15 +244,19 @@ menu "ESPDrone Config"
             
             config DSHOT_150
                 bool "DShot150"
+                depends on BRUSHLESS
     
             config DSHOT_300
                 bool "DShot300"
+                depends on BRUSHLESS
 
             config DSHOT_600
                 bool "DShot600"
+                depends on BRUSHLESS
     
             config PWM
                 bool "PWM"
+                depends on BRUSHED
         endchoice
 
         config MOTOR_THRUST_MAX
@@ -426,46 +296,315 @@ menu "ESPDrone Config"
                 GPIO number (IOxx) MOTOR04_PIN
     endmenu
 
-    menu "Debug options"
-        config DEBUG_ENABLE
-            bool "Activate debug mode"
-            default y
-            help
-                Tick if you want to debug your system
-
-        if DEBUG_ENABLE
+    menu "Power"
 
         choice
-            prompt "Select debug output method"
-            default DEBUG_PRINT_ON_SEGGER_RTT
+            prompt "Battery"
+            default BATTERY_3S
 
-            config DEBUG_PRINT_ON_UART
-                bool "UART"
-                help
-                    Enable debug printing on UART
-
-            config DEBUG_PRINT_ON_SEGGER_RTT
-                bool "JTAG"
-                help
-                    Enable debug printing on SEGGER RTT (JTAG)
+            config BATTERY_3S
+                bool "3S LiPo"
+            config BATTERY_4S
+                bool "4S LiPo"
         endchoice
 
-        endif
+        config BATTERY_CELL_LOW_MV
+            int "Low battery warning (mV per cell)"
+            range 3000 3700
+            default 3200
+            help
+                Pack voltage below this value (times the number of cells) for 5 s raises the low battery state.
+
+        config BATTERY_CELL_CRITICAL_MV
+            int "Critical battery (mV per cell)"
+            range 2800 3600
+            default 3000
+            help
+                Pack voltage below this value (times the number of cells) for 5 s is treated as critical.
+
     endmenu
 
-    menu "Calibration angle"
-        config PITCH_CALIB
-            int "PITCH_CALIB deg*100"
-            range -400 400
-            default 0
-            help
-                if PITCH error angle is 0.90,set this 90
+    menu "Receiver & Link"
+        menu "Wi-Fi access point"
+            config WIFI_BASE_SSID
+                string "Wi-Fi Base SSID"
+                default "ESP-DRONE"
+                help
+                    Wi-Fi Base SSID, 1-16 characters. the final SSID will be BASE_SSID-MAC
+            config WIFI_PASSWORD
+                string "Wi-Fi Password"
+                default "12345678"
+                help
+                    Wi-Fi Password, 8-64 characters
+            config WIFI_CHANNEL
+                int "Wi-Fi/ESP-Now Channel"
+                range 1 13
+                default 6
+                help
+                    Wi-Fi/ESP-Now Channel, 1-13
+            config WIFI_MAX_STA_CONN
+                int "Wi-Fi Max Station Connection"
+                range 1 6
+                default 3
+                help
+                    Wi-Fi Max Station Connection, 1-6
+        endmenu
 
-        config ROLL_CALIB
-            int "ROLL_CALIB deg*100"
-            range -400 400
-            default 0
+        menu "ESP-NOW control link"
+            config ESPNOW_CTRL_ENABLE
+                bool "Enable the ESP-NOW control link"
+                default y
+                help
+                    Receive control frames from a transmitter over ESP-NOW. The wire format is in
+                    espnow_link.h. ESP-NOW uses the channel of the Wi-Fi access point.
+            config ESPNOW_CTRL_PEER_MAC
+                string "Transmitter MAC address (STA MAC)"
+                depends on ESPNOW_CTRL_ENABLE
+                default ""
+                help
+                    Format aa:bb:cc:dd:ee:ff. Only frames from this address are accepted.
+                    Leave empty to accept control from ANY transmitter on the channel (bench use only).
+            config ESPNOW_CTRL_ENCRYPT
+                bool "Encrypt the control link"
+                depends on ESPNOW_CTRL_ENABLE
+                default n
+                help
+                    Needs a transmitter MAC and the same PMK and LMK on the transmitter. The transmitter
+                    must send unicast to the drone's AP MAC.
+            config ESPNOW_CTRL_PMK
+                string "Primary master key (16 characters)"
+                depends on ESPNOW_CTRL_ENCRYPT
+                default ""
+            config ESPNOW_CTRL_LMK
+                string "Local master key (16 characters)"
+                depends on ESPNOW_CTRL_ENCRYPT
+                default ""
+            config ESPNOW_CTRL_LINK_TIMEOUT_MS
+                int "Link timeout (ms)"
+                depends on ESPNOW_CTRL_ENABLE
+                range 50 2000
+                default 250
+                help
+                    Time without a valid control frame after which the failsafe is triggered.
+            config ESPNOW_CTRL_FAILSAFE_DISARM
+                bool "Disarm on link loss"
+                depends on ESPNOW_CTRL_ENABLE
+                default y
+                help
+                    On link loss the setpoint is set to level attitude with zero thrust. This also disarms
+                    the drone, arming again needs a new ARM edge from the transmitter.
+            config ESPNOW_CTRL_START_DISARMED
+                bool "Start disarmed"
+                depends on ESPNOW_CTRL_ENABLE
+                default y
+                help
+                    Boot disarmed so the transmitter has to arm the drone. cfclient can still arm by
+                    setting the system.forceArm parameter.
+            config ESPNOW_CTRL_STATUS_PERIOD_MS
+                int "Status frame period (ms)"
+                depends on ESPNOW_CTRL_ENABLE
+                range 20 1000
+                default 100
+            config ESPNOW_CTRL_MAX_ANGLE_DEG
+                int "Roll/pitch angle at full stick (deg)"
+                depends on ESPNOW_CTRL_ENABLE
+                range 1 45
+                default 15
+            config ESPNOW_CTRL_MAX_YAW_RATE_DPS
+                int "Yaw rate at full stick (deg/s)"
+                depends on ESPNOW_CTRL_ENABLE
+                range 1 360
+                default 30
+            config ESPNOW_CTRL_THRUST_MAX
+                int "Thrust sent to the commander at full throttle"
+                depends on ESPNOW_CTRL_ENABLE
+                range 48 2047
+                default 300
+                help
+                    Same scale as the commander thrust (DShot 48-2047). The brushless mixer limits the
+                    output to DEFAULT_MAX_THRUST in power_distribution_stock.c. The previous ESP-NOW
+                    decoder topped out at 300, which is kept as the default.
+        endmenu
+
+
+        config ENABLE_LEGACY_APP
+            bool "Accept packets of the legacy ESPlane 1.0 app"
+            default n
             help
-                if ROLL error angle is 0.90,set this 90
+                Decodes the 11 byte UDP control packets of the first ESPlane app.
     endmenu
+
+    menu "Failsafe & Arming"
+
+        config FAILSAFE_STABILIZE_TIMEOUT_MS
+            int "No setpoint: level the vehicle after (ms)"
+            range 100 5000
+            default 500
+            help
+                Time without a new setpoint from any link after which the commander forces
+                roll and pitch to zero and keeps the last thrust.
+
+        config FAILSAFE_SHUTDOWN_TIMEOUT_MS
+            int "No setpoint: cut the thrust after (ms)"
+            range 200 20000
+            default 2000
+            help
+                Time without a new setpoint after which the commander drops to a null setpoint.
+                Must be larger than the stabilize timeout.
+
+        comment "Arming and link-loss behaviour of the ESP-NOW link are in Receiver & Link."
+
+    endmenu
+
+    menu "Flight control"
+
+        config ENABLE_POSITION_HOLD_MODE
+            bool "Position hold mode"
+            default y
+            help
+                Allows position and altitude hold when the sensors for it are fitted.
+
+        config ENABLE_COMMAND_MODE_SET
+            bool "Allow the client to switch the flight mode"
+            depends on ENABLE_POSITION_HOLD_MODE
+            default y
+
+        menu "PID gains"
+            comment "Gains are entered times 1000 (75000 = 75.0). They are also tunable at run time through the CRTP params."
+
+        menu "Rate controller (deg/s -> torque)"
+        config PID_ROLL_RATE_KP
+            int "Roll rate Kp (x0.001)"
+            range 0 1000000
+            default 75000
+        config PID_ROLL_RATE_KI
+            int "Roll rate Ki (x0.001)"
+            range 0 1000000
+            default 500
+        config PID_ROLL_RATE_KD
+            int "Roll rate Kd (x0.001)"
+            range 0 1000000
+            default 1000
+        config PID_ROLL_RATE_INTEGRATION_LIMIT
+            int "Roll rate integral limit (x0.001)"
+            range 0 1000000
+            default 33300
+        config PID_PITCH_RATE_KP
+            int "Pitch rate Kp (x0.001)"
+            range 0 1000000
+            default 85000
+        config PID_PITCH_RATE_KI
+            int "Pitch rate Ki (x0.001)"
+            range 0 1000000
+            default 2000
+        config PID_PITCH_RATE_KD
+            int "Pitch rate Kd (x0.001)"
+            range 0 1000000
+            default 1000
+        config PID_PITCH_RATE_INTEGRATION_LIMIT
+            int "Pitch rate integral limit (x0.001)"
+            range 0 1000000
+            default 33300
+        config PID_YAW_RATE_KP
+            int "Yaw rate Kp (x0.001)"
+            range 0 1000000
+            default 0
+        config PID_YAW_RATE_KI
+            int "Yaw rate Ki (x0.001)"
+            range 0 1000000
+            default 0
+        config PID_YAW_RATE_KD
+            int "Yaw rate Kd (x0.001)"
+            range 0 1000000
+            default 0
+        config PID_YAW_RATE_INTEGRATION_LIMIT
+            int "Yaw rate integral limit (x0.001)"
+            range 0 1000000
+            default 166700
+        endmenu
+        menu "Attitude controller (deg -> deg/s)"
+        config PID_ROLL_KP
+            int "Roll Kp (x0.001)"
+            range 0 1000000
+            default 10000
+        config PID_ROLL_KI
+            int "Roll Ki (x0.001)"
+            range 0 1000000
+            default 1000
+        config PID_ROLL_KD
+            int "Roll Kd (x0.001)"
+            range 0 1000000
+            default 100
+        config PID_ROLL_INTEGRATION_LIMIT
+            int "Roll integral limit (x0.001)"
+            range 0 1000000
+            default 20000
+        config PID_PITCH_KP
+            int "Pitch Kp (x0.001)"
+            range 0 1000000
+            default 12000
+        config PID_PITCH_KI
+            int "Pitch Ki (x0.001)"
+            range 0 1000000
+            default 2000
+        config PID_PITCH_KD
+            int "Pitch Kd (x0.001)"
+            range 0 1000000
+            default 100
+        config PID_PITCH_INTEGRATION_LIMIT
+            int "Pitch integral limit (x0.001)"
+            range 0 1000000
+            default 20000
+        config PID_YAW_KP
+            int "Yaw Kp (x0.001)"
+            range 0 1000000
+            default 0
+        config PID_YAW_KI
+            int "Yaw Ki (x0.001)"
+            range 0 1000000
+            default 0
+        config PID_YAW_KD
+            int "Yaw Kd (x0.001)"
+            range 0 1000000
+            default 0
+        config PID_YAW_INTEGRATION_LIMIT
+            int "Yaw integral limit (x0.001)"
+            range 0 1000000
+            default 50000
+        endmenu
+        endmenu
+
+    endmenu
+
+    menu "Debug & logging"
+
+        choice DEBUG_OUTPUT
+            prompt "Debug message output"
+            default DEBUG_PRINT_ON_ESPLOG
+            help
+                Where DEBUG_PRINTx messages go.
+
+            config DEBUG_PRINT_ON_ESPLOG
+                bool "ESP-IDF log (console UART)"
+
+            config DEBUG_PRINT_ON_SEGGER_RTT
+                bool "SEGGER SystemView over JTAG"
+                depends on APPTRACE_SV_ENABLE
+                help
+                    Needs the trace destination set to JTAG and SystemView enabled under
+                    Component config -> Application Level Tracing. profiles/sysview.defaults
+                    does that.
+        endchoice
+
+    endmenu
+    menu "System"
+
+        config BASE_STACK_SIZE
+            int "base stack size for system task"
+            range 512 1024
+            default 1024 if IDF_TARGET_ESP32
+            default 512 if IDF_TARGET_ESP32S2
+            default 1024 if IDF_TARGET_ESP32S3
+    endmenu
+
 endmenu

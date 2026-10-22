@@ -25,14 +25,10 @@ before_script:
 build_demo_cmake:
   <<: *build_examples_template
   script:
-    - idf.py fullclean
+    - idf.py set-target esp32
     - idf.py build
     - idf.py fullclean
-    - idf.py set-target esp32s2
-    - idf.py build
-    - idf.py fullclean
-    - idf.py set-target esp32s3
-    - idf.py build
+    - idf.py -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;profiles/sysview.defaults" reconfigure build
 
 build_docs:
     stage: build

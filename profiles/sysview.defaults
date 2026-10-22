@@ -1,0 +1,5 @@
+# Debug messages and traces through SEGGER SystemView over JTAG.
+# The JTAG pins (GPIO12-15 on the ESP32) are then not available to the board.
+CONFIG_APPTRACE_DEST_JTAG=y
+CONFIG_APPTRACE_SV_ENABLE=y
+CONFIG_DEBUG_PRINT_ON_SEGGER_RTT=y
