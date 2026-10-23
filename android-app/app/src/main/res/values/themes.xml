@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.EspDrone" parent="android:Theme.Material.NoActionBar" />
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- USB serial chips found on ESP32 boards (vendor and product ids are decimal) -->
+<resources>
+    <usb-device vendor-id="4292" product-id="60000" />   <!-- Silicon Labs CP210x 10c4:ea60 -->
+    <usb-device vendor-id="6790" product-id="29987" />   <!-- WCH CH340 1a86:7523 -->
+    <usb-device vendor-id="6790" product-id="21795" />   <!-- WCH CH9102 1a86:55d4 -->
+    <usb-device vendor-id="1027" product-id="24577" />   <!-- FTDI FT232 0403:6001 -->
+    <usb-device vendor-id="12346" product-id="4097" />   <!-- ESP32-S3/C3 USB-Serial-JTAG 303a:1001 -->
+</resources>
