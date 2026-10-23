@@ -126,6 +126,8 @@ protocol, and is not a fit for the bridge.
 
 ## Towards the phone app
 
+A first draft of the Android app is in [`android-app/`](../../android-app) (never built yet, see its README).
+
 The bridge protocol is the app's protocol: the app replaces `groundstation.py` and sends the same frames.
 
 | Topic | Plan |
