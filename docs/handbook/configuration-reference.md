@@ -131,6 +131,7 @@ them see [Configuration](configuration.md).
 | `ESPNOW_CTRL_FAILSAFE_DISARM` | Disarm on link loss | on | on |  |
 | `ESPNOW_CTRL_START_DISARMED` | Start disarmed | on | on |  |
 | `ESPNOW_CTRL_STATUS_PERIOD_MS` | Status frame period (ms) | `100` | `100` | 20 to 1000 |
+| `ESPNOW_CTRL_TELEMETRY_PERIOD_MS` | Telemetry frame period (ms, 0 = off) | `50` | `50` | 0 to 1000 |
 | `ESPNOW_CTRL_MAX_ANGLE_DEG` | Roll/pitch angle at full stick (deg) | `15` | `15` | 1 to 45 |
 | `ESPNOW_CTRL_MAX_YAW_RATE_DPS` | Yaw rate at full stick (deg/s) | `30` | `30` | 1 to 360 |
 | `ESPNOW_CTRL_THRUST_MAX` | Thrust sent to the commander at full throttle | `300` | `300` | 48 to 2047 |

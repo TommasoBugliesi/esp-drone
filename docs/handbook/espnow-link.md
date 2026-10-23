@@ -6,6 +6,7 @@ No pairing handshake, no router, one hop.
 * Implementation: [`espnow_link.c`](../../components/core/crazyflie/hal/src/espnow_link.c)
 * Wire format (shared with the transmitter): [`espnow_link.h`](../../components/core/crazyflie/hal/interface/espnow_link.h)
 * Reference transmitter: [`examples/espnow_transmitter`](../../examples/espnow_transmitter)
+* USB bridge and laptop tool: [Ground station](ground-station.md)
 * Unit test: [`tests/host/test_espnow_link.c`](../../tests/host/test_espnow_link.c)
 
 ## Radio setup
@@ -62,6 +63,25 @@ Values outside the range are clamped.
 
 Sent every `ESPNOW_CTRL_STATUS_PERIOD_MS` (100 ms) while the link is up.
 
+### Telemetry, drone to transmitter (32 bytes)
+
+| Offset | Size | Field | Meaning |
+|---|---|---|---|
+| 0 | 1 | `magic` | `0xD7` |
+| 1 | 1 | `version` | `1` |
+| 2 | 1 | `type` | `3` |
+| 3 | 1 | `flags` | as in STATUS |
+| 4 | 2 | `seq` | telemetry frame counter |
+| 6 | 6 | `roll`, `pitch`, `yaw` | estimated attitude, int16, 0.01 degree |
+| 12 | 6 | `gyroX`, `gyroY`, `gyroZ` | body rates, int16, 0.1 deg/s |
+| 18 | 2 | `thrust` | thrust given to the mixer |
+| 20 | 8 | `motor[4]` | mixer outputs M1-M4, DShot 48-2047 on brushless |
+| 28 | 2 | `batteryMv` | pack voltage in mV |
+| 30 | 2 | `crc` | |
+
+Sent every `ESPNOW_CTRL_TELEMETRY_PERIOD_MS` (50 ms, 0 turns it off) while the link is up. The values are the
+`stabilizer.*`, `gyro.*` and `motor.*` log variables. A transmitter that does not know type 3 ignores it.
+
 ## Arming, kill and failsafe
 
 ```mermaid
@@ -110,6 +130,7 @@ refuses to start with encryption on and no keys.
 | `ESPNOW_CTRL_FAILSAFE_DISARM` | on | |
 | `ESPNOW_CTRL_START_DISARMED` | on | |
 | `ESPNOW_CTRL_STATUS_PERIOD_MS` | 100 | 20 to 1000 |
+| `ESPNOW_CTRL_TELEMETRY_PERIOD_MS` | 50 | 0 (off) to 1000 |
 | `ESPNOW_CTRL_MAX_ANGLE_DEG` | 15 | 1 to 45 |
 | `ESPNOW_CTRL_MAX_YAW_RATE_DPS` | 30 | 1 to 360 |
 | `ESPNOW_CTRL_THRUST_MAX` | 300 | 48 to 2047 |
@@ -133,8 +154,9 @@ including the header so only the wire format is pulled in.
 
 ### Phone as a joypad
 
-A phone cannot send ESP-NOW. Put an ESP32 between them: the phone talks to the bridge over BLE or
-Wi-Fi/UDP, the bridge runs the transmitter code. Two rules for the bridge:
+A phone cannot send ESP-NOW. Put an ESP32 between them: [`examples/espnow_bridge`](../../examples/espnow_bridge)
+forwards frames between a USB serial port and the drone, see [Ground station](ground-station.md). Two rules for
+any bridge:
 
 * It owns the **link to the drone**, so if the phone link drops it must stop sending (the drone's failsafe
   then takes over) or send `KILL`, never repeat the last stick values.
@@ -145,7 +167,7 @@ Wi-Fi/UDP, the bridge runs the transmitter code. Two rules for the bridge:
 | | |
 |---|---|
 | Builds on ESP-IDF 4.4.8, transmitter example builds | yes |
-| Host unit test (arming edge, thrust rule, scaling, kill latch, foreign stop, failsafe, validation, MAC check) | yes, passes with AddressSanitizer and UBSan |
+| Host unit test (arming edge, thrust rule, scaling, kill latch, foreign stop, failsafe, validation, MAC check, telemetry encoding) | yes, passes with AddressSanitizer and UBSan |
 | The task loop: sequence and staleness rejection, "link comes up with ARM set", status scheduling | **not covered by the unit test** |
 | Over the air: range, latency, loss, encryption interoperability | **not verified on hardware** |
 | RSSI | not available, the ESP-IDF 4.4 receive callback does not provide it |

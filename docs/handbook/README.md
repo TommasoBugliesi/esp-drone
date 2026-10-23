@@ -11,6 +11,7 @@ read what you need.
 | Understand what runs when, and why | [Architecture](architecture.md) |
 | Change pins, motors, battery, PID gains | [Configuration](configuration.md) |
 | Fly with an ESP32 transmitter or a phone bridge | [ESP-NOW link](espnow-link.md) |
+| Fly from the laptop keyboard through a USB bridge, plan the phone app | [Ground station](ground-station.md) |
 | See the pin map, or choose an IMU / EEPROM / SD card | [Hardware](hardware.md) |
 | Contribute, run the tests, see what changed | [Development](development.md) |
 | Know what is wrong or could be better | [Code review](code-review.md) |
