@@ -20,10 +20,10 @@ custom **FlyingFree V1.0** board: BMI160 IMU over SPI, brushless motors driven w
 ## Quick start
 
 ```bash
-tools/setup-idf.sh                    # once: installs ESP-IDF 4.4.8 under ~/esp, no root needed
+tools/setup-idf.sh                    # once: installs ESP-IDF 4.4.8 (ESP32 and S3) under ~/esp, no root needed
 . ~/esp/idf-env.sh                    # in every new shell
 
-idf.py set-target esp32
+idf.py set-target esp32               # FlyingFree V1.0; esp32s3 for FlyingFree V2
 idf.py menuconfig                     # ESPDrone Config: pins, sensors, motors, link, PID gains
 idf.py build
 idf.py -p /dev/ttyUSB0 flash monitor

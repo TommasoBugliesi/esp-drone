@@ -31,13 +31,18 @@ idf.py --version        # ESP-IDF v4.4.8
 
 ## 3. Build
 
+The target chip selects the board:
+
 ```bash
-idf.py set-target esp32
+idf.py set-target esp32       # FlyingFree V1.0
+idf.py set-target esp32s3     # FlyingFree V2 (ESP32-S3)
 idf.py build
 ```
 
-The image is about 0.8 MB of the 1 MB application partition, so only ~23 % headroom is left, see
-[code review](code-review.md#flash-size).
+Changing the target clears `sdkconfig`, so the board's defaults apply. On V1.0 the image is about 0.8 MB of
+the 1 MB application partition (about 24 % left, see [code review](code-review.md#flash-size)); V2 uses the
+1.5 MB partition of its 8 MB flash and flashes and logs over its USB-C port (`idf.py -p /dev/ttyACM0 flash
+monitor`).
 
 ### Optional configuration layers
 
@@ -46,7 +51,7 @@ Layers in [`profiles/`](../../profiles) are added on top of `sdkconfig.defaults`
 | Profile | Use it for |
 |---|---|
 | `bench.defaults` | First power-up, props off: motor ceiling 300 (about 12 % throttle), boots disarmed, failsafe disarms |
-| `sysview.defaults` | Debug messages and traces through SEGGER SystemView over JTAG (uses GPIO12-15) |
+| `sysview.defaults` | Debug messages and traces through SEGGER SystemView over JTAG (V1.0: external probe on GPIO12-15, V2: the built-in USB-JTAG) |
 
 ```bash
 idf.py -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;profiles/bench.defaults" reconfigure build

@@ -87,7 +87,7 @@ good flight controller, **P2** worthwhile, **P3** later.
 |---|---|---|---|
 | P1 | **Add more host tests**: PID, mixer, filters, CRC, the ESP-NOW task loop | Only the link state machine is tested. These modules are pure logic and need no hardware. | M |
 | P1 | **Run the tests and the transmitter build in CI** | CI builds the firmware only | S |
-| P2 | **Rename `stm32_legacy.h`** (38 includers, it holds the `M2T` family and a few typedefs) and **`platform_cf2.c`**; keep only what is used | They say STM32 in an ESP32 project. Wait until the sensor work lands, it touches the same files. | S |
+| P2 | **Rename `stm32_legacy.h`** (38 includers, it holds the `M2T` family and a few typedefs); keep only what is used. (`platform_cf2.c` is now `platform_boards.c`.) | It says STM32 in an ESP32 project. Wait until the sensor work lands, it touches the same files. | S |
 | P2 | **Split the `crazyflie` component** (hal, modules, utils) into smaller components with explicit dependencies | One 20 000 line component makes everything depend on everything | L |
 | P2 | **Fix the 10 compiler warnings**, enable `-Werror` in CI | Warnings hide new ones | S |
 | P2 | **Move `_dshotCmd` out of `motors_brushless.h`**; a `static` array in a header gives every includer its own copy and a warning | | S |

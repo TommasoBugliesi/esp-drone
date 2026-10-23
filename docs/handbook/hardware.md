@@ -1,6 +1,7 @@
 # Hardware
 
-The FlyingFree V1.0 as the firmware sees it, and the decisions that are still open.
+The FlyingFree V1.0 as the firmware sees it, and the decisions that are still open. The ESP32-S3 successor is
+in [hardware/flyingfree-v2](../../hardware/flyingfree-v2/README.md).
 
 > **No schematic of this board is in the repository.** [`hardware/`](../../hardware) holds the upstream
 > ESP-Drone boards. Everything below comes from the Kconfig defaults and the code. Check pins against your
@@ -11,7 +12,7 @@ The FlyingFree V1.0 as the firmware sees it, and the decisions that are still op
 | | |
 |---|---|
 | MCU | ESP32 (dual core), Wi-Fi and BLE |
-| IMU | BMI160 on SPI (VSPI), polled at 1 kHz, interrupt pin not used yet |
+| IMU | BMI160 on SPI3, polled at 1 kHz, interrupt pin not used yet (`IMU_INT1_PIN` = -1) |
 | Magnetometer | QMC5883L on I2C0 (optional) |
 | Barometer | BMP280 (optional, driver is a stub) |
 | Range finder | VL53L0X on I2C0 (optional) |
@@ -25,11 +26,11 @@ The FlyingFree V1.0 as the firmware sees it, and the decisions that are still op
 | Function | GPIO | Setting |
 |---|---|---|
 | I2C0 SDA / SCL | 21 / 22 | `I2C0_PIN_SDA`, `I2C0_PIN_SCL` |
-| VSPI MISO / MOSI / CLK / CS0 | 19 / 23 / 18 / 5 | `VSPI_PIN_*` (BMI160 is on CS0) |
+| IMU SPI (SPI3) MISO / MOSI / CLK / CS | 19 / 23 / 18 / 5 | `IMU_SPI_PIN_*` |
 | Motor 1 / 2 / 3 / 4 | 27 / 26 / 25 / 33 | `MOTOR01_PIN` to `MOTOR04_PIN` |
 | LED blue / green / red | 16 / 4 / 17 | `LED_PIN_*` |
 | Buzzer | 2 | `BUZ1_PIN_POS` |
-| Battery voltage (ADC1 channel 6) | 34 | `ADC1_PIN` |
+| Battery voltage (ADC1 channel 6) | 34 | `VBAT_ADC_PIN` |
 
 ### What is left
 
@@ -48,6 +49,10 @@ One input is still needed for the IMU data-ready interrupt (35, 36 or 39 are nat
 ## Open decisions
 
 ### IMU and magnetometer
+
+> **Decided for the ESP32-S3 board:** ICM-42688-P on SPI2 and an MMC5983MA magnetometer on SPI3. The
+> BMI270 + BMM350 option below was dropped, see [ESP32-S3 board requirements](esp32-s3-board-requirements.md#imu-and-magnetometer-pairs-considered).
+> It still describes the trade-off for the current ESP32 board.
 
 Today the BMI160 gives accel and gyro and the QMC5883L sits on I2C0. A proposed alternative is a
 **Bosch BMI270 with a BMM350** magnetometer attached to the IMU's auxiliary interface.
@@ -104,7 +109,7 @@ With the pins that are left:
 
 | Option | Pins | Notes |
 |---|---|---|
-| SD over SPI on the **existing VSPI bus** | one new chip select, for example 32 | cheapest, but it shares the bus with the IMU, and `spi_drv.c` supports only one device per bus today |
+| SD over SPI on the **existing IMU bus** | one new chip select, for example 32 | cheapest, but it shares the bus with the IMU (`spi_drv.c` now supports several devices per bus) |
 | SD over SPI on a **separate bus** | CLK 14, MOSI 13, MISO 35, CS 32 (pin matrix) | IMU timing stays isolated. Not available together with JTAG (13, 14). |
 | SDMMC 1-bit | CLK 14, CMD 15, D0 2 | fixed pins on the ESP32, and GPIO2 is the buzzer |
 | USB mass storage | n/a | the classic ESP32 has no USB device or host. The S3 does, see the [ESP32-S3 roadmap](esp32-s3-roadmap.md). |

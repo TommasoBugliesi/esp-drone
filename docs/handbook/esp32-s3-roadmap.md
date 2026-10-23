@@ -90,7 +90,7 @@ versions.
 
 | Capability | State today | Needed | Effort |
 |---|---|---|---|
-| ESP-IDF | 4.4.8, S3 only as a preview there | **port to ESP-IDF 5.x**: RMT, ADC, I2C and GPIO drivers changed, `esp_now` already handled | L |
+| ESP-IDF | 4.4.8, which supports the S3, but this repository blocks it (see [firmware for two boards](firmware-dual-target.md)) | **port to ESP-IDF 5.x** for the new RMT, ADC, I2C and USB drivers, `esp_now` already handled | L |
 | Hardware abstraction | drivers call ESP-IDF directly | thin `hal_uart / spi / i2c / motor / time` so S3 specifics stay in one place | M |
 | RC receiver input | ESP-NOW and UDP only | **CRSF (ELRS, Crossfire) and SBUS** on a UART, with link statistics | M |
 | Serial protocol stack | CRTP only | **MSP v1/v2** (OSD, telemetry, configuration), CRSF telemetry | M-L |
@@ -153,6 +153,8 @@ Rules that make it work:
 | **5. Video** (optional) | a companion S3 with a camera and an overlay over Wi-Fi, or evaluate the ESP32-P4 | as needed |
 
 ## Board design notes for the S3
+
+The full list, with priorities and a GPIO budget, is in [ESP32-S3 board requirements](esp32-s3-board-requirements.md).
 
 | Topic | Note |
 |---|---|

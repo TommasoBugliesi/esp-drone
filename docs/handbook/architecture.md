@@ -141,10 +141,12 @@ per packet. Parameters are exposed the same way and **are not stored**, they res
 | Directory | Contents |
 |---|---|
 | `components/core/crazyflie/modules/src` | stabilizer, controllers, estimators, commander, CRTP, log, param, system |
-| `components/core/crazyflie/hal/src` | sensors (`sensors_flyingfree_v01.c`), power management, Wi-Fi link, ESP-NOW link, LED sequences, buzzer |
+| `components/core/crazyflie/hal/src` | sensors (`sensors_flyingfree_v01.c`, `sensors_flyingfree_v02.c`, shared `sensors_common.c`), power management, Wi-Fi link, ESP-NOW link, LED sequences, buzzer |
 | `components/core/crazyflie/utils` | filters, PID helpers, rate supervisor |
 | `components/drivers/general` | motors (DShot and brushed), LEDs, buzzer, ADC, Wi-Fi |
 | `components/drivers/i2c_spi_devices` | BMI160 |
 | `components/drivers/i2c_devices` | QMC5883L, BMP280, VL53L0X/L1X, EEPROM stub |
 | `components/drivers/i2c_bus`, `spi_bus` | bus layers |
-| `components/platform` | board identification (`FF01`) and the compatibility header `stm32_legacy.h` |
+| `components/platform` | board identification (`FF01`, `FF02`, `platform_boards.c`) and the compatibility header `stm32_legacy.h` |
+| `components/config/include/board.h` | what differs between the boards apart from pins: SPI hosts, RMT channels, battery divider |
+| `components/drivers/spi_devices`, `i2c_devices` | sensor drivers, including ICM-42688-P, MMC5983MA and DPS310 for V2 |

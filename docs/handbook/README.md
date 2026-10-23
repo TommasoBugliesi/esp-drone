@@ -15,6 +15,9 @@ read what you need.
 | Contribute, run the tests, see what changed | [Development](development.md) |
 | Know what is wrong or could be better | [Code review](code-review.md) |
 | Move to an ESP32-S3 with GPS, video and OSD | [ESP32-S3 roadmap](esp32-s3-roadmap.md) |
+| Specify the ESP32-S3 board (F4V3S features, 1S-3S) | [ESP32-S3 board requirements](esp32-s3-board-requirements.md) |
+| Run one firmware on both boards, port Betaflight code | [Firmware for two boards](firmware-dual-target.md) |
+| Design and build the new PCB | [PCB plan](../../hardware/flyingfree-v2/README.md) |
 
 ## Terms used
 
@@ -31,6 +34,6 @@ read what you need.
 
 ## Conventions
 
-* Pin numbers are GPIO numbers of the ESP32.
+* Pin numbers are GPIO numbers of the board's chip (ESP32 on V1.0, ESP32-S3 on V2).
 * Gains in Kconfig are stored times 1000 (`75000` means 75.0).
 * "Not verified on hardware" is written wherever something has only been compiled or unit tested.
