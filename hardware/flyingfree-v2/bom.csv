@@ -1,0 +1,124 @@
+ref,value,part,package,sheet,function,populate,note
+D1,SMBJ13A,Littelfuse SMBJ13A,SMB (DO-214AA),1,Battery input and protection,yes,"TVS, cathode to VBAT"
+C1,22uF 35V,-,1210 X5R,1,Battery input and protection,yes,
+C2,22uF 35V,-,1210 X5R,1,Battery input and protection,yes,
+U1,MP28167-A,MPS MP28167GQ-A,QFN-16 3x3,1,"5 V rail, buck-boost (PWR-04)",yes,
+L1,4.7uH Isat>=4A shielded,5x5 mm class (Coilcraft XGL5030 / Wurth WE-XHMI),5x5 mm,1,"5 V rail, buck-boost (PWR-04)",yes,
+C3,22uF 25V,-,1206,1,"5 V rail, buck-boost (PWR-04)",yes,"CIN, at pin IN"
+C4,5x 22uF 10V,-,0805,1,"5 V rail, buck-boost (PWR-04)",yes,COUT >= 5 x 22 uF (DS)
+C5,100nF,-,0402,1,"5 V rail, buck-boost (PWR-04)",yes,
+C6,100nF,-,0402,1,"5 V rail, buck-boost (PWR-04)",yes,
+C7,1uF,-,0402,1,"5 V rail, buck-boost (PWR-04)",yes,
+R1,430k 1%,-,0402,1,"5 V rail, buck-boost (PWR-04)",yes,DS table 1
+R2,107k 1%,-,0402,1,"5 V rail, buck-boost (PWR-04)",yes,1.0 V x (1 + 430/107) = 5.02 V
+R3,100k,-,0402,1,"5 V rail, buck-boost (PWR-04)",yes,EN on; internal UVLO 2.65 V
+D2,Schottky 2A,Nexperia PMEG3020EH / SS24,SOD-123F,1,USB power path (PWR-09),yes,"anode VBUS, cathode +5V"
+U2,TLV62569,TI TLV62569DBVR,SOT-23-5,1,"3.3 V rail, buck (PWR-05)",yes,
+L2,2.2uH Isat>=3A shielded,Coilcraft XAL4020-222ME (TI EVM) or smaller,4x4 / 2.5x2 mm,1,"3.3 V rail, buck (PWR-05)",yes,
+C8,4.7uF,-,0603,1,"3.3 V rail, buck (PWR-05)",yes,CIN
+C9,22uF,-,0805,1,"3.3 V rail, buck (PWR-05)",yes,COUT 10-47 uF
+R7,100k 1%,-,0402,1,"3.3 V rail, buck (PWR-05)",yes,
+R8,22.1k 1%,-,0402,1,"3.3 V rail, buck (PWR-05)",yes,
+U3,LP5907-3.3,TI LP5907MFX-3.3/NOPB,SOT-23-5,1,"Sensor 3.3 V, low-noise LDO (PWR-06)",yes,
+C10,1uF,-,0402,1,"Sensor 3.3 V, low-noise LDO (PWR-06)",yes,
+C11,1uF,-,0402,1,"Sensor 3.3 V, low-noise LDO (PWR-06)",yes,low ESR
+U4,MP28167-A,MPS MP28167GQ-A,QFN-16 3x3,2,"9 V video rail, buck-boost (PWR-07)",yes,
+L3,4.7uH Isat>=4A shielded,5x5 mm class (Coilcraft XGL5030 / Wurth WE-XHMI),5x5 mm,2,"9 V video rail, buck-boost (PWR-07)",yes,
+C12,22uF 25V,-,1206,2,"9 V video rail, buck-boost (PWR-07)",yes,CIN
+C13,5x 22uF 16V,-,0805,2,"9 V video rail, buck-boost (PWR-07)",yes,COUT
+C14,100nF,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,
+C15,100nF,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,
+C16,1uF,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,
+R9,866k 1%,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,
+R10,107k 1%,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,1.0 V x (1 + 866/107) = 9.09 V
+R11,430k 1%,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,
+R12,100k 1%,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,with the internal 2M: on above ~6.0 V
+Q1,N-MOSFET,AOS AO3400A,SOT-23,2,"9 V video rail, buck-boost (PWR-07)",yes,
+R14,100k,-,0402,2,"9 V video rail, buck-boost (PWR-07)",yes,Q1 on at reset: 9 V off
+FB1,ferrite 600R@100MHz 3A,-,0805,2,"9 V video rail, buck-boost (PWR-07)",yes,
+R15,56k 1%,-,0402,2,"Battery voltage and current sense (PWR-10, PWR-11)",yes,
+R16,10k 1%,-,0402,2,"Battery voltage and current sense (PWR-10, PWR-11)",yes,
+C17,47nF,-,0402,2,"Battery voltage and current sense (PWR-10, PWR-11)",yes,
+R17,1k,-,0402,2,"Battery voltage and current sense (PWR-10, PWR-11)",yes,
+C18,10nF,-,0402,2,"Battery voltage and current sense (PWR-10, PWR-11)",yes,
+D3,BAT54S,Nexperia BAT54S,SOT-23,2,"Battery voltage and current sense (PWR-10, PWR-11)",yes,
+U5,ESP32-S3-MINI-1U-N8,Espressif ESP32-S3-MINI-1U-N8,LGA-65 15.4x15.4x2.4,3,ESP32-S3-MINI-1U-N8,yes,U.FL antenna to an external 2.4 GHz antenna (MEC-07)
+C19,22uF,-,0805,3,ESP32-S3-MINI-1U-N8,yes,>= 10 uF at the power entrance
+C20,100nF,-,0402,3,ESP32-S3-MINI-1U-N8,yes,
+R18,10k,-,0402,3,"Reset and boot (MCU-02, MCU-04)",yes,
+C21,1uF,-,0402,3,"Reset and boot (MCU-02, MCU-04)",yes,
+SW1,BOOT,tactile 3x4 mm SMD,SMD,3,"Reset and boot (MCU-02, MCU-04)",yes,
+R19,10k,-,0402,3,"Reset and boot (MCU-02, MCU-04)",yes,
+J2,USB-C 16p,GCT USB4105-GF-A,"USB-C, TH shell legs",3,USB-C (MCU-03),yes,
+R20,5.1k,-,0402,3,USB-C (MCU-03),yes,
+R21,5.1k,-,0402,3,USB-C (MCU-03),yes,
+R22,0R (22R option),-,0402,3,USB-C (MCU-03),yes,
+R23,0R (22R option),-,0402,3,USB-C (MCU-03),yes,
+U6,USBLC6-2SC6,ST USBLC6-2SC6,SOT-23-6,3,USB-C (MCU-03),yes,
+C22,10uF,-,0603,3,USB-C (MCU-03),yes,
+C36,100nF,-,0402,3,USB-C (MCU-03),yes,at U6 VBUS (DS)
+R24,1k,-,0402,3,"Status LEDs (IND-01, IND-02)",yes,
+D4,LED blue (power),-,0603,3,"Status LEDs (IND-01, IND-02)",yes,
+R25,1k,-,0402,3,"Status LEDs (IND-01, IND-02)",yes,
+D5,LED red,-,0603,3,"Status LEDs (IND-01, IND-02)",yes,
+R26,1k,-,0402,3,"Status LEDs (IND-01, IND-02)",yes,
+D6,LED green,-,0603,3,"Status LEDs (IND-01, IND-02)",yes,
+Q2,N-MOSFET,AOS AO3400A,SOT-23,3,Buzzer driver (IND-03),yes,
+R27,100R,-,0402,3,Buzzer driver (IND-03),yes,
+R28,100k,-,0402,3,Buzzer driver (IND-03),yes,also holds strap IO3 low
+D7,1N4148W,-,SOD-323,3,Buzzer driver (IND-03),yes,"flyback, cathode +5V"
+U7,74AHCT1G125,TI SN74AHCT1G125DBVR,SOT-23-5,3,LED strip buffer (IND-04),yes,
+R29,330R,-,0402,3,LED strip buffer (IND-04),yes,
+C23,100nF,-,0402,3,LED strip buffer (IND-04),yes,
+U8,ICM-42688-P,TDK ICM-42688-P,LGA-14 2.5x3x0.91,4,"IMU ICM-42688-P on SPI2 (SEN-01, SEN-02)",yes,
+C24,100nF X7R,-,0402,4,"IMU ICM-42688-P on SPI2 (SEN-01, SEN-02)",yes,VDD
+C26,2.2uF X7R,-,0402,4,"IMU ICM-42688-P on SPI2 (SEN-01, SEN-02)",yes,VDD
+C25,10nF X7R,-,0402,4,"IMU ICM-42688-P on SPI2 (SEN-01, SEN-02)",yes,VDDIO
+U9,MMC5983MA,MEMSIC MMC5983MA,LGA-16 3x3x1,4,"Magnetometer MMC5983MA on SPI3 (SEN-03, SEN-04)",yes,
+C28,1uF,-,0402,4,"Magnetometer MMC5983MA on SPI3 (SEN-03, SEN-04)",yes,VDD
+C27,100nF,-,0402,4,"Magnetometer MMC5983MA on SPI3 (SEN-03, SEN-04)",yes,VDDIO
+C29,10uF low ESR,-,0603 X5R,4,"Magnetometer MMC5983MA on SPI3 (SEN-03, SEN-04)",yes,"SET/RESET, at the pin"
+R30,10k,-,0402,4,"Magnetometer MMC5983MA on SPI3 (SEN-03, SEN-04)",yes,CS idle high
+U10,DPS310,Infineon DPS310XTSA1,"VLGA-8 2.0x2.5, 0.65 pitch",4,Barometer DPS310 on I2C0 (SEN-06),yes,
+C30,100nF,-,0402,4,Barometer DPS310 on I2C0 (SEN-06),yes,
+R31,2.2k,-,0402,4,"I2C0 pull-ups and EEPROM (COM-04, STO-03)",yes,
+R32,2.2k,-,0402,4,"I2C0 pull-ups and EEPROM (COM-04, STO-03)",yes,
+U11,24LC256,Microchip 24LC256T-I/ST,TSSOP-8,4,"I2C0 pull-ups and EEPROM (COM-04, STO-03)",DNP,
+C31,100nF,-,0402,4,"I2C0 pull-ups and EEPROM (COM-04, STO-03)",DNP,
+J3,microSD push-push,Hirose DM3AT-SF-PEJM5,"SMD, 1.68 mm high",4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+R33,10k,-,0402,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+R34,10k,-,0402,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+R35,10k,-,0402,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+R36,10k,-,0402,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+R37,10k,-,0402,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+C32,10uF,-,0603,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+C33,100nF,-,0402,4,"microSD, SDMMC 1-bit (STO-01, STO-02)",yes,
+J4,ESC 8p SH1.0,JST SM08B-SRSS-TB,SH 1.0 mm side entry,5,"ESC connector, 8-pin JST-SH (MOT-01)",yes,
+R38,100R,-,0402,5,Motor and servo outputs (MOT-02..05),yes,
+R39,100R,-,0402,5,Motor and servo outputs (MOT-02..05),yes,
+R40,100R,-,0402,5,Motor and servo outputs (MOT-02..05),yes,
+R41,100R,-,0402,5,Motor and servo outputs (MOT-02..05),yes,
+R42,100R,-,0402,5,Motor and servo outputs (MOT-02..05),yes,
+R43,100R,-,0402,5,Motor and servo outputs (MOT-02..05),yes,
+R44,220R,-,0402,5,"Receiver UART1 (COM-01, COM-02)",yes,
+JP2,solder jumper,-,SJ 2-pad,5,"Receiver UART1 (COM-01, COM-02)",yes,DJI SBUS to UART1 RX
+R45,220R,-,0402,5,"GPS UART0 and compass I2C (COM-01, COM-04, SEN-05)",yes,
+J8,DJI 6p SH1.0,JST SM06B-SRSS-TB,SH 1.0 mm,6,"HD VTX, DJI 6-pin JST-SH (VID-01, PWR-08)",yes,
+R46,220R,-,0402,6,"HD VTX, DJI 6-pin JST-SH (VID-01, PWR-08)",yes,
+JP1A,solder jumper,-,SJ 3-pad,6,"HD VTX, DJI 6-pin JST-SH (VID-01, PWR-08)",yes,"default: 9 V (O3, O4 Pro)"
+JP1B,solder jumper,-,SJ 3-pad,6,"HD VTX, DJI 6-pin JST-SH (VID-01, PWR-08)",yes,VBAT: O4 on 1S-3S
+U12,AT7456E,Zhongke AT7456E,HTSSOP-28 + EP,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,
+Y1,27MHz parallel,-,3225,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,load caps per DS figure
+FB2,ferrite,-,0603,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,5 V: video levels
+C34,3x 100nF,-,0402,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,"one per DVDD, AVDD, PVDD"
+C37,10uF,-,0603,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,
+C35,1uF,-,0603,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,video coupling
+R47,75R,-,0402,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,
+U13,74LVC1G125,TI SN74LVC1G125DBVR,SOT-23-5,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,
+C39,100nF,-,0402,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,
+R51,10k,-,0402,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,"TTL input, VIH 2.0 V"
+C38,100nF,-,0402,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",DNP,power-on reset
+R49,10k,-,0402,6,"Analog OSD AT7456E on SPI3 (VID-02, VID-03)",yes,"CS idle high, fitted on all builds"
+FB3,ferrite 1A,-,0603,6,"Analog camera and VTX pads (VID-03, COM-03)",yes,
+JP3A,solder jumper,-,SJ 3-pad,6,"Analog camera and VTX pads (VID-03, COM-03)",yes,analog VTX on 5 V
+JP3B,solder jumper,-,SJ 3-pad,6,"Analog camera and VTX pads (VID-03, COM-03)",yes,analog VTX on 9 V

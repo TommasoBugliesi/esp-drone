@@ -1,0 +1,396 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1760' height='1244' viewBox='0 0 1760 1244'>
+<rect width='1760' height='1244' fill='#ffffff'/>
+<rect x='10' y='10' width='1740' height='1224' fill='none' stroke='#1a1a1a' stroke-width='2'/>
+<rect x='30' y='30' width='540' height='708' rx='6' fill='none' stroke='#c8c8c8' stroke-width='1.2'/>
+<text x='40' y='48' fill='#1a1a1a' font-size='13' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>ESP32-S3-MINI-1U-N8</text>
+<rect x='180' y='60' width='210' height='538' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='285.0' y='74' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>U5</text>
+<text x='285.0' y='592' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>ESP32-S3-MINI-1U-N8</text>
+<line x1='158' y1='90' x2='180' y2='90' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='94' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>3V3</text>
+<rect x='117.2' y='80' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='122.2' y='93' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+3V3</text>
+<line x1='158' y1='114' x2='180' y2='114' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='118' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN</text>
+<rect x='131.6' y='104' width='24.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='136.6' y='117' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN</text>
+<line x1='158' y1='138' x2='180' y2='138' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='142' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='124.4' y='128' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='129.4' y='141' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<line x1='158' y1='162' x2='180' y2='162' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='166' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO0</text>
+<rect x='117.2' y='152' width='38.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='122.2' y='165' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BOOT</text>
+<line x1='158' y1='186' x2='180' y2='186' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='190' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO1</text>
+<rect x='88.4' y='176' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='189' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBAT_ADC</text>
+<line x1='158' y1='210' x2='180' y2='210' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='214' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO2</text>
+<rect x='88.4' y='200' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='213' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CURR_ADC</text>
+<line x1='158' y1='234' x2='180' y2='234' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='238' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO3</text>
+<rect x='102.8' y='224' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='107.8' y='237' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZZER</text>
+<line x1='158' y1='258' x2='180' y2='258' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='262' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO4</text>
+<rect x='88.4' y='248' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='261' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SPI3_SCK</text>
+<line x1='158' y1='282' x2='180' y2='282' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='286' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO5</text>
+<rect x='81.2' y='272' width='74.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='86.2' y='285' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SPI3_MOSI</text>
+<line x1='158' y1='306' x2='180' y2='306' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='310' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO6</text>
+<rect x='81.2' y='296' width='74.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='86.2' y='309' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SPI3_MISO</text>
+<line x1='158' y1='330' x2='180' y2='330' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='334' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO7</text>
+<rect x='102.8' y='320' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='107.8' y='333' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>MAG_CS</text>
+<line x1='158' y1='354' x2='180' y2='354' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='358' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO8</text>
+<rect x='88.4' y='344' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='357' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>UART2_RX</text>
+<line x1='158' y1='378' x2='180' y2='378' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='382' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO9</text>
+<rect x='88.4' y='368' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='381' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IMU_INT1</text>
+<line x1='158' y1='402' x2='180' y2='402' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='406' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO10</text>
+<rect x='102.8' y='392' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='107.8' y='405' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IMU_CS</text>
+<line x1='158' y1='426' x2='180' y2='426' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='430' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO11</text>
+<rect x='88.4' y='416' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='429' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IMU_MOSI</text>
+<line x1='158' y1='450' x2='180' y2='450' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='454' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO12</text>
+<rect x='95.6' y='440' width='60.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='100.6' y='453' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IMU_SCK</text>
+<line x1='158' y1='474' x2='180' y2='474' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='478' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO13</text>
+<rect x='88.4' y='464' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='477' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IMU_MISO</text>
+<line x1='158' y1='498' x2='180' y2='498' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='502' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO14</text>
+<rect x='88.4' y='488' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='501' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IMU_INT2</text>
+<line x1='158' y1='522' x2='180' y2='522' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='526' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO15</text>
+<rect x='102.8' y='512' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='107.8' y='525' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>PINIO2</text>
+<line x1='158' y1='546' x2='180' y2='546' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='550' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO16</text>
+<rect x='59.6' y='536' width='96.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='64.6' y='549' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_STRIP_IO</text>
+<line x1='158' y1='570' x2='180' y2='570' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='574' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO17</text>
+<rect x='88.4' y='560' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='93.4' y='573' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>UART1_TX</text>
+<line x1='390' y1='90' x2='412' y2='90' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='94' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO18</text>
+<rect x='414.0' y='80' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='93' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>UART1_RX</text>
+<line x1='390' y1='114' x2='412' y2='114' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='118' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO19</text>
+<rect x='414.0' y='104' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='117' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_DN</text>
+<line x1='390' y1='138' x2='412' y2='138' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='142' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO20</text>
+<rect x='414.0' y='128' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='141' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_DP</text>
+<line x1='390' y1='162' x2='412' y2='162' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='166' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO21</text>
+<rect x='414.0' y='152' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='165' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VTX_EN_N</text>
+<line x1='390' y1='186' x2='412' y2='186' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='190' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO26</text>
+<rect x='414.0' y='176' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='189' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>UART2_TX</text>
+<line x1='390' y1='210' x2='412' y2='210' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='214' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO33</text>
+<rect x='414.0' y='200' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='213' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>M1_IO</text>
+<line x1='390' y1='234' x2='412' y2='234' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='238' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO34</text>
+<rect x='414.0' y='224' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='237' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>M2_IO</text>
+<line x1='390' y1='258' x2='412' y2='258' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='262' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO35</text>
+<rect x='414.0' y='248' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='261' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>M3_IO</text>
+<line x1='390' y1='282' x2='412' y2='282' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='286' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO36</text>
+<rect x='414.0' y='272' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='285' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>M4_IO</text>
+<line x1='390' y1='306' x2='412' y2='306' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='310' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO37</text>
+<rect x='414.0' y='296' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='309' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>M5_IO</text>
+<line x1='390' y1='330' x2='412' y2='330' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='334' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO38</text>
+<rect x='414.0' y='320' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='333' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>M6_IO</text>
+<line x1='390' y1='354' x2='412' y2='354' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='358' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO39</text>
+<rect x='414.0' y='344' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='357' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>OSD_CS</text>
+<line x1='390' y1='378' x2='412' y2='378' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='382' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO40</text>
+<rect x='414.0' y='368' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='381' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SD_CLK</text>
+<line x1='390' y1='402' x2='412' y2='402' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='406' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO41</text>
+<rect x='414.0' y='392' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='405' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SD_CMD</text>
+<line x1='390' y1='426' x2='412' y2='426' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='430' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO42</text>
+<rect x='414.0' y='416' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='429' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SD_D0</text>
+<line x1='390' y1='450' x2='412' y2='450' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='454' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO43</text>
+<rect x='414.0' y='440' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='453' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>UART0_TX</text>
+<line x1='390' y1='474' x2='412' y2='474' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='478' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO44</text>
+<rect x='414.0' y='464' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='477' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>UART0_RX</text>
+<line x1='390' y1='498' x2='412' y2='498' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='502' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO45</text>
+<rect x='414.0' y='488' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='501' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_R</text>
+<line x1='390' y1='522' x2='412' y2='522' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='526' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO46</text>
+<rect x='414.0' y='512' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='525' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_G</text>
+<line x1='390' y1='546' x2='412' y2='546' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='550' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO47</text>
+<rect x='414.0' y='536' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='549' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>I2C0_SDA</text>
+<line x1='390' y1='570' x2='412' y2='570' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='574' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO48</text>
+<rect x='414.0' y='560' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='419.0' y='573' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>I2C0_SCL</text>
+<rect x='160.2' y='609' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='165.2' y='622' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+3V3</text>
+<line x1='201.0' y1='619' x2='225.0' y2='619' stroke='#1a1a1a'/>
+<rect x='225.0' y='610' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='285' y='623' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>C19</text>
+<line x1='345.0' y1='619' x2='369.0' y2='619' stroke='#1a1a1a'/>
+<rect x='371.0' y='609' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='376.0' y='622' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='285' y='641' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>22uF - &gt;= 10 uF at the power entrance</text>
+<rect x='160.2' y='649' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='165.2' y='662' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+3V3</text>
+<line x1='201.0' y1='659' x2='225.0' y2='659' stroke='#1a1a1a'/>
+<rect x='225.0' y='650' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='285' y='663' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>C20</text>
+<line x1='345.0' y1='659' x2='369.0' y2='659' stroke='#1a1a1a'/>
+<rect x='371.0' y='649' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='376.0' y='662' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='285' y='681' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>100nF</text>
+<text x='40' y='700' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>All 39 GPIO used. Straps: IO0 BOOT, IO3 buzzer (pull-down), IO45/46 LEDs.</text>
+<text x='40' y='716' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO1-18 glitch low ~60 us at power-up: no motor, servo or enable there.</text>
+<text x='40' y='732' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Motors IO33-38, 9 V enable IO21. ADC1 only: VBAT IO1, CURR IO2.</text>
+<rect x='30' y='752' width='540' height='306' rx='6' fill='none' stroke='#c8c8c8' stroke-width='1.2'/>
+<text x='40' y='770' fill='#1a1a1a' font-size='13' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Reset and boot (MCU-02, MCU-04)</text>
+<rect x='174.6' y='781' width='24.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='179.6' y='794' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN</text>
+<line x1='201.0' y1='791' x2='225.0' y2='791' stroke='#1a1a1a'/>
+<rect x='225.0' y='782' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='285' y='795' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R18</text>
+<line x1='345.0' y1='791' x2='369.0' y2='791' stroke='#1a1a1a'/>
+<rect x='371.0' y='781' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='376.0' y='794' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+3V3</text>
+<text x='285' y='813' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>10k</text>
+<rect x='174.6' y='821' width='24.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='179.6' y='834' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN</text>
+<line x1='201.0' y1='831' x2='225.0' y2='831' stroke='#1a1a1a'/>
+<rect x='225.0' y='822' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='285' y='835' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>C21</text>
+<line x1='345.0' y1='831' x2='369.0' y2='831' stroke='#1a1a1a'/>
+<rect x='371.0' y='821' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='376.0' y='834' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='285' y='853' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>1uF</text>
+<rect x='180' y='862' width='210' height='58' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='285.0' y='876' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SW1</text>
+<text x='285.0' y='914' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BOOT</text>
+<line x1='158' y1='892' x2='180' y2='892' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='896' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>1</text>
+<rect x='117.2' y='882' width='38.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='122.2' y='895' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BOOT</text>
+<line x1='390' y1='892' x2='412' y2='892' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='385' y='896' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>2</text>
+<rect x='414.0' y='882' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='419.0' y='895' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='160.2' y='931' width='38.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='165.2' y='944' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BOOT</text>
+<line x1='201.0' y1='941' x2='225.0' y2='941' stroke='#1a1a1a'/>
+<rect x='225.0' y='932' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='285' y='945' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R19</text>
+<line x1='345.0' y1='941' x2='369.0' y2='941' stroke='#1a1a1a'/>
+<rect x='371.0' y='931' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='376.0' y='944' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+3V3</text>
+<text x='285' y='963' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>10k</text>
+<rect x='180' y='972' width='210' height='58' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='285.0' y='986' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>TP7</text>
+<text x='285.0' y='1024' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN pad</text>
+<line x1='158' y1='1002' x2='180' y2='1002' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='185' y='1006' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>TP</text>
+<rect x='131.6' y='992' width='24.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='136.6' y='1005' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN</text>
+<text x='40' y='1052' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>EN RC 10k / 1 uF (module datasheet and design guidelines).</text>
+<rect x='588' y='30' width='540' height='546' rx='6' fill='none' stroke='#c8c8c8' stroke-width='1.2'/>
+<text x='598' y='48' fill='#1a1a1a' font-size='13' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB-C (MCU-03)</text>
+<rect x='738' y='60' width='210' height='154' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='843.0' y='74' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>J2</text>
+<text x='843.0' y='208' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB-C 16p</text>
+<line x1='716' y1='90' x2='738' y2='90' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='94' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBUS</text>
+<rect x='675.2' y='80' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='680.2' y='93' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBUS</text>
+<line x1='716' y1='114' x2='738' y2='114' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='118' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D+</text>
+<rect x='646.4' y='104' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='651.4' y='117' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_C_DP</text>
+<line x1='716' y1='138' x2='738' y2='138' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='142' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D-</text>
+<rect x='646.4' y='128' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='651.4' y='141' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_C_DN</text>
+<line x1='716' y1='162' x2='738' y2='162' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='166' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CC1</text>
+<rect x='682.4' y='152' width='31.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='687.4' y='165' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CC1</text>
+<line x1='716' y1='186' x2='738' y2='186' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='190' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CC2</text>
+<rect x='682.4' y='176' width='31.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='687.4' y='189' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CC2</text>
+<line x1='948' y1='90' x2='970' y2='90' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='943' y='94' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='972.0' y='80' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='977.0' y='93' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<line x1='948' y1='114' x2='970' y2='114' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='943' y='118' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>SHIELD</text>
+<rect x='972.0' y='104' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='977.0' y='117' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='725.4' y='225' width='31.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='730.4' y='238' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CC1</text>
+<line x1='759.0' y1='235' x2='783.0' y2='235' stroke='#1a1a1a'/>
+<rect x='783.0' y='226' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='239' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R20</text>
+<line x1='903.0' y1='235' x2='927.0' y2='235' stroke='#1a1a1a'/>
+<rect x='929.0' y='225' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='238' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='257' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>5.1k</text>
+<rect x='725.4' y='265' width='31.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='730.4' y='278' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>CC2</text>
+<line x1='759.0' y1='275' x2='783.0' y2='275' stroke='#1a1a1a'/>
+<rect x='783.0' y='266' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='279' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R21</text>
+<line x1='903.0' y1='275' x2='927.0' y2='275' stroke='#1a1a1a'/>
+<rect x='929.0' y='265' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='278' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='297' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>5.1k</text>
+<rect x='689.4' y='305' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='694.4' y='318' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_C_DP</text>
+<line x1='759.0' y1='315' x2='783.0' y2='315' stroke='#1a1a1a'/>
+<rect x='783.0' y='306' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='319' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R22</text>
+<line x1='903.0' y1='315' x2='927.0' y2='315' stroke='#1a1a1a'/>
+<rect x='929.0' y='305' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='934.0' y='318' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_DP</text>
+<text x='843' y='337' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>0R (22R option)</text>
+<rect x='689.4' y='345' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='694.4' y='358' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_C_DN</text>
+<line x1='759.0' y1='355' x2='783.0' y2='355' stroke='#1a1a1a'/>
+<rect x='783.0' y='346' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='359' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R23</text>
+<line x1='903.0' y1='355' x2='927.0' y2='355' stroke='#1a1a1a'/>
+<rect x='929.0' y='345' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='934.0' y='358' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_DN</text>
+<text x='843' y='377' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>0R (22R option)</text>
+<rect x='738' y='386' width='210' height='82' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='843.0' y='400' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>U6</text>
+<text x='843.0' y='462' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USBLC6-2SC6</text>
+<line x1='716' y1='416' x2='738' y2='416' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='420' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>I/O1 1,6</text>
+<rect x='646.4' y='406' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='651.4' y='419' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_C_DP</text>
+<line x1='716' y1='440' x2='738' y2='440' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='743' y='444' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>I/O2 3,4</text>
+<rect x='646.4' y='430' width='67.6' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='651.4' y='443' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>USB_C_DN</text>
+<line x1='948' y1='416' x2='970' y2='416' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='943' y='420' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBUS 5</text>
+<rect x='972.0' y='406' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='977.0' y='419' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBUS</text>
+<line x1='948' y1='440' x2='970' y2='440' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='943' y='444' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND 2</text>
+<rect x='972.0' y='430' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='977.0' y='443' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='718.2' y='479' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='723.2' y='492' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBUS</text>
+<line x1='759.0' y1='489' x2='783.0' y2='489' stroke='#1a1a1a'/>
+<rect x='783.0' y='480' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='493' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>C22</text>
+<line x1='903.0' y1='489' x2='927.0' y2='489' stroke='#1a1a1a'/>
+<rect x='929.0' y='479' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='492' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='511' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>10uF</text>
+<rect x='718.2' y='519' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='723.2' y='532' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VBUS</text>
+<line x1='759.0' y1='529' x2='783.0' y2='529' stroke='#1a1a1a'/>
+<rect x='783.0' y='520' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='533' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>C36</text>
+<line x1='903.0' y1='529' x2='927.0' y2='529' stroke='#1a1a1a'/>
+<rect x='929.0' y='519' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='532' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='551' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>100nF - at U6 VBUS (DS)</text>
+<text x='598' y='570' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D+/D- pass through U6 (1-6, 3-4). Short traces to U6 VBUS and GND.</text>
+<rect x='588' y='590' width='540' height='270' rx='6' fill='none' stroke='#c8c8c8' stroke-width='1.2'/>
+<text x='598' y='608' fill='#1a1a1a' font-size='13' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Status LEDs (IND-01, IND-02)</text>
+<rect x='718.2' y='619' width='38.8' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='723.2' y='632' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+3V3</text>
+<line x1='759.0' y1='629' x2='783.0' y2='629' stroke='#1a1a1a'/>
+<rect x='783.0' y='620' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='633' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R24</text>
+<line x1='903.0' y1='629' x2='927.0' y2='629' stroke='#1a1a1a'/>
+<rect x='929.0' y='619' width='74.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='934.0' y='632' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_PWR_A</text>
+<text x='843' y='651' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>1k</text>
+<rect x='682.2' y='659' width='74.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='687.2' y='672' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_PWR_A</text>
+<line x1='759.0' y1='669' x2='783.0' y2='669' stroke='#1a1a1a'/>
+<rect x='783.0' y='660' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='673' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D4</text>
+<line x1='903.0' y1='669' x2='927.0' y2='669' stroke='#1a1a1a'/>
+<rect x='929.0' y='659' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='672' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='691' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED blue (power)</text>
+<rect x='711.0' y='699' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='716.0' y='712' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_R</text>
+<line x1='759.0' y1='709' x2='783.0' y2='709' stroke='#1a1a1a'/>
+<rect x='783.0' y='700' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='713' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R25</text>
+<line x1='903.0' y1='709' x2='927.0' y2='709' stroke='#1a1a1a'/>
+<rect x='929.0' y='699' width='60.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='934.0' y='712' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_R_A</text>
+<text x='843' y='731' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>1k</text>
+<rect x='696.6' y='739' width='60.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='701.6' y='752' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_R_A</text>
+<line x1='759.0' y1='749' x2='783.0' y2='749' stroke='#1a1a1a'/>
+<rect x='783.0' y='740' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='753' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D5</text>
+<line x1='903.0' y1='749' x2='927.0' y2='749' stroke='#1a1a1a'/>
+<rect x='929.0' y='739' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='752' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='771' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED red</text>
+<rect x='711.0' y='779' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='716.0' y='792' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_G</text>
+<line x1='759.0' y1='789' x2='783.0' y2='789' stroke='#1a1a1a'/>
+<rect x='783.0' y='780' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='793' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R26</text>
+<line x1='903.0' y1='789' x2='927.0' y2='789' stroke='#1a1a1a'/>
+<rect x='929.0' y='779' width='60.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='934.0' y='792' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_G_A</text>
+<text x='843' y='811' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>1k</text>
+<rect x='696.6' y='819' width='60.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='701.6' y='832' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_G_A</text>
+<line x1='759.0' y1='829' x2='783.0' y2='829' stroke='#1a1a1a'/>
+<rect x='783.0' y='820' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='843' y='833' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D6</text>
+<line x1='903.0' y1='829' x2='927.0' y2='829' stroke='#1a1a1a'/>
+<rect x='929.0' y='819' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='934.0' y='832' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='843' y='851' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED green</text>
+<rect x='1146' y='30' width='540' height='276' rx='6' fill='none' stroke='#c8c8c8' stroke-width='1.2'/>
+<text x='1156' y='48' fill='#1a1a1a' font-size='13' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Buzzer driver (IND-03)</text>
+<rect x='1296' y='60' width='210' height='82' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='1401.0' y='74' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Q2</text>
+<text x='1401.0' y='136' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>N-MOSFET</text>
+<line x1='1274' y1='90' x2='1296' y2='90' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1301' y='94' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>G 1</text>
+<rect x='1226.0' y='80' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1231.0' y='93' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZ_G</text>
+<line x1='1506' y1='90' x2='1528' y2='90' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1501' y='94' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D 3</text>
+<rect x='1530.0' y='80' width='38.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1535.0' y='93' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZ-</text>
+<line x1='1506' y1='114' x2='1528' y2='114' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1501' y='118' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>S 2</text>
+<rect x='1530.0' y='104' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1535.0' y='117' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='1261.8' y='153' width='53.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1266.8' y='166' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZZER</text>
+<line x1='1317.0' y1='163' x2='1341.0' y2='163' stroke='#1a1a1a'/>
+<rect x='1341.0' y='154' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='1401' y='167' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R27</text>
+<line x1='1461.0' y1='163' x2='1485.0' y2='163' stroke='#1a1a1a'/>
+<rect x='1487.0' y='153' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1492.0' y='166' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZ_G</text>
+<text x='1401' y='185' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>100R</text>
+<rect x='1269.0' y='193' width='46.0' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1274.0' y='206' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZ_G</text>
+<line x1='1317.0' y1='203' x2='1341.0' y2='203' stroke='#1a1a1a'/>
+<rect x='1341.0' y='194' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='1401' y='207' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R28</text>
+<line x1='1461.0' y1='203' x2='1485.0' y2='203' stroke='#1a1a1a'/>
+<rect x='1487.0' y='193' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1492.0' y='206' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='1401' y='225' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>100k - also holds strap IO3 low</text>
+<rect x='1276.2' y='233' width='38.8' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1281.2' y='246' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>BUZ-</text>
+<line x1='1317.0' y1='243' x2='1341.0' y2='243' stroke='#1a1a1a'/>
+<rect x='1341.0' y='234' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='1401' y='247' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>D7</text>
+<line x1='1461.0' y1='243' x2='1485.0' y2='243' stroke='#1a1a1a'/>
+<rect x='1487.0' y='233' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1492.0' y='246' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+5V</text>
+<text x='1401' y='265' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>1N4148W - flyback, cathode +5V</text>
+<text x='1156' y='284' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>AO3400A: RDS(on) &lt; 48 mOhm at 2.5 V gate, fine from 3.3 V.</text>
+<text x='1156' y='300' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>IO3 glitches at power-up: at most a 60 us click.</text>
+<rect x='1146' y='320' width='540' height='244' rx='6' fill='none' stroke='#c8c8c8' stroke-width='1.2'/>
+<text x='1156' y='338' fill='#1a1a1a' font-size='13' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED strip buffer (IND-04)</text>
+<rect x='1296' y='350' width='210' height='106' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.6' />
+<text x='1401.0' y='364' text-anchor='middle' fill='#6b4a00' font-size='12' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>U7</text>
+<text x='1401.0' y='450' text-anchor='middle' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>74AHCT1G125</text>
+<line x1='1274' y1='380' x2='1296' y2='380' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1301' y='384' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>A 2</text>
+<rect x='1175.6' y='370' width='96.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1180.6' y='383' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_STRIP_IO</text>
+<line x1='1274' y1='404' x2='1296' y2='404' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1301' y='408' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>OE# 1</text>
+<rect x='1240.4' y='394' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1245.4' y='407' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<line x1='1274' y1='428' x2='1296' y2='428' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1301' y='432' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VCC 5</text>
+<rect x='1240.4' y='418' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1245.4' y='431' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+5V</text>
+<line x1='1506' y1='380' x2='1528' y2='380' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1501' y='384' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Y 4</text>
+<rect x='1530.0' y='370' width='89.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1535.0' y='383' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_STRIP_Y</text>
+<line x1='1506' y1='404' x2='1528' y2='404' stroke='#1a1a1a' stroke-width='1.2'/>
+<text x='1501' y='408' text-anchor='end' fill='#1a1a1a' font-size='11' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND 3</text>
+<rect x='1530.0' y='394' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1535.0' y='407' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<rect x='1225.8' y='467' width='89.2' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1230.8' y='480' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_STRIP_Y</text>
+<line x1='1317.0' y1='477' x2='1341.0' y2='477' stroke='#1a1a1a'/>
+<rect x='1341.0' y='468' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='1401' y='481' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>R29</text>
+<line x1='1461.0' y1='477' x2='1485.0' y2='477' stroke='#1a1a1a'/>
+<rect x='1487.0' y='467' width='60.4' height='20' rx='3' fill='none' stroke='#1f5fa8' stroke-width='1'/><text x='1492.0' y='480' fill='#1f5fa8' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>LED_DIN</text>
+<text x='1401' y='499' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>330R</text>
+<rect x='1283.4' y='507' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1288.4' y='520' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>+5V</text>
+<line x1='1317.0' y1='517' x2='1341.0' y2='517' stroke='#1a1a1a'/>
+<rect x='1341.0' y='508' width='120' height='18' rx='2' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.2' />
+<text x='1401' y='521' text-anchor='middle' fill='#6b4a00' font-size='11' font-weight='bold' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>C23</text>
+<line x1='1461.0' y1='517' x2='1485.0' y2='517' stroke='#1a1a1a'/>
+<rect x='1487.0' y='507' width='31.6' height='20' rx='3' fill='none' stroke='#b03a2e' stroke-width='1'/><text x='1492.0' y='520' fill='#b03a2e' font-size='12' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>GND</text>
+<text x='1401' y='539' text-anchor='middle' fill='#1a1a1a' font-size='10' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>100nF</text>
+<text x='1156' y='558' fill='#555' font-size='11' font-style='italic' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>VIH 2.0 V at VCC 5 V: takes 3.3 V in. Driven by I2S (RMT TX all DShot).</text>
+<rect x='1200' y='1144' width='540' height='80' fill='#fbfbf7' stroke='#1a1a1a' stroke-width='1.5'/>
+<text x='1212' y='1168' font-size='16' font-weight='bold' fill='#1a1a1a' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>FlyingFree V2 (FF02), ESP32-S3</text>
+<text x='1212' y='1190' font-size='13' fill='#1a1a1a' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Sheet 3/6: MCU, USB and indicators</text>
+<text x='1212' y='1210' font-size='11' fill='#555' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>draft A, 2026-10-23. Pin numbers only where checked in the datasheet.</text>
+<text x='30' y='1204' font-size='11' fill='#555' font-family='DejaVu Sans Mono, Menlo, Consolas, monospace'>Nets with the same label are connected. Red labels: power. Dashed / *: not populated (DNP) by default.</text>
+</svg>
