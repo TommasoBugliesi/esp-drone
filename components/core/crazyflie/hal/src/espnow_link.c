@@ -27,6 +27,8 @@
 
 #include "esp_idf_version.h"
 #include "esp_now.h"
+#include <math.h>
+
 #include "esp_wifi.h"
 
 #include "FreeRTOS.h"
@@ -52,6 +54,7 @@
 
 #define LINK_TIMEOUT        M2T(CONFIG_ESPNOW_CTRL_LINK_TIMEOUT_MS)
 #define STATUS_PERIOD       M2T(CONFIG_ESPNOW_CTRL_STATUS_PERIOD_MS)
+#define TELEMETRY_PERIOD    M2T(CONFIG_ESPNOW_CTRL_TELEMETRY_PERIOD_MS)   // 0: no telemetry
 
 #define CRTP_RPYT_SIZE      14 // roll, pitch, yaw (float) + thrust (uint16)
 
@@ -90,6 +93,8 @@ static uint16_t lastSeq;
 static uint16_t seqAck;
 static TickType_t lastRxTick;
 static TickType_t lastStatusTick;
+static TickType_t lastTelemetryTick;
+static uint16_t telemetrySeq;
 static uint8_t statusPeer[ESP_NOW_ETH_ALEN];
 static bool haveStatusPeer = false;
 
@@ -300,6 +305,90 @@ static void sendStatus(void)
   esp_now_send(statusPeer, (const uint8_t *)&st, sizeof(st));
 }
 
+static int16_t clampI16(float v)
+{
+  if (v > 32767.0f) {
+    return 32767;
+  }
+  if (v < -32768.0f) {
+    return -32768;
+  }
+  return (int16_t)lrintf(v);
+}
+
+static uint16_t clampU16(uint32_t v)
+{
+  return (v > 0xFFFF) ? 0xFFFF : (uint16_t)v;
+}
+
+/* Log variables read for the telemetry frame, resolved once */
+static struct {
+  bool resolved;
+  logVarId_t roll, pitch, yaw, thrust;
+  logVarId_t gyro[3];
+  logVarId_t motor[4];
+} tlmVars;
+
+static float logFloatOrZero(logVarId_t id)
+{
+  return LOG_VARID_IS_VALID(id) ? logGetFloat(id) : 0.0f;
+}
+
+static void sendTelemetry(void)
+{
+  espnowLinkTelemetry_t t;
+  static char *motorNames[4] = {"m1", "m2", "m3", "m4"};
+  static char *axisNames[3] = {"x", "y", "z"};
+
+  if (!haveStatusPeer) {
+    return;
+  }
+  if (!tlmVars.resolved) {
+    tlmVars.roll = logGetVarId("stabilizer", "roll");
+    tlmVars.pitch = logGetVarId("stabilizer", "pitch");
+    tlmVars.yaw = logGetVarId("stabilizer", "yaw");
+    tlmVars.thrust = logGetVarId("stabilizer", "thrust");
+    for (int i = 0; i < 3; i++) {
+      tlmVars.gyro[i] = logGetVarId("gyro", axisNames[i]);
+    }
+    for (int i = 0; i < 4; i++) {
+      tlmVars.motor[i] = logGetVarId("motor", motorNames[i]);
+    }
+    tlmVars.resolved = true;
+  }
+
+  t.magic = ESPNOW_LINK_MAGIC;
+  t.version = ESPNOW_LINK_VERSION;
+  t.type = ESPNOW_LINK_PKT_TELEMETRY;
+  t.flags = (systemIsArmed() ? ESPNOW_LINK_STATUS_ARMED : 0) |
+            (killLatched ? ESPNOW_LINK_STATUS_KILLED : 0) |
+            (pmIsBatteryLow() ? ESPNOW_LINK_STATUS_BATTERY_LOW : 0) |
+            (failsafeActive ? ESPNOW_LINK_STATUS_FAILSAFE : 0);
+  t.seq = telemetrySeq++;
+  t.roll = clampI16(logFloatOrZero(tlmVars.roll) * 100.0f);
+  t.pitch = clampI16(logFloatOrZero(tlmVars.pitch) * 100.0f);
+  t.yaw = clampI16(logFloatOrZero(tlmVars.yaw) * 100.0f);
+  t.gyroX = clampI16(logFloatOrZero(tlmVars.gyro[0]) * 10.0f);
+  t.gyroY = clampI16(logFloatOrZero(tlmVars.gyro[1]) * 10.0f);
+  t.gyroZ = clampI16(logFloatOrZero(tlmVars.gyro[2]) * 10.0f);
+  const float thrust = logFloatOrZero(tlmVars.thrust);
+  t.thrust = clampU16(thrust > 0.0f ? (uint32_t)thrust : 0);
+  for (int i = 0; i < 4; i++) {
+    t.motor[i] = LOG_VARID_IS_VALID(tlmVars.motor[i]) ? clampU16(logGetUint(tlmVars.motor[i])) : 0;
+  }
+  t.batteryMv = (uint16_t)(pmGetBatteryVoltage() * 1000.0f);
+  t.crc = espnowLinkCrc16((const uint8_t *)&t, sizeof(t) - sizeof(t.crc));
+
+  esp_now_send(statusPeer, (const uint8_t *)&t, sizeof(t));
+}
+
+/* Ticks until a periodic event is due, at least 1 */
+static TickType_t untilDue(TickType_t now, TickType_t last, TickType_t period)
+{
+  TickType_t elapsed = now - last;
+  return (elapsed >= period) ? 1 : (period - elapsed);
+}
+
 static void espnowLinkTask(void *param)
 {
   rxItem_t item;
@@ -311,11 +400,17 @@ static void espnowLinkTask(void *param)
     TickType_t wait = portMAX_DELAY;
 
     if (active) {
-      // Wake for the next status frame or the link timeout, whichever is first
-      TickType_t sinceRx = xTaskGetTickCount() - lastRxTick;
+      // Wake for the next status or telemetry frame or the link timeout, whichever is first
+      TickType_t now = xTaskGetTickCount();
+      TickType_t sinceRx = now - lastRxTick;
       TickType_t untilTimeout = (sinceRx >= LINK_TIMEOUT) ? 1 : (LINK_TIMEOUT - sinceRx + 1);
+      TickType_t untilStatus = untilDue(now, lastStatusTick, STATUS_PERIOD);
 
-      wait = (untilTimeout < STATUS_PERIOD) ? untilTimeout : STATUS_PERIOD;
+      wait = (untilTimeout < untilStatus) ? untilTimeout : untilStatus;
+      if (TELEMETRY_PERIOD > 0) {
+        TickType_t untilTelemetry = untilDue(now, lastTelemetryTick, TELEMETRY_PERIOD);
+        wait = (untilTelemetry < wait) ? untilTelemetry : wait;
+      }
     }
 
     if (xQueueReceive(rxQueue, &item, wait) == pdTRUE) {
@@ -334,6 +429,7 @@ static void espnowLinkTask(void *param)
           failsafeActive = false;
           prevArm = (item.pkt.flags & ESPNOW_LINK_FLAG_ARM) != 0;
           lastStatusTick = 0;
+          lastTelemetryTick = 0;
           activeLog = 1;
           DEBUG_PRINTI("Link up");
         }
@@ -354,9 +450,15 @@ static void espnowLinkTask(void *param)
       if (now - lastRxTick > LINK_TIMEOUT) {
         haveSeq = false;
         enterFailsafe();
-      } else if (now - lastStatusTick >= STATUS_PERIOD) {
-        lastStatusTick = now;
-        sendStatus();
+      } else {
+        if (now - lastStatusTick >= STATUS_PERIOD) {
+          lastStatusTick = now;
+          sendStatus();
+        }
+        if (TELEMETRY_PERIOD > 0 && now - lastTelemetryTick >= TELEMETRY_PERIOD) {
+          lastTelemetryTick = now;
+          sendTelemetry();
+        }
       }
     }
   }

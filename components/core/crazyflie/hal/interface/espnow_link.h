@@ -26,7 +26,9 @@
  *    Encryption (CONFIG_ESPNOW_CTRL_ENCRYPT) requires unicast.
  *  - CONFIG_ESPNOW_CTRL_PEER_MAC is the transmitter's STA MAC.
  *  - The drone answers with STATUS frames to the transmitter's MAC, sent from
- *    the drone's AP MAC.
+ *    the drone's AP MAC, and with TELEMETRY frames if
+ *    CONFIG_ESPNOW_CTRL_TELEMETRY_PERIOD_MS is not 0. A transmitter that does
+ *    not know a frame type ignores it.
  *
  * Wire format: packed, little endian, CRC-16/CCITT-FALSE over every byte that
  * precedes the crc field.
@@ -48,8 +50,9 @@
 #define ESPNOW_LINK_MAGIC    0xD7
 #define ESPNOW_LINK_VERSION  1
 
-#define ESPNOW_LINK_PKT_CONTROL  1
-#define ESPNOW_LINK_PKT_STATUS   2
+#define ESPNOW_LINK_PKT_CONTROL    1
+#define ESPNOW_LINK_PKT_STATUS     2
+#define ESPNOW_LINK_PKT_TELEMETRY  3
 
 /* CONTROL flags */
 #define ESPNOW_LINK_FLAG_ARM   (1 << 0)
@@ -88,6 +91,25 @@ typedef struct {
   uint16_t batteryMv;  // pack voltage
   uint16_t crc;
 } __attribute__((packed)) espnowLinkStatus_t;
+
+/* Drone -> transmitter, while the link is up */
+typedef struct {
+  uint8_t  magic;
+  uint8_t  version;
+  uint8_t  type;       // ESPNOW_LINK_PKT_TELEMETRY
+  uint8_t  flags;      // ESPNOW_LINK_STATUS_*
+  uint16_t seq;        // telemetry frame counter
+  int16_t  roll;       // estimated attitude, 0.01 deg
+  int16_t  pitch;
+  int16_t  yaw;
+  int16_t  gyroX;      // body rates, 0.1 deg/s
+  int16_t  gyroY;
+  int16_t  gyroZ;
+  uint16_t thrust;     // thrust sent to the mixer
+  uint16_t motor[4];   // mixer outputs M1-M4 (DShot 48-2047 on brushless)
+  uint16_t batteryMv;  // pack voltage
+  uint16_t crc;
+} __attribute__((packed)) espnowLinkTelemetry_t;
 
 static inline uint16_t espnowLinkCrc16(const uint8_t *data, unsigned int len)
 {

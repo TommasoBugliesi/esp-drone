@@ -29,6 +29,8 @@ build_demo_cmake:
       - TARGET: [esp32, esp32s3]    # FlyingFree V1.0, FlyingFree V2
   script:
     - tests/host/run.sh
+    - python3 -m unittest tools/groundstation/test_espdrone_link.py
+    - (cd examples/espnow_bridge && idf.py set-target $TARGET && idf.py build)
     - idf.py set-target $TARGET
     - idf.py build
     - idf.py fullclean

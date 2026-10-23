@@ -526,6 +526,14 @@ menu "ESPDrone Config"
                 depends on ESPNOW_CTRL_ENABLE
                 range 20 1000
                 default 100
+            config ESPNOW_CTRL_TELEMETRY_PERIOD_MS
+                int "Telemetry frame period (ms, 0 = off)"
+                depends on ESPNOW_CTRL_ENABLE
+                range 0 1000
+                default 50
+                help
+                    Attitude, rates, thrust, motor outputs and battery, sent to the transmitter
+                    while the link is up. 50 ms is 20 Hz, about 1.3 kB/s of airtime.
             config ESPNOW_CTRL_MAX_ANGLE_DEG
                 int "Roll/pitch angle at full stick (deg)"
                 depends on ESPNOW_CTRL_ENABLE

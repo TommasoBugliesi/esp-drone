@@ -40,7 +40,27 @@ esp_err_t esp_now_register_recv_cb(esp_now_recv_cb_t cb) { (void)cb; return ESP_
 esp_err_t esp_now_add_peer(const esp_now_peer_info_t *p) { (void)p; return ESP_OK; }
 esp_err_t esp_now_del_peer(const uint8_t *a) { (void)a; return ESP_OK; }
 bool esp_now_is_peer_exist(const uint8_t *a) { (void)a; return false; }
-esp_err_t esp_now_send(const uint8_t *a, const uint8_t *d, size_t l) { (void)a; (void)d; (void)l; g_statusSent++; return ESP_OK; }
+static uint8_t g_lastSent[64]; static size_t g_lastSentLen;
+esp_err_t esp_now_send(const uint8_t *a, const uint8_t *d, size_t l) {
+  (void)a; g_statusSent++;
+  g_lastSentLen = l < sizeof(g_lastSent) ? l : sizeof(g_lastSent);
+  memcpy(g_lastSent, d, g_lastSentLen);
+  return ESP_OK;
+}
+/* Log variables for the telemetry frame: ids 1.. in the order they are looked up */
+static const char *g_logNames[] = {"stabilizer.roll", "stabilizer.pitch", "stabilizer.yaw", "stabilizer.thrust",
+                                   "gyro.x", "gyro.y", "gyro.z", "motor.m1", "motor.m2", "motor.m3", "motor.m4"};
+static const float g_logValues[] = {12.34f, -5.5f, 179.99f, 30000.0f, 100.0f, -0.26f, 4000.0f, 48, 1000, 2047, 70000};
+logVarId_t logGetVarId(char *group, char *name) {
+  char full[48];
+  snprintf(full, sizeof(full), "%s.%s", group, name);
+  for (unsigned i = 0; i < sizeof(g_logNames) / sizeof(g_logNames[0]); i++) {
+    if (strcmp(full, g_logNames[i]) == 0) return (logVarId_t)(i + 1);
+  }
+  return 0xffff;
+}
+float logGetFloat(logVarId_t id) { return g_logValues[id - 1]; }
+unsigned int logGetUint(logVarId_t id) { return (unsigned int)g_logValues[id - 1]; }
 esp_err_t esp_now_set_pmk(const uint8_t *k) { (void)k; return ESP_OK; }
 
 /* ---- helpers ----------------------------------------------------------- */
@@ -136,6 +156,29 @@ int main(void)
   CHECK(ensureStatusPeer(PEER)); seqAck = 42; sendStatus(); CHECK(g_statusSent == 1);
 
   if (failures) { printf("%d check(s) failed\n", failures); return 1; }
+  /* Telemetry frame encoding */
+  haveStatusPeer = true;
+  killLatched = false;
+  failsafeActive = false;
+  g_armed = true;
+  sendTelemetry();
+  assert(g_lastSentLen == sizeof(espnowLinkTelemetry_t) && g_lastSentLen == 32);
+  espnowLinkTelemetry_t t;
+  memcpy(&t, g_lastSent, sizeof(t));
+  assert(t.magic == ESPNOW_LINK_MAGIC && t.type == ESPNOW_LINK_PKT_TELEMETRY);
+  assert(t.crc == espnowLinkCrc16(g_lastSent, sizeof(t) - sizeof(t.crc)));
+  assert(t.flags & ESPNOW_LINK_STATUS_ARMED);
+  assert(t.roll == 1234 && t.pitch == -550 && t.yaw == 17999);
+  assert(t.gyroX == 1000 && t.gyroY == -3 && t.gyroZ == 32767);   // 400.0 deg/s clamps at 3276.7
+  assert(t.thrust == 30000);
+  assert(t.motor[0] == 48 && t.motor[1] == 1000 && t.motor[2] == 2047 && t.motor[3] == 0xFFFF);
+  assert(t.batteryMv == 11100);
+  uint16_t firstSeq = t.seq;
+  sendTelemetry();
+  memcpy(&t, g_lastSent, sizeof(t));
+  assert(t.seq == (uint16_t)(firstSeq + 1));
+  printf("Telemetry frame OK\n");
+
   printf("espnow_link host test: all checks passed\n");
   return 0;
 }
