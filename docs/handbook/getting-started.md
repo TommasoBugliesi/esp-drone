@@ -50,7 +50,7 @@ Layers in [`profiles/`](../../profiles) are added on top of `sdkconfig.defaults`
 
 | Profile | Use it for |
 |---|---|
-| `bench.defaults` | First power-up, props off: motor ceiling 300 (about 12 % throttle), boots disarmed, failsafe disarms |
+| `bench.defaults` | First power-up, props off: motor ceiling 300 (about 12 % throttle), boots disarmed, failsafe disarms, range finder off |
 | `sysview.defaults` | Debug messages and traces through SEGGER SystemView over JTAG (V1.0: external probe on GPIO12-15, V2: the built-in USB-JTAG) |
 
 ```bash

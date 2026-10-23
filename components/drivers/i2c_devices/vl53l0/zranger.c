@@ -121,11 +121,11 @@ void zRangerInit(void)
   if (isInit)
     return;
 
-  dev.I2Cx = 0;
+  dev.I2Cx = I2C0_DEV;
   dev.devAddr = VL53L0X_DEFAULT_ADDRESS;
   i2cdevInit(dev.I2Cx);
 
-  dev.io_timeout = 0;
+  dev.io_timeout = 500;   // ms (1 kHz tick). 0 means "wait forever" in this driver and stalls the boot
   dev.did_timeout = 0;
   dev.timeout_start_ms = 0;
   dev.stop_variable = 0;
@@ -138,12 +138,18 @@ void zRangerInit(void)
   wordData = vl53l0xGetModelID(&dev);
   DEBUG_PRINTI( "VL53L0X: %02X\n\r", wordData);
 
-  if(wordData == VL53L0X_ID)
-	{
-    DEBUG_PRINT( "VL53L0X I2C commection [OK].\n");
+  if(wordData != VL53L0X_ID)
+  {
+    // Not fitted, or not answering: leave the range finder off and let the system boot
+    DEBUG_PRINTW("VL53L0X not found (ID %04X), range finder disabled\n", wordData);
+    return;
   }
+  DEBUG_PRINT( "VL53L0X I2C commection [OK].\n");
 
-  vl53l0xInit(&dev, I2C0_DEV, true);
+  if (!vl53l0xInit(&dev, I2C0_DEV, true)) {
+    DEBUG_PRINTW("VL53L0X init failed, range finder disabled\n");
+    return;
+  }
 
   xTaskCreate(zRangerTask, ZRANGER_TASK_NAME, ZRANGER_TASK_STACKSIZE, NULL, ZRANGER_TASK_PRI, NULL);
 
