@@ -1,49 +1,76 @@
+# ESPDrone for FlyingFree
 
-## ESP-Drone
+Flight-controller firmware for a quadcopter built on the **ESP32**. It started as
+Espressif's [ESP-Drone](https://github.com/espressif/esp-drone), itself a port of the
+[Crazyflie](https://github.com/bitcraze/crazyflie-firmware) firmware (STM32). This fork targets the
+custom **FlyingFree V1.0** board: BMI160 IMU over SPI, brushless motors driven with DShot, 3S/4S battery.
 
-* [中文](./README_cn.md)
+| | |
+|---|---|
+| Chip | ESP32 (dual core), ESP-IDF **v4.4.8** |
+| Control loop | 1 kHz stabilizer, 500 Hz attitude, complementary estimator |
+| Motors | DShot150/300/600 through the RMT peripheral |
+| Remote control | **ESP-NOW** link to a transmitter (this repo has a reference one), or Wi-Fi/UDP with cfclient |
+| Configuration | Kconfig with a flight-controller style menu, a schema exporter for building a UI |
 
-### Introduction
+> **Status.** The firmware builds and the unit tests pass. It has **not been flown or powered up since the
+> refactor**: motor arming, the ESP-NOW link and the new failsafe behaviour need bench testing with the
+> propellers off. See [what is verified](docs/handbook/development.md#what-is-verified-and-what-is-not).
 
-**ESP-Drone** is an open source solution based on Espressif ESP32/ESP32-S2/ESP32-S3 Wi-Fi chip, which can be controlled by a mobile APP or gamepad over **Wi-Fi** connection. ESP-Drone comes with **simple hardware**, **clear and extensible code architecture**, and therefore this project can be used in **STEAM education** and other fields. The main code is ported from **Crazyflie** open source project with **GPL3.0** protocol.
+## Quick start
 
-> Currently support ESP32、ESP32S2、ESP32S3, please using ESP-IDF [release/v4.4](https://docs.espressif.com/projects/esp-idf/en/release-v4.4/esp32s2/get-started/index.html) branch as your develop environment
+```bash
+tools/setup-idf.sh                    # once: installs ESP-IDF 4.4.8 under ~/esp, no root needed
+. ~/esp/idf-env.sh                    # in every new shell
 
-![ESP-Drone](./docs/_static/espdrone_s2_v1_2_2.png)
+idf.py set-target esp32
+idf.py menuconfig                     # ESPDrone Config: pins, sensors, motors, link, PID gains
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
+```
 
-For more information, please check the sections below:
-* **Getting Started**: [Getting Started](https://docs.espressif.com/projects/espressif-esp-drone/zh_CN/latest/gettingstarted.html)
-* **Hardware Schematic**：[Hardware](https://docs.espressif.com/projects/espressif-esp-drone/zh_CN/latest/_static/ESP32_S2_Drone_V1_2/SCH_Mainboard_ESP32_S2_Drone_V1_2.pdf)
-* **iOS APP Source code**: [ESP-Drone-iOS](https://github.com/EspressifApps/ESP-Drone-iOS)
-* **Android APP Source code**: [ESP-Drone-Android](https://github.com/EspressifApps/ESP-Drone-Android)
+First power-up with the propellers **off**, using the bench profile (low throttle ceiling, boots disarmed):
 
-### Features
+```bash
+idf.py -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;profiles/bench.defaults" reconfigure build
+```
 
-1. Stabilize Mode
-2. Height-hold Mode
-3. Position-hold Mode
-4. APP Control
-5. cfclient Supported, refer https://github.com/leeebo/crazyflie-clients-python
-6. ESP-BOX3 Joystick Control (through esp-now)
+## Repository layout
 
-Note: to implement Height-hold/Position-hold mode, extension boards are needed. For more information, see Hardware Reference. 
+```
+main/                        app_main, Kconfig (all ESPDrone options)
+components/
+  core/crazyflie/            flight code: hal/ (sensors, power, links), modules/ (stabilizer,
+                             controllers, estimators, commander, CRTP), utils/
+  drivers/                   motors (DShot, brushed), BMI160, QMC5883L, VL53L0X, SPI/I2C buses, ...
+  platform/ config/          board identification, task priorities and stack sizes
+  lib/dsp_lib/               matrix / math routines used by the Kalman filter
+profiles/                    sdkconfig layers: sysview.defaults, bench.defaults
+tools/                       setup-idf.sh, config/espdrone_config.py (Kconfig <-> UI bridge)
+examples/espnow_transmitter/ reference transmitter, a separate ESP-IDF project
+tests/host/                  unit tests that run on the PC with plain gcc
+docs/handbook/               the documentation, start here
+docs/en, docs/zh_CN          legacy upstream ESP-Drone docs (other boards), kept for reference
+hardware/                    schematics and datasheets of the upstream boards and sensors
+```
 
-### Third Party Copyrighted Code
+## Documentation
 
-Additional third party copyrighted code is included under the following licenses.
+Start with the **[handbook](docs/handbook/README.md)**:
 
-| Component | License | Origin |Commit ID |
-| :---:  | :---: | :---: |:---: |
-| core/crazyflie | GPL3.0  |[Crazyflie](https://github.com/bitcraze/crazyflie-firmware/tree/2021.01) |tag_2021_01 b448553|
-| lib/dsp_lib |  | [esp32-lin](https://github.com/whyengineer/esp32-lin/tree/master/components/dsp_lib) |6fa39f4c|
+| Page | Read it to |
+|---|---|
+| [Getting started](docs/handbook/getting-started.md) | install, build, flash, first power-up |
+| [Architecture](docs/handbook/architecture.md) | boot sequence, tasks, control path, safety model |
+| [Configuration](docs/handbook/configuration.md) | every setting, profiles, building a configurator UI |
+| [ESP-NOW link](docs/handbook/espnow-link.md) | protocol, arming, failsafe, writing a transmitter |
+| [Hardware](docs/handbook/hardware.md) | FlyingFree pin map, open decisions (IMU, EEPROM, SD card) |
+| [Development](docs/handbook/development.md) | workflow, tests, what changed in this fork |
+| [Code review](docs/handbook/code-review.md) | findings and improvement proposals |
+| [ESP32-S3 roadmap](docs/handbook/esp32-s3-roadmap.md) | what is missing to treat an S3 like an STM32 flight controller |
 
-### Support Policy
+## License and credits
 
-From December 2022, we will offer limited support on this project, but Pull Request is still welcomed!
-
-### THANKS
-
-1. Thanks to Bitcraze for the great [Crazyflie project](https://www.bitcraze.io/%20).
-2. Thanks to Espressif for the powerful [ESP-IDF framework](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html).
-3. Thanks to WhyEngineer for the useful [ESP-DSP lib](https://github.com/whyengineer/esp32-lin/tree/master/components/dsp_lib).
-
+GPL-3.0, see [LICENSE](LICENSE). Flight code from the [Crazyflie firmware](https://github.com/bitcraze/crazyflie-firmware/tree/2021.01)
+(Bitcraze, GPL-3.0), ESP32 port by Espressif Systems, math routines from
+[esp32-lin](https://github.com/whyengineer/esp32-lin/tree/master/components/dsp_lib).
