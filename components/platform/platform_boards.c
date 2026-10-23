@@ -28,9 +28,11 @@
 #define DEBUG_MODULE "PLATFORM"
 #include "debug_cf.h"
 
-/*to support different hardware platform */
-static platformConfig_t configs[] = {
+#include "board.h"
 
+// Only the board the firmware is built for: its sensor driver is the only one compiled in
+static platformConfig_t configs[] = {
+#ifdef CONFIG_TARGET_FLYINGFREE_V01
     {
         .deviceType = "FF01",
         .deviceTypeName = "FlyingFree V1.0 ",
@@ -38,6 +40,16 @@ static platformConfig_t configs[] = {
         .physicalLayoutAntennasAreClose = false,
         .motorsType = MotorsTypeBrushless,
     },
+#endif
+#ifdef CONFIG_TARGET_FLYINGFREE_V02
+    {
+        .deviceType = "FF02",
+        .deviceTypeName = "FlyingFree V2",
+        .sensorImplementation = SensorImplementation_flyingfree_v02,
+        .physicalLayoutAntennasAreClose = false,
+        .motorsType = MotorsTypeBrushless,
+    },
+#endif
 };
 
 const platformConfig_t *platformGetListOfConfigurations(int *nrOfConfigs)
@@ -56,5 +68,5 @@ bool platformInitHardware()
 
 const char *platformConfigGetPlatformName()
 {
-    return "ED12";
+    return BOARD_DEVICE_TYPE;
 }

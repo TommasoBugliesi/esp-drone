@@ -1,0 +1,11 @@
+# Added on top of sdkconfig.defaults when the target is esp32s3 (FlyingFree V2).
+# ESP-IDF loads sdkconfig.defaults.<target> automatically.
+
+CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240=y
+
+# ESP32-S3-MINI-1U-N8: 8 MB quad flash, no PSRAM
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE=y
+
+# Console and debugging over the native USB (USB-Serial-JTAG), UART0 is free for the GPS
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y

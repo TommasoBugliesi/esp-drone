@@ -75,7 +75,7 @@ static bool useAdaptiveStd = true;
 // (will not work if useAdaptiveStd is on)
 static float flowStdFixed = 2.0f;
 
-#define NCS_PIN CONFIG_VSPI_PIN_CS0
+#define NCS_PIN CONFIG_IMU_SPI_PIN_CS
 
 
 static void flowdeckTask(void *param)

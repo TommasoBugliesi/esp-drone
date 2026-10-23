@@ -35,9 +35,9 @@ static unsigned int led_pin[] = {
 };
 
 static bool led_pin_enable[] = {
-    [LED_BLUE] = CONFIG_LED_PIN_BLUE_ENABLE,
-    [LED_RED]   = CONFIG_LED_PIN_RED_ENABLE,
-    [LED_GREEN] = CONFIG_LED_PIN_GREEN_ENABLE,
+    [LED_BLUE] = LED_PRESENT_BLUE,
+    [LED_RED]   = LED_PRESENT_RED,
+    [LED_GREEN] = LED_PRESENT_GREEN,
 };
 static int led_polarity[] = {
     [LED_BLUE] = LED_POL_BLUE,
@@ -121,7 +121,7 @@ void ledSetAll(void)
 }
 void ledSet(led_t led, bool value)
 {
-    if (led >= LED_NUM_MAX || led < 0) {
+    if (led >= LED_NUM_MAX || led < 0 || !led_pin_enable[led]) {
         return;
     }
 

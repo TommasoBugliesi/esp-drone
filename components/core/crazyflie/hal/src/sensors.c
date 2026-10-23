@@ -39,6 +39,9 @@
 #ifdef CONFIG_TARGET_FLYINGFREE_V01
   #include "sensors_flyingfree_v01.h"
 #endif
+#ifdef CONFIG_TARGET_FLYINGFREE_V02
+  #include "sensors_flyingfree_v02.h"
+#endif
 
 typedef struct {
   SensorImplementation_t implements;
@@ -62,7 +65,8 @@ typedef struct {
 static void nullFunction(void) {}
 #pragma GCC diagnostic pop
 
-static const sensorsImplementation_t sensorImplementations[SensorImplementation_COUNT] = {
+// Only the selected board's implementation is compiled in
+static const sensorsImplementation_t sensorImplementations[] = {
 #ifdef CONFIG_TARGET_FLYINGFREE_V01
   {
     .implements = SensorImplementation_flyingfree_v01,
@@ -77,6 +81,23 @@ static const sensorsImplementation_t sensorImplementations[SensorImplementation_
     .readMag = sensorsFF01ReadMag,
     .readBaro = sensorsFF01ReadBaro,
     .setAccMode = sensorsFF01SetAccMode,
+    .dataAvailableCallback = NULL,
+  },
+#endif
+#ifdef CONFIG_TARGET_FLYINGFREE_V02
+  {
+    .implements = SensorImplementation_flyingfree_v02,
+    .init = sensorsFF02Init,
+    .test = sensorsFF02Test,
+    .areCalibrated = sensorsFF02AreCalibrated,
+    .manufacturingTest = NULL,
+    .acquire = sensorsFF02Acquire,
+    .waitDataReady = sensorsFF02WaitDataReady,
+    .readGyro = sensorsFF02ReadGyro,
+    .readAcc = sensorsFF02ReadAcc,
+    .readMag = sensorsFF02ReadMag,
+    .readBaro = sensorsFF02ReadBaro,
+    .setAccMode = sensorsFF02SetAccMode,
     .dataAvailableCallback = NULL,
   },
 #endif
@@ -99,6 +120,10 @@ void sensorsInit(void) {
 #endif
 
   activeImplementation = findImplementation(sensorImplementation);
+  if (activeImplementation == NULL) {
+    DEBUG_PRINTE("no sensor implementation %d in this build\n", sensorImplementation);
+    return;
+  }
 
   activeImplementation->init();
 
@@ -106,7 +131,10 @@ void sensorsInit(void) {
 }
 
 bool sensorsTest(void) {
-  return activeImplementation->test();
+  if (activeImplementation == NULL) {
+    return false;
+  }
+  return activeImplementation->test ? activeImplementation->test() : isInit;
 }
 
 bool sensorsAreCalibrated(void) {
@@ -114,7 +142,7 @@ bool sensorsAreCalibrated(void) {
 }
 
 bool sensorsManufacturingTest(void){
-  return activeImplementation->manufacturingTest;
+  return activeImplementation->manufacturingTest ? activeImplementation->manufacturingTest() : true;
 }
 
 void sensorsAcquire(sensorData_t *sensors, const uint32_t tick) {
@@ -145,14 +173,10 @@ void sensorsSetAccMode(accModes accMode) {
   activeImplementation->setAccMode(accMode);
 }
 
-void __attribute__((used)) EXTI14_Callback(void) {
-  activeImplementation->dataAvailableCallback();
-}
-
 static const sensorsImplementation_t* findImplementation(SensorImplementation_t implementation) {
   const sensorsImplementation_t* result = 0;
 
-  for (int i = 0; i < SensorImplementation_COUNT; i++) {
+  for (int i = 0; i < sizeof(sensorImplementations) / sizeof(sensorImplementations[0]); i++) {
     if (sensorImplementations[i].implements == implementation) {
       result = &sensorImplementations[i];
       break;

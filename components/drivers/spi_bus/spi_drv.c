@@ -34,104 +34,106 @@
 #define DEBUG_MODULE "SPIDRV"
 #include "debug_cf.h"
 
-// Definitions of sensors SPI bus speed
-#define SPI_DEFAULT_SENSORS_CLOCK_SPEED             1000000
+#define SPI_MAX_TRANSFER_SIZE 4096
+#define SPI_HOST_COUNT        3       // SPI1_HOST..SPI3_HOST
 
-static bool isinit_spiPort[3] = {0, 0, 0};
+static bool isBusInit[SPI_HOST_COUNT];
+static SemaphoreHandle_t busMutex[SPI_HOST_COUNT];
 
-// TODO : Add option to have more devices on the same SPI bus (usually only one MPU)
+static const spiBusDef imuBus = {
+    .host               = BOARD_IMU_SPI_HOST,
+    .sclk_pin           = CONFIG_IMU_SPI_PIN_CLK,
+    .mosi_pin           = CONFIG_IMU_SPI_PIN_MOSI,
+    .miso_pin           = CONFIG_IMU_SPI_PIN_MISO,
+    .max_transfer_size  = SPI_MAX_TRANSFER_SIZE,
+};
+static const spiDef imuDef = {
+    .bus                = &imuBus,
+    .cs_pin             = CONFIG_IMU_SPI_PIN_CS,
+    .speed              = BOARD_IMU_SPI_HZ,
+    .mode               = 0,
+};
+spiDrv imuSpiDev = { .def = &imuDef };
 
-#ifdef CONFIG_VSPI_ENABLE
-    static const spiDef sensorVBusDef = {
-        .spiPort            = SPI3_HOST, //VSPI
-        .sclk_pin           = CONFIG_VSPI_PIN_CLK,
-        .mosi_pin           = CONFIG_VSPI_PIN_MOSI,
-        .miso_pin           = CONFIG_VSPI_PIN_MISO,
-        .cs_pin             = CONFIG_VSPI_PIN_CS0,
-        .speed              = SPI_DEFAULT_SENSORS_CLOCK_SPEED,
-        .max_transfer_size  = 4096,
-    };
-    static spi_device_handle_t vspi;
-    spiDrv sensorsVBus = {
-        .def                = &sensorVBusDef,
-    };
+#ifdef CONFIG_TARGET_FLYINGFREE_V02
+static const spiBusDef sensBus = {
+    .host               = BOARD_SENS_SPI_HOST,
+    .sclk_pin           = CONFIG_SENS_SPI_PIN_CLK,
+    .mosi_pin           = CONFIG_SENS_SPI_PIN_MOSI,
+    .miso_pin           = CONFIG_SENS_SPI_PIN_MISO,
+    .max_transfer_size  = SPI_MAX_TRANSFER_SIZE,
+};
+static const spiDef magDef = {
+    .bus                = &sensBus,
+    .cs_pin             = CONFIG_MAG_SPI_PIN_CS,
+    .speed              = BOARD_MAG_SPI_HZ,
+    .mode               = 3,          // MMC5983MA: clock idles high, sampled on the rising edge
+};
+static const spiDef osdDef = {
+    .bus                = &sensBus,
+    .cs_pin             = CONFIG_OSD_SPI_PIN_CS,
+    .speed              = BOARD_OSD_SPI_HZ,
+    .mode               = 0,
+};
+spiDrv magSpiDev = { .def = &magDef };
+spiDrv osdSpiDev = { .def = &osdDef };
 #endif
 
-#ifdef CONFIG_HSPI_ENABLE
-    static const spiDef sensorHBusDef = {
-        .spiPort            = HSPI,
-        .sclk_pin           = CONFIG_HSPI_PIN_CLK,
-        .mosi_pin           = CONFIG_HSPI_PIN_MOSI,
-        .miso_pin           = CONFIG_HSPI_PIN_MISO,
-        .cs_pin             = CONFIG_HSPI_PIN_CS0,
-        .speed              = SPI_DEFAULT_SENSORS_CLOCK_SPEED,
-        .max_transfer_size  = 4096,
-    };
-    static spi_device_handle_t hspi;
-    spiDrv sensorsHBus = {
-        .def                = &sensorHBusDef,
-    };
-#endif
-
-// TODO : Define HSPI bus and initialize
-
-void spidrvInitBus (spiDrv *spi)
-{   
-    if (isinit_spiPort[spi->def->spiPort]) {
-        return;
+static bool spidrvInitBus(const spiBusDef *bus)
+{
+    if (isBusInit[bus->host]) {
+        return true;
     }
 
     spi_bus_config_t conf = {
-        .mosi_io_num = spi->def->mosi_pin,
-        .miso_io_num = spi->def->miso_pin,
-        .sclk_io_num = spi->def->sclk_pin,
+        .mosi_io_num = bus->mosi_pin,
+        .miso_io_num = bus->miso_pin,
+        .sclk_io_num = bus->sclk_pin,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
-        .max_transfer_sz = spi->def->max_transfer_size,
+        .max_transfer_sz = bus->max_transfer_size,
     };
-    esp_err_t err = spi_bus_initialize(spi->def->spiPort, &conf, SPI_DMA_CH_AUTO);
-    
+    esp_err_t err = spi_bus_initialize(bus->host, &conf, SPI_DMA_CH_AUTO);
     if (err != ESP_OK) {
-        DEBUG_PRINTE("Failed to initialize SPI bus %d, error: %d", spi->def->spiPort, err);
-        return;
-    }   
-
-    DEBUG_PRINTI("SPI bus %d initialized", spi->def->spiPort);
-    spi->isBusFreeMutex = xSemaphoreCreateMutex();
-    isinit_spiPort[spi->def->spiPort] = true;
-
-    // Add a device to the bus
-    spidrvAddDevice(spi);
-}
-
-void spidrvAddDevice(spiDrv *spi)
-{
-    if (spi == NULL || spi->def == NULL) {
-        DEBUG_PRINTE("SPI bus or configuration not defined");
-        return;
+        DEBUG_PRINTE("Failed to initialize SPI bus %d, error: %d", bus->host, err);
+        return false;
     }
 
+    busMutex[bus->host] = xSemaphoreCreateMutex();
+    isBusInit[bus->host] = true;
+    DEBUG_PRINTI("SPI bus %d initialized", bus->host);
+    return true;
+}
+
+static void spidrvAddDevice(spiDrv *spi)
+{
     spi_device_interface_config_t devcfg = {
         .clock_speed_hz = spi->def->speed,
-        .mode = 0,  // SPI mode 0
+        .mode = spi->def->mode,
         .spics_io_num = spi->def->cs_pin,
         .queue_size = 3,
     };
 
-    esp_err_t ret = spi_bus_add_device(spi->def->spiPort, &devcfg, &vspi);
+    esp_err_t ret = spi_bus_add_device(spi->def->bus->host, &devcfg, &spi->handle);
     if (ret != ESP_OK) {
-        DEBUG_PRINTE("Failed to add device on SPI bus %d, error: %d", spi->def->spiPort, ret);
-    } else {
-        sensorsVBus.handle = vspi;
-        DEBUG_PRINTI("Device added to SPI bus %d", spi->def->spiPort);
+        DEBUG_PRINTE("Failed to add device (CS %d) on SPI bus %d, error: %d", spi->def->cs_pin,
+                     spi->def->bus->host, ret);
+        return;
     }
+    spi->isBusFreeMutex = busMutex[spi->def->bus->host];
+    DEBUG_PRINTI("Device (CS %d) added to SPI bus %d", spi->def->cs_pin, spi->def->bus->host);
 }
 
-void spidrvInit (spiDrv *spi){
-    spidrvInitBus(spi);
-}
-
-void spidrvTryToRestartBus(spiDrv *spi)
+void spidrvInit(spiDrv *spi)
 {
-    spidrvInitBus(spi);
+    if (spi == NULL || spi->def == NULL) {
+        DEBUG_PRINTE("SPI device not defined");
+        return;
+    }
+    if (spi->handle != NULL) {
+        return;
+    }
+    if (spidrvInitBus(spi->def->bus)) {
+        spidrvAddDevice(spi);
+    }
 }

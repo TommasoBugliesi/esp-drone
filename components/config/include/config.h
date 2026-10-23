@@ -46,9 +46,7 @@
 #define PROTOCOL_VERSION 4
 #define QUAD_FORMATION_X
 
-#ifndef CONFIG_IDF_TARGET_ESP32
-#error "FlyingFree V1 needs an ESP32 target (idf.py set-target esp32)"
-#endif
+#include "board.h"
 
 //#define DEBUG_UDP
 //#define DEBUG_EP2

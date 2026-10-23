@@ -60,7 +60,7 @@ static void dshotKeepAliveTask(void *param);
  */
 rmt_config_t config[NBR_OF_MOTORS] = {
     {    
-        .channel = RMT_CHANNEL_1,                      // rmt channel to be linked to gpio
+        .channel = (rmt_channel_t)MOT_RMT_CH1,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR1_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -72,7 +72,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },    
     {    
-        .channel = RMT_CHANNEL_2,                      // rmt channel to be linked to gpio
+        .channel = (rmt_channel_t)MOT_RMT_CH2,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR2_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -84,7 +84,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },
         {    
-        .channel = RMT_CHANNEL_3,                      // rmt channel to be linked to gpio
+        .channel = (rmt_channel_t)MOT_RMT_CH3,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR3_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 
@@ -96,7 +96,7 @@ rmt_config_t config[NBR_OF_MOTORS] = {
         .flags = RMT_CHANNEL_FLAGS_INVERT_SIG,
     },
         {    
-        .channel = RMT_CHANNEL_4,                      // rmt channel to be linked to gpio
+        .channel = (rmt_channel_t)MOT_RMT_CH4,                      // rmt channel to be linked to gpio
         .rmt_mode = RMT_MODE_TX,                     // rmt as output
         .gpio_num = MOTOR4_GPIO,                     // GPIO number 
         .mem_block_num = 1,                          // Link memory block to channel 

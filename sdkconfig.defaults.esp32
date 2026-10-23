@@ -1,0 +1,5 @@
+# Added on top of sdkconfig.defaults when the target is esp32 (FlyingFree V1.0).
+# ESP-IDF loads sdkconfig.defaults.<target> automatically.
+
+# Without this the ESP32 runs at 160 MHz
+CONFIG_ESP32_DEFAULT_CPU_FREQ_240=y

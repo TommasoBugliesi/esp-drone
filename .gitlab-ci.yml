@@ -24,10 +24,15 @@ before_script:
 
 build_demo_cmake:
   <<: *build_examples_template
+  parallel:
+    matrix:
+      - TARGET: [esp32, esp32s3]    # FlyingFree V1.0, FlyingFree V2
   script:
-    - idf.py set-target esp32
+    - tests/host/run.sh
+    - idf.py set-target $TARGET
     - idf.py build
     - idf.py fullclean
+    - idf.py set-target $TARGET
     - idf.py -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;profiles/sysview.defaults" reconfigure build
 
 build_docs:

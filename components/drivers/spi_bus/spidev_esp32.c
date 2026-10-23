@@ -32,6 +32,9 @@ int spidevInit(spiDrv *dev) {
 }
 
 bool spidevTransfer(spiDrv *dev, uint8_t *txData, uint8_t *rxData, size_t length) {
+    if (dev->handle == NULL) {
+        return false;
+    }
     if (xSemaphoreTake(dev->isBusFreeMutex, pdMS_TO_TICKS(5)) == pdFALSE) {
         return false;
     }

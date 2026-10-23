@@ -2,13 +2,21 @@ menu "ESPDrone Config"
 
     choice BOARD
         prompt "Board"
-        default TARGET_FLYINGFREE_V01
+        default TARGET_FLYINGFREE_V01 if IDF_TARGET_ESP32
+        default TARGET_FLYINGFREE_V02 if IDF_TARGET_ESP32S3
         help
             Hardware definition. Every pin below has its default for the selected board.
+            The board follows the chip: idf.py set-target esp32 gives V1.0, esp32s3 gives V2.
 
         config TARGET_FLYINGFREE_V01
             bool "FlyingFree V1.0 (ESP32)"
             depends on IDF_TARGET_ESP32
+
+        config TARGET_FLYINGFREE_V02
+            bool "FlyingFree V2 (ESP32-S3)"
+            depends on IDF_TARGET_ESP32S3
+            help
+                hardware/flyingfree-v2: ICM-42688-P, MMC5983MA, DPS310, 1S-3S.
     endchoice
 
     comment "Board: wiring of the selected target. Change only if the PCB differs."
@@ -16,21 +24,22 @@ menu "ESPDrone Config"
 
         config PLATFORM_STRING
             string "Platform identification string"
-            default "0;FF01"
+            default "0;FF01" if TARGET_FLYINGFREE_V01
+            default "0;FF02" if TARGET_FLYINGFREE_V02
             help
                 Device type reported by the platform layer, "0;" is required.
-                The part after it must match a deviceType in platform_cf2.c.
+                The part after it must match a deviceType in platform_boards.c.
 
         menu "I2C"
             config I2C0_ENABLE
                 bool "Activate I2C channel 0"
-                default y if TARGET_FLYINGFREE_V01
+                default y
                 help
-                    Tick if you want to use I2C channel 0
+                    Barometer, external compass pads, range finder, EEPROM.
 
             config I2C1_ENABLE
                 bool "Activate I2C channel 1"
-                default n if TARGET_FLYINGFREE_V01
+                default n
                 help
                     Tick if you want to use I2C channel 1
 
@@ -38,14 +47,18 @@ menu "ESPDrone Config"
                 config I2C0_PIN_SDA
                     int "I2C0_PIN_SDA GPIO number"
                     range 0 39 if TARGET_FLYINGFREE_V01
+                    range 0 48 if TARGET_FLYINGFREE_V02
                     default 21 if TARGET_FLYINGFREE_V01
+                    default 47 if TARGET_FLYINGFREE_V02
                     help
                         GPIO number (IOxx) I2C0_PIN_SDA
 
                 config I2C0_PIN_SCL
                     int "I2C0_PIN_SCL GPIO number"
                     range 0 39 if TARGET_FLYINGFREE_V01
+                    range 0 48 if TARGET_FLYINGFREE_V02
                     default 22 if TARGET_FLYINGFREE_V01
+                    default 48 if TARGET_FLYINGFREE_V02
                     help
                         GPIO number (IOxx) I2C0_PIN_SCL
             endif
@@ -54,51 +67,84 @@ menu "ESPDrone Config"
                 config I2C1_PIN_SDA
                     int "I2C1_PIN_SDA GPIO number"
                     help
-                        GPIO number (IOxx) I2C0_PIN_SDA
+                        GPIO number (IOxx) I2C1_PIN_SDA
 
                 config I2C1_PIN_SCL
                     int "I2C1_PIN_SCL GPIO number"
                     help
-                        GPIO number (IOxx) I2C0_PIN_SCL
+                        GPIO number (IOxx) I2C1_PIN_SCL
             endif
         endmenu
 
 
         menu "SPI"
-            config VSPI_ENABLE
-                bool "Activate VSPI channel"
-                default y if TARGET_FLYINGFREE_V01
+            comment "IMU bus: SPI3 on V1.0, SPI2 on V2 (the IMU has it to itself)"
+
+            config IMU_SPI_PIN_MISO
+                int "IMU SPI MISO GPIO number"
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
+                default 19 if TARGET_FLYINGFREE_V01
+                default 13 if TARGET_FLYINGFREE_V02
+
+            config IMU_SPI_PIN_MOSI
+                int "IMU SPI MOSI GPIO number"
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
+                default 23 if TARGET_FLYINGFREE_V01
+                default 11 if TARGET_FLYINGFREE_V02
+
+            config IMU_SPI_PIN_CLK
+                int "IMU SPI clock GPIO number"
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
+                default 18 if TARGET_FLYINGFREE_V01
+                default 12 if TARGET_FLYINGFREE_V02
+
+            config IMU_SPI_PIN_CS
+                int "IMU SPI chip select GPIO number"
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
+                default 5 if TARGET_FLYINGFREE_V01
+                default 10 if TARGET_FLYINGFREE_V02
+
+            config IMU_INT1_PIN
+                int "IMU data-ready interrupt GPIO number (-1: not wired)"
+                range -1 39 if TARGET_FLYINGFREE_V01
+                range -1 48 if TARGET_FLYINGFREE_V02
+                default -1 if TARGET_FLYINGFREE_V01
+                default 9 if TARGET_FLYINGFREE_V02
                 help
-                    Tick if you want to use VSPI channel 0
+                    V2 takes its sample clock from this pin. V1.0 does not wire it yet and
+                    uses a 1 kHz software timer.
 
-            if VSPI_ENABLE
-                config VSPI_PIN_MISO
-                    int "VSPI_PIN_MISO GPIO number"
-                    range 0 39 if TARGET_FLYINGFREE_V01
-                    default 19 if TARGET_FLYINGFREE_V01
-                    help
-                        GPIO number (IOxx) VSPI_PIN_MISO
+            if TARGET_FLYINGFREE_V02
+                comment "Sensor bus (SPI3): magnetometer and analog OSD"
 
-                config VSPI_PIN_MOSI
-                    int "VSPI_PIN_MOSI GPIO number"
-                    range 0 39 if TARGET_FLYINGFREE_V01
-                    default 23 if TARGET_FLYINGFREE_V01
-                    help
-                        GPIO number (IOxx) VSPI_PIN_MOSI
+                config SENS_SPI_PIN_MISO
+                    int "Sensor SPI MISO GPIO number"
+                    range 0 48
+                    default 6
 
-                config VSPI_PIN_CLK
-                    int "VSPI_PIN_CLK GPIO number"
-                    range 0 39 if TARGET_FLYINGFREE_V01
-                    default 18 if TARGET_FLYINGFREE_V01
-                    help
-                        GPIO number (IOxx) VSPI_PIN_CLK
+                config SENS_SPI_PIN_MOSI
+                    int "Sensor SPI MOSI GPIO number"
+                    range 0 48
+                    default 5
 
-                config VSPI_PIN_CS0
-                    int "VSPI_PIN_CS0 GPIO number"
-                    range 0 39 if TARGET_FLYINGFREE_V01
-                    default 05 if TARGET_FLYINGFREE_V01
-                    help
-                        GPIO number (IOxx) VSPI_PIN_CS0
+                config SENS_SPI_PIN_CLK
+                    int "Sensor SPI clock GPIO number"
+                    range 0 48
+                    default 4
+
+                config MAG_SPI_PIN_CS
+                    int "Magnetometer chip select GPIO number"
+                    range 0 48
+                    default 7
+
+                config OSD_SPI_PIN_CS
+                    int "OSD chip select GPIO number"
+                    range 0 48
+                    default 39
             endif
         endmenu
 
@@ -106,46 +152,49 @@ menu "ESPDrone Config"
         menu "LEDs"
             config LED_PIN_BLUE_ENABLE
                 bool "Blue Led Available"
-                default y if TARGET_FLYINGFREE_V01 
+                default y if TARGET_FLYINGFREE_V01
+                default n if TARGET_FLYINGFREE_V02
                 help
                     Tick if blue led available
 
             config LED_PIN_GREEN_ENABLE
                 bool "Green Led Available"
-                default y if TARGET_FLYINGFREE_V01 
+                default y
                 help
-                    Tick if blue led available
+                    Tick if green led available
 
             config LED_PIN_RED_ENABLE
                 bool "Red Led Available"
-                default y if TARGET_FLYINGFREE_V01 
+                default y
                 help
-                    Tick if blue led available
-        
+                    Tick if red led available
+
             config LED_PIN_BLUE
                 int "LED_PIN_BLUE GPIO number"
                 depends on LED_PIN_BLUE_ENABLE
-                range 0 39 if TARGET_FLYINGFREE_V01 
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
                 default 16 if TARGET_FLYINGFREE_V01
-                default -1 if !LED_PIN_BLUE_ENABLE
                 help
                     GPIO number (IOxx) LED_PIN_BLUE
 
             config LED_PIN_GREEN
                 int "LED_PIN_GREEN GPIO number"
                 depends on LED_PIN_GREEN_ENABLE
-                range 0 39 if TARGET_FLYINGFREE_V01 
-                default 04 if TARGET_FLYINGFREE_V01
-                default -1 if !LED_PIN_GREEN_ENABLE
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
+                default 4 if TARGET_FLYINGFREE_V01
+                default 46 if TARGET_FLYINGFREE_V02
                 help
                     GPIO number (IOxx) LED_PIN_GREEN
 
             config LED_PIN_RED
                 int "LED_PIN_RED GPIO number"
                 depends on LED_PIN_RED_ENABLE
-                range 0 39 if TARGET_FLYINGFREE_V01 
+                range 0 39 if TARGET_FLYINGFREE_V01
+                range 0 48 if TARGET_FLYINGFREE_V02
                 default 17 if TARGET_FLYINGFREE_V01
-                default -1 if !LED_PIN_RED_ENABLE
+                default 45 if TARGET_FLYINGFREE_V02
                 help
                     GPIO number (IOxx) LED_PIN_RED
         endmenu
@@ -154,7 +203,7 @@ menu "ESPDrone Config"
         menu "Buzzer"
             config BUZZER_ENABLE
                 bool "enable buzzer to play sound"
-                default y if TARGET_FLYINGFREE_V01
+                default y
                     help
                     Tick if buzzer available
 
@@ -162,27 +211,53 @@ menu "ESPDrone Config"
                 config BUZ1_PIN_POS
                     int "BUZ1_PIN_POS GPIO number"
                     range 0 39 if TARGET_FLYINGFREE_V01
-                    default 02 if TARGET_FLYINGFREE_V01
+                    range 0 48 if TARGET_FLYINGFREE_V02
+                    default 2 if TARGET_FLYINGFREE_V01
+                    default 3 if TARGET_FLYINGFREE_V02
                     help
                         GPIO number (IOxx) BUZ1_PIN_POS
             endif
         endmenu
 
 
-        menu "Battery voltage sense (ADC)"
+        menu "Battery voltage and current sense (ADC)"
             config ADC_ENABLE
                 bool "At least one ADC channel available"
-                default y if TARGET_FLYINGFREE_V01
+                default y
                 help
                     Tick if you want to use an ADC channel
 
             if ADC_ENABLE
-                config ADC1_PIN
-                    int "ADC1_PIN Channel number"
-                    range 0 39 if TARGET_FLYINGFREE_V01
+                config VBAT_ADC_PIN
+                    int "Battery voltage GPIO number (ADC1)"
+                    range 32 39 if TARGET_FLYINGFREE_V01
+                    range 1 10 if TARGET_FLYINGFREE_V02
                     default 34 if TARGET_FLYINGFREE_V01
+                    default 1 if TARGET_FLYINGFREE_V02
                     help
-                        GPIO number (IOxx) ADC1_PIN
+                        Pin of the battery divider. Must be an ADC1 pin: ADC2 does not work while
+                        Wi-Fi runs.
+
+                config CURR_ADC_ENABLE
+                    bool "ESC current sensor input"
+                    default n if TARGET_FLYINGFREE_V01
+                    default y if TARGET_FLYINGFREE_V02
+
+                config CURR_ADC_PIN
+                    int "ESC current sensor GPIO number (ADC1)"
+                    depends on CURR_ADC_ENABLE
+                    range 32 39 if TARGET_FLYINGFREE_V01
+                    range 1 10 if TARGET_FLYINGFREE_V02
+                    default 2 if TARGET_FLYINGFREE_V02
+                    default 35
+
+                config CURR_AMP_PER_VOLT_X100
+                    int "Current sensor scale (A per V, x100)"
+                    depends on CURR_ADC_ENABLE
+                    range 1 100000
+                    default 2500
+                    help
+                        From the ESC's documentation. 2500 means 25 A per volt (40 mV/A).
             endif
         endmenu
 
@@ -191,20 +266,43 @@ menu "ESPDrone Config"
     menu "Sensors"
 
         config QMC5883L_ENABLE
-            bool "Magnetometer QMC5883L"
+            bool "Magnetometer QMC5883L (I2C0)"
+            depends on TARGET_FLYINGFREE_V01
             default y
 
         config BMP280_ENABLE
             bool "Barometer BMP280"
+            depends on TARGET_FLYINGFREE_V01
             default n
+            help
+                No working BMP280 driver yet; the option only reserves the place.
+
+        config MMC5983MA_ENABLE
+            bool "Magnetometer MMC5983MA (SPI3)"
+            depends on TARGET_FLYINGFREE_V02
+            default y
+
+        config MMC5983MA_RATE_1000HZ
+            bool "Sample the magnetometer at 1 kHz"
+            depends on MMC5983MA_ENABLE
+            default n
+            help
+                1 kHz continuous mode (1.2 mG rms). Off: 100 Hz (0.4 mG rms).
+
+        config DPS310_ENABLE
+            bool "Barometer DPS310 (I2C0)"
+            depends on TARGET_FLYINGFREE_V02
+            default y
 
         config RANGE_VL53L0X_ENABLE
             bool "Range finder VL53L0X"
-            default y
+            default y if TARGET_FLYINGFREE_V01
+            default n
 
         config UPSIDEDOWN_ENABLE
             bool "Board mounted upside down"
-            default y
+            default y if TARGET_FLYINGFREE_V01
+            default n
             help
                 Flips the Z axis (and the matching X) of the IMU and the magnetometer.
 
@@ -227,7 +325,7 @@ menu "ESPDrone Config"
     menu "Motors & ESC"
         choice MOTOR_TYPE
             prompt "Motor Type"
-            default BRUSHLESS if TARGET_FLYINGFREE_V01
+            default BRUSHLESS
             
             config BRUSHLESS
                 bool "Brushless Motors"
@@ -267,31 +365,40 @@ menu "ESPDrone Config"
             help
                 Upper limit of the commander thrust and of every motor output after mixing.
                 1000 is about 48 % throttle, raise it once the vehicle is tuned.
+        comment "V2: motors on GPIO33-36, which do not glitch at power-up. Do not use GPIO1-18."
         config MOTOR01_PIN
             int "MOTOR01_PIN GPIO number"
             range 0 39 if TARGET_FLYINGFREE_V01
+            range 0 48 if TARGET_FLYINGFREE_V02
             default 27 if TARGET_FLYINGFREE_V01
+            default 33 if TARGET_FLYINGFREE_V02
             help
                 GPIO number (IOxx) MOTOR01_PIN
 
         config MOTOR02_PIN
             int "MOTOR02_PIN GPIO number"
             range 0 39 if TARGET_FLYINGFREE_V01
+            range 0 48 if TARGET_FLYINGFREE_V02
             default 26 if TARGET_FLYINGFREE_V01
+            default 34 if TARGET_FLYINGFREE_V02
             help
                 GPIO number (IOxx) MOTOR02_PIN
 
         config MOTOR03_PIN
             int "MOTOR03_PIN GPIO number"
             range 0 39 if TARGET_FLYINGFREE_V01
+            range 0 48 if TARGET_FLYINGFREE_V02
             default 25 if TARGET_FLYINGFREE_V01
+            default 35 if TARGET_FLYINGFREE_V02
             help
                 GPIO number (IOxx) MOTOR03_PIN
 
         config MOTOR04_PIN
             int "MOTOR04_PIN GPIO number"
             range 0 39 if TARGET_FLYINGFREE_V01
+            range 0 48 if TARGET_FLYINGFREE_V02
             default 33 if TARGET_FLYINGFREE_V01
+            default 36 if TARGET_FLYINGFREE_V02
             help
                 GPIO number (IOxx) MOTOR04_PIN
     endmenu
@@ -302,11 +409,25 @@ menu "ESPDrone Config"
             prompt "Battery"
             default BATTERY_3S
 
+            config BATTERY_1S
+                bool "1S LiPo"
+                depends on TARGET_FLYINGFREE_V02
+            config BATTERY_2S
+                bool "2S LiPo"
+                depends on TARGET_FLYINGFREE_V02
             config BATTERY_3S
                 bool "3S LiPo"
             config BATTERY_4S
                 bool "4S LiPo"
+                depends on TARGET_FLYINGFREE_V01
         endchoice
+
+        config BATTERY_CELLS
+            int
+            default 1 if BATTERY_1S
+            default 2 if BATTERY_2S
+            default 3 if BATTERY_3S
+            default 4 if BATTERY_4S
 
         config BATTERY_CELL_LOW_MV
             int "Low battery warning (mV per cell)"

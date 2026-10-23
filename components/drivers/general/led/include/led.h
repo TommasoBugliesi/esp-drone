@@ -29,50 +29,59 @@
 #define LED_POL_POS 0
 #define LED_POL_NEG 1
 
-// If colour not available skip
+// If colour not available skip. A role whose LED is missing moves to another LED.
 #ifdef CONFIG_LED_PIN_BLUE_ENABLE
+    #define LED_PRESENT_BLUE 1
     #define LED_GPIO_BLUE  CONFIG_LED_PIN_BLUE
-    #define LED_POL_BLUE   LED_POL_POS
-
-    #define LINK_DOWN_LED    LED_BLUE
-    #define SYS_LED          LED_BLUE
-#endif
-#ifndef CONFIG_LED_PIN_BLUE_ENABLE
+#else
+    #define LED_PRESENT_BLUE 0
     #define LED_GPIO_BLUE -1
-    #define LED_POL_BLUE LED_POL_POS
-
-    #define LINK_DOWN_LED    -1
-    #define SYS_LED          -1
 #endif
-#ifdef CONFIG_LED_PIN_RED_ENABLE
-    #define LED_GPIO_RED   CONFIG_LED_PIN_RED
-    #define LED_POL_RED    LED_POL_POS
+#define LED_POL_BLUE   LED_POL_POS
 
+#ifdef CONFIG_LED_PIN_RED_ENABLE
+    #define LED_PRESENT_RED 1
+    #define LED_GPIO_RED   CONFIG_LED_PIN_RED
+#else
+    #define LED_PRESENT_RED 0
+    #define LED_GPIO_RED -1
+#endif
+#define LED_POL_RED    LED_POL_POS
+
+#ifdef CONFIG_LED_PIN_GREEN_ENABLE
+    #define LED_PRESENT_GREEN 1
+    #define LED_GPIO_GREEN CONFIG_LED_PIN_GREEN
+#else
+    #define LED_PRESENT_GREEN 0
+    #define LED_GPIO_GREEN -1
+#endif
+#define LED_POL_GREEN  LED_POL_POS
+
+#if LED_PRESENT_RED
     #define CHG_LED          LED_RED
     #define LOWBAT_LED       LED_RED
     #define ERR_LED1         LED_RED
     #define ERR_LED2         LED_RED
-#endif
-#ifndef CONFIG_LED_PIN_RED_ENABLE
-    #define LED_GPIO_RED -1
-    #define LED_POL_RED LED_POL_POS
-
+#else
     #define CHG_LED          -1
     #define LOWBAT_LED       -1
     #define ERR_LED1         -1
     #define ERR_LED2         -1
 #endif
-#ifdef CONFIG_LED_PIN_GREEN_ENABLE
-    #define LED_GPIO_GREEN CONFIG_LED_PIN_GREEN  
-    #define LED_POL_GREEN  LED_POL_POS
 
+#if LED_PRESENT_GREEN
     #define LINK_LED         LED_GREEN
-#endif
-#ifndef CONFIG_LED_PIN_GREEN_ENABLE
-    #define LED_GPIO_GREEN -1
-    #define LED_POL_GREEN LED_POL_POS
-
+#else
     #define LINK_LED         -1
+#endif
+
+#if LED_PRESENT_BLUE
+    #define LINK_DOWN_LED    LED_BLUE
+    #define SYS_LED          LED_BLUE
+#else
+    // FlyingFree V2 has red and green only
+    #define LINK_DOWN_LED    LOWBAT_LED
+    #define SYS_LED          LINK_LED
 #endif
 
 #define LED_NUM_MAX 3

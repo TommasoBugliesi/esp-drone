@@ -1,5 +1,16 @@
+# The sensor file of the selected board. Config values are not loaded during the early
+# expansion of REQUIRES, so every sensor driver is required and the linker drops the unused ones.
+set(board_srcs "")
+if(CONFIG_TARGET_FLYINGFREE_V01)
+    list(APPEND board_srcs "./hal/src/sensors_flyingfree_v01.c")
+endif()
+if(CONFIG_TARGET_FLYINGFREE_V02)
+    list(APPEND board_srcs "./hal/src/sensors_flyingfree_v02.c")
+endif()
+
 idf_component_register(SRCS "./hal/src/buzzer.c" 
-                "./hal/src/sensors_flyingfree_v01.c" 
+                ${board_srcs}
+                "./hal/src/sensors_common.c"
                 "./hal/src/freeRTOSdebug.c" 
                 "./hal/src/ledseq.c" 
                 "./hal/src/pm_esplane.c" 
@@ -69,7 +80,7 @@ idf_component_register(SRCS "./hal/src/buzzer.c"
                 "./utils/src/version.c"
                 "./utils/src/rateSupervisor.c"
                 INCLUDE_DIRS "./hal/interface" "./modules/interface" "./utils/interface"
-                REQUIRES i2c_bus spi_bus deck mpu6050 bmi160 ms5611 hmc5883l qmc5883l pmw3901 vl53l1 vl53l0 platform config led eeprom dsp_lib motors wifi adc esp_timer esp_wifi app_trace)
+                REQUIRES i2c_bus spi_bus deck mpu6050 bmi160 ms5611 hmc5883l qmc5883l icm42688p mmc5983ma dps310 pmw3901 vl53l1 vl53l0 platform config led eeprom dsp_lib motors wifi adc esp_timer esp_wifi app_trace)
 
 idf_component_get_property( FREERTOS_ORIG_INCLUDE_PATH freertos ORIG_INCLUDE_PATH)
 target_include_directories(${COMPONENT_TARGET} PUBLIC

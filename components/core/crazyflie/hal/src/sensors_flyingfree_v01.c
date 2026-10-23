@@ -227,7 +227,7 @@ int8_t bmi160_spi_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_
 
 // SPI Read Write function for BMI160
 int8_t bmi160_spi_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t length) {
-    if (spidevRead(VSPI_DEV, reg_addr, data, length)) {
+    if (spidevRead(IMU_SPI_DEV, reg_addr, data, length)) {
         return BMI160_OK;
     }
     return BMI160_E_COM_FAIL;
@@ -235,7 +235,7 @@ int8_t bmi160_spi_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t
 
 // Write function for BMI160
 int8_t bmi160_spi_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t length) {
-    if (spidevWrite(VSPI_DEV, reg_addr, data, length)) {
+    if (spidevWrite(IMU_SPI_DEV, reg_addr, data, length)) {
         return BMI160_OK;
     }
     return BMI160_E_COM_FAIL;
@@ -250,10 +250,10 @@ static void sensorsDeviceInit(void)
 
     int8_t rslt;
     i2cdevInit(I2C0_DEV);
-    spidevInit(VSPI_DEV);
+    spidevInit(IMU_SPI_DEV);
 
     // Assign the SPI device pointer to the dev_id field
-    bmi160dev.id = (uint8_t)VSPI_DEV.def->spiPort; // Cast the address of spiDevice as uint8_t (Bosch uses this as a handle)
+    bmi160dev.id = 0; // unused: the read/write callbacks always talk to IMU_SPI_DEV
     bmi160dev.intf = BMI160_SPI_INTF; // Set interface type to SPI
     bmi160dev.read = bmi160_spi_read;       // Set read function
     bmi160dev.write = bmi160_spi_write;     // Set write function
@@ -645,9 +645,9 @@ void sensorsFF01SetAccMode(accModes accMode)
 void processMagnetometerMeasurements(struct qmc5883l_raw_data_t *qmc5883l_mag)
 {
     if (mag_data_ready) {
-        sensorData.mag.y = MAG_X_TOFRAME *              ((float)qmc5883l_mag->x / MAG_GAUSS_PER_LSB); //to gauss
-        sensorData.mag.x = MAG_Y_TOFRAME * UPSIDEDOWN * ((float)qmc5883l_mag->y / MAG_GAUSS_PER_LSB);
-        sensorData.mag.z = UPSIDEDOWN *                 ((float)qmc5883l_mag->z / MAG_GAUSS_PER_LSB);
+        sensorData.mag.y = MAG_X_TOFRAME *              ((float)qmc5883l_mag->x * MAG_GAUSS_PER_LSB); //to gauss
+        sensorData.mag.x = MAG_Y_TOFRAME * UPSIDEDOWN * ((float)qmc5883l_mag->y * MAG_GAUSS_PER_LSB);
+        sensorData.mag.z = UPSIDEDOWN *                 ((float)qmc5883l_mag->z * MAG_GAUSS_PER_LSB);
 
         mag_data_ready = false;
         // DEBUG_PRINTI("hmc5883l DATA ready");

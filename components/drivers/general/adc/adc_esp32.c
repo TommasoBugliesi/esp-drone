@@ -24,6 +24,7 @@
 #include "esp_idf_version.h"
 #include "driver/adc.h"
 #include "esp_adc_cal.h"
+#include "driver/gpio.h"
 #include "adc_esp32.h"
 #include "config.h"
 #include "pm_esplane.h"
@@ -34,13 +35,17 @@
 static bool isInit;
 
 static esp_adc_cal_characteristics_t *adc_chars;
-// TODO: find a clever way to link the copter configuration to the channel list to retrieve the right ADC_CHANNEL automatically
-#ifdef CONFIG_TARGET_FLYINGFREE_V01
-static const adc_channel_t channel = ADC_CHANNEL_6;     // GPI34 if ADC1
-#endif
 
-static const adc_bits_width_t width = ADC_WIDTH_MAX-1;
-static const adc_atten_t atten = 3; // we directly set the attenuation to 3(11dB/12dB) to avoid the build warning
+// Battery voltage and ESC current. Only ADC1: ADC2 cannot be read while Wi-Fi runs.
+#define ADC_MAX_PINS 2
+static struct {
+    int gpio;
+    adc1_channel_t channel;
+} adcPins[ADC_MAX_PINS];
+static int adcPinCount;
+
+static const adc_bits_width_t width = ADC_WIDTH_BIT_12;
+static const adc_atten_t atten = (adc_atten_t)3; // 11 dB (12 dB in newer IDF), as a value to avoid the deprecation warning
 static const adc_unit_t unit = ADC_UNIT_1;
 #define DEFAULT_VREF 1100 //Use adc2_vref_to_gpio() to obtain a better estimate
 #define NO_OF_SAMPLES   30          //Multisampling
@@ -56,17 +61,42 @@ static void print_char_val_type(esp_adc_cal_value_t val_type)
     }
 }
 
+/* ADC1 channel of a GPIO, configured on first use. -1 if the pin has no ADC1 channel. */
+static int adcChannelOf(uint32_t pin)
+{
+    for (int i = 0; i < adcPinCount; i++) {
+        if (adcPins[i].gpio == (int)pin) {
+            return adcPins[i].channel;
+        }
+    }
+    if (adcPinCount >= ADC_MAX_PINS) {
+        DEBUG_PRINTE("no ADC slot left for GPIO%u", (unsigned)pin);
+        return -1;
+    }
+    for (int ch = 0; ch < ADC1_CHANNEL_MAX; ch++) {
+        gpio_num_t io;
+        if (adc1_pad_get_io_num((adc1_channel_t)ch, &io) == ESP_OK && io == (gpio_num_t)pin) {
+            adc1_config_channel_atten((adc1_channel_t)ch, atten);
+            adcPins[adcPinCount].gpio = pin;
+            adcPins[adcPinCount].channel = (adc1_channel_t)ch;
+            adcPinCount++;
+            return ch;
+        }
+    }
+    DEBUG_PRINTE("GPIO%u is not an ADC1 pin", (unsigned)pin);
+    return -1;
+}
+
 float analogReadVoltage(uint32_t pin)
 {
+    const int channel = adcChannelOf(pin);
+    if (!isInit || channel < 0) {
+        return 0.0f;
+    }
+
     uint32_t adc_reading = 0;
     for (int i = 0; i < NO_OF_SAMPLES; i++) {
-        if (unit == ADC_UNIT_1) {
-            adc_reading += adc1_get_raw((adc1_channel_t)channel);
-        } else {
-            int raw;
-            adc2_get_raw((adc2_channel_t)channel, width, &raw);
-            adc_reading += raw;
-        }
+        adc_reading += adc1_get_raw((adc1_channel_t)channel);
     }
     adc_reading /= NO_OF_SAMPLES;
     //Convert adc_reading to voltage in mV
@@ -80,12 +110,7 @@ void adcInit(void)
         return;
     }
 
-    if (unit == ADC_UNIT_1) {
-        adc1_config_width(width);
-        adc1_config_channel_atten(channel, atten);
-    } else {
-        adc2_config_channel_atten((adc2_channel_t)channel, atten);
-    }
+    adc1_config_width(width);
 
     //Characterize ADC
     adc_chars = calloc(1, sizeof(esp_adc_cal_characteristics_t));

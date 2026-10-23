@@ -46,10 +46,10 @@ ${py_bin_dir:+export PIP_BREAK_SYSTEM_PACKAGES=1}
 . "$IDF_DIR/export.sh"
 ENV
 
-echo "== installing the ESP32 toolchain and Python environment"
+echo "== installing the ESP32 and ESP32-S3 toolchains and the Python environment"
 (
   [ -n "$py_bin_dir" ] && export PATH="$py_bin_dir:$PATH" PIP_BREAK_SYSTEM_PACKAGES=1
-  "$IDF_DIR/install.sh" esp32
+  "$IDF_DIR/install.sh" esp32,esp32s3
   # CMake and Ninja come from the OS package manager on Linux, fetch them instead (no root)
   . "$IDF_DIR/export.sh" >/dev/null
   python "$IDF_DIR/tools/idf_tools.py" install cmake ninja

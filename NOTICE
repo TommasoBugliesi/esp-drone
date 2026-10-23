@@ -1,0 +1,17 @@
+ESPDrone (FlyingFree) firmware - third-party sources
+
+This firmware is licensed under the GNU General Public License version 3 (see LICENSE).
+It is derived from ESP-Drone (Espressif Systems) and the Crazyflie firmware (Bitcraze AB).
+
+Parts of it are derived from the following GPL-3.0-or-later projects. Each derived file keeps
+its original notice and names its source; changes are described in the file header.
+
+  Betaflight / Cleanflight   https://github.com/betaflight/betaflight   commit 4b1aed7 (2026-10-23)
+    components/drivers/spi_devices/icm42688p   from src/main/drivers/accgyro/accgyro_spi_icm426xx.c
+    components/drivers/i2c_devices/dps310      from src/main/drivers/barometer/barometer_dps310.c
+                                               (Copyright INAVFLIGHT OU, MPL-2.0 or GPL-3.0-or-later,
+                                               used under the GPL)
+
+  ArduPilot                  https://github.com/ArduPilot/ardupilot
+    components/drivers/spi_devices/mmc5983ma   SET/RESET offset method of
+                                               libraries/AP_Compass/AP_Compass_MMC5xx3.cpp

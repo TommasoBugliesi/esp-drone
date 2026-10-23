@@ -119,7 +119,10 @@ void pmInit(void)
     return;
   }
 
-    pmEnableExtBatteryVoltMeasuring(CONFIG_ADC1_PIN); // ADC1 PIN is fixed to ADC channel
+    pmEnableExtBatteryVoltMeasuring(CONFIG_VBAT_ADC_PIN);
+#ifdef CONFIG_CURR_ADC_ENABLE
+    pmEnableExtBatteryCurrMeasuring(CONFIG_CURR_ADC_PIN, CONFIG_CURR_AMP_PER_VOLT_X100 / 100.0f);
+#endif
 
     pmSyslinkInfo.pgood = false;
     pmSyslinkInfo.chg = false;
@@ -335,7 +338,9 @@ void pmTask(void *param)
     // Measure battery voltage
     extBatteryVoltage = pmMeasureExtBatteryVoltage();
     extBatteryVoltageMV = (uint16_t)(extBatteryVoltage * 1000);
-    // extBatteryCurrent = pmMeasureExtBatteryCurrent();
+#ifdef CONFIG_CURR_ADC_ENABLE
+    extBatteryCurrent = pmMeasureExtBatteryCurrent();
+#endif
     pmSetBatteryVoltage(extBatteryVoltage);
     batteryLevel = pmBatteryChargeFromVoltage(pmGetBatteryVoltage()) * 10;
   #ifdef DEBUG_EP2

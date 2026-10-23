@@ -25,6 +25,7 @@
 
 #include "motors.h"
 #include "driver/rmt.h"
+#include "board.h"
 
 #define DSHOT_THROTTLE_MIN 48
 #define DSHOT_THROTTLE_MAX 2047
@@ -35,10 +36,11 @@
 static rmt_item32_t _dshotCmd[17];
 #define RMT_CMD_SIZE (sizeof(_dshotCmd) / sizeof(_dshotCmd[0])) // Prevent variable definition rmt_item32_t _dshotCmd[17]; 
 
-#define MOT_RMT_CH1  1      // Motor M1 pwmchannel
-#define MOT_RMT_CH2  2      // Motor M2 pwmchannel
-#define MOT_RMT_CH3  3      // Motor M3 pwmchannel
-#define MOT_RMT_CH4  4      // Motor M4 pwmchannel  
+// RMT transmit channels of the motors: 1-4 on the ESP32, 0-3 on the S3 (its channels 4-7 only receive)
+#define MOT_RMT_CH1  (BOARD_MOTOR_RMT_CHANNEL_0 + 0)
+#define MOT_RMT_CH2  (BOARD_MOTOR_RMT_CHANNEL_0 + 1)
+#define MOT_RMT_CH3  (BOARD_MOTOR_RMT_CHANNEL_0 + 2)
+#define MOT_RMT_CH4  (BOARD_MOTOR_RMT_CHANNEL_0 + 3)
 
 #define MOTOR_TO_RMT_CHANNEL(motor_channel) (motor_channel == MOTOR_M1 ? MOT_RMT_CH1 : \
                                              motor_channel == MOTOR_M2 ? MOT_RMT_CH2 : \

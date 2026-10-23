@@ -31,6 +31,7 @@
 
 typedef enum {
     SensorImplementation_flyingfree_v01,
+    SensorImplementation_flyingfree_v02,
     SensorImplementation_COUNT,
 } SensorImplementation_t;
 

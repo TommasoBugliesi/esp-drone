@@ -30,26 +30,17 @@
 
 #include "esp_idf_version.h"
 #include "syslink.h"
-#include "driver/adc.h"
+#include "board.h"
 //#include "deck.h"
 
-#ifdef CONFIG_TARGET_FLYINGFREE_V01
-  #define VOLTAGE_DIVIDER 0.1546391753f // 15kOhm/82kOhm
-#endif
+#define VOLTAGE_DIVIDER BOARD_VBAT_DIVIDER
 
-#ifdef CONFIG_BATTERY_3S 
-  #define BATTERY_VOLTAGE 11.1f //3.7*3.0 
-  #define BATTERY_VOLTAGE_MV 11100
-  #define BATTERY_VOLTAGE_MIN 9.0f
-  #define BATTERY_VOLTAGE_MAX 12.5f
-  #define BATTERY_MULTIPLIER 3.0f
-#elif CONFIG_BATTERY_4S
-  #define BATTERY_VOLTAGE 14.8f //3.7*4.0 
-  #define BATTERY_VOLTAGE_MV 14800
-  #define BATTERY_VOLTAGE_MIN 12.0f
-  #define BATTERY_VOLTAGE_MAX 15.6f
-  #define BATTERY_MULTIPLIER 4.0f
-#endif
+// CONFIG_BATTERY_CELLS follows the Battery choice (1S-3S on V2, 3S-4S on V1.0)
+#define BATTERY_MULTIPLIER  ((float)CONFIG_BATTERY_CELLS)
+#define BATTERY_VOLTAGE     (3.7f * BATTERY_MULTIPLIER)
+#define BATTERY_VOLTAGE_MV  (3700 * CONFIG_BATTERY_CELLS)
+#define BATTERY_VOLTAGE_MIN (3.0f * BATTERY_MULTIPLIER)
+#define BATTERY_VOLTAGE_MAX (4.2f * BATTERY_MULTIPLIER)
 
 /* The measured value is the whole pack voltage, so the per-cell thresholds
  * are scaled by the number of cells (BATTERY_MULTIPLIER). LOW_VOLTAGE and

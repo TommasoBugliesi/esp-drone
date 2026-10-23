@@ -29,10 +29,13 @@
 #include "spi_drv.h"
 
 typedef spiDrv    SPI_Dev;
-#define VSPI_DEV  &sensorsVBus
-#define HSPI_DEV  &sensorsHBus
+#define IMU_SPI_DEV  (&imuSpiDev)
+#ifdef CONFIG_TARGET_FLYINGFREE_V02
+#define MAG_SPI_DEV  (&magSpiDev)
+#define OSD_SPI_DEV  (&osdSpiDev)
+#endif
 
-// Initializes the SPI driver
+// Initializes the device and its bus
 int spidevInit(spiDrv *dev);
 
 // Transfers data over SPI (both send and receive)
