@@ -67,7 +67,12 @@ def cmd_info(args):
 def cmd_config(args):
     link = open_link(args)
     mac = bytes(6) if args.drone_mac == 'broadcast' else L.parse_mac(args.drone_mac)
-    link.configure(mac, args.channel, save=args.save)
+    # Opening the port can reset the board (DTR/RTS on the auto-reset circuit): wait until the
+    # bridge answers before sending, or the frame is lost while it boots
+    wait_info(link)
+    for _ in range(3):
+        link.configure(mac, args.channel, save=args.save)
+        time.sleep(0.2)
     time.sleep(0.7)
     link.bridge_info = None
     print_info(wait_info(link))
@@ -101,6 +106,7 @@ def cmd_fly(args):
         sys.exit('fly needs pygame: pip install -r tools/groundstation/requirements.txt')
 
     link = open_link(args)
+    wait_info(link)   # the board may reboot when the port is opened; do not send before it answers
     pygame.init()
     screen = pygame.display.set_mode((760, 430))
     pygame.display.set_caption('ESPDrone ground station')

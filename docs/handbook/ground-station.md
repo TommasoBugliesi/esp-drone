@@ -53,6 +53,9 @@ python3 tools/groundstation/groundstation.py info   --port /dev/ttyUSB1
 python3 tools/groundstation/groundstation.py config --port /dev/ttyUSB1 --drone-mac <drone AP MAC> --channel 6 --save
 ```
 
+Opening the serial port can reset a board with an auto-reset circuit (most CP2102 and CH340 boards), so the
+tool waits for the bridge's first reply before it sends anything. A saved pairing survives that reboot.
+
 `info` prints the bridge's **STA MAC**. Put it into the drone as `ESPNOW_CTRL_PEER_MAC` (menuconfig: ESPDrone
 Config, Receiver & Link, ESP-NOW control link) and flash the drone again, so that only your bridge is
 obeyed. For the very first bench test an empty value works too (any transmitter accepted, the drone logs a
